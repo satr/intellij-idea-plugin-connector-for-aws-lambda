@@ -1,5 +1,5 @@
 <idea-plugin>
-  <id>io.github.satr.idea.plugin.lad.connector</id>
+  <id>io.github.satr.idea.plugin.connector.la</id>
   <name>Connector for AWS Lambda</name>
   <version>1.1</version>
   <vendor email="n/a" url="https://satr.github.io">github.com/satr</vendor>

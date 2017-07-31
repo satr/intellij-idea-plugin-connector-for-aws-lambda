@@ -5,28 +5,24 @@ import com.intellij.openapi.project.Project;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.artifacts.ArtifactType;
+import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 public class ProjectModelImpl implements ProjectModel {
     private final String JAR_ARTIFACT_TYPE = "jar";
-    protected ConnectorSettings connectorSettings = ConnectorSettings.getInstance();
 
     @Override
-    public Artifact getArtifact(Project project) {
+    public Collection<? extends ArtifactEntry> getJarArtifacts(Project project) {
+        if(project == null)
+            return Collections.emptyList();
         ArtifactManager artifactManager = ArtifactManager.getInstance(project);
         final Collection<? extends Artifact> jarArtifacts = artifactManager.getArtifactsByType(ArtifactType.findById(JAR_ARTIFACT_TYPE));
-        if(jarArtifacts.isEmpty())
-            return null;
-
-        Artifact artifact = null;
-        String lastSelectedJarArtifactName = connectorSettings.getLastSelectedJarArtifactName();
-        artifact = (Artifact) jarArtifacts.toArray()[0];
-        for(Artifact art : jarArtifacts) {
-            if (!art.getName().equals(lastSelectedJarArtifactName))
-                continue;
-            return art;
-        }
-        return artifact;
+        ArrayList<ArtifactEntry> artifactEntries = new ArrayList<>();
+        for(Artifact artifact : jarArtifacts)
+            artifactEntries.add(new ArtifactEntry(artifact));
+        return artifactEntries;
     }
 }

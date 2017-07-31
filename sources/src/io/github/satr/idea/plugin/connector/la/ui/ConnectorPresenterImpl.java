@@ -4,8 +4,8 @@ package io.github.satr.idea.plugin.connector.la.ui;
 import com.amazonaws.services.lambda.model.Runtime;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.packaging.artifacts.Artifact;
 import io.github.satr.common.OperationValueResult;
+import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorModel;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorSettings;
@@ -41,24 +41,18 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
     }
 
     @Override
-    public void updateFunction(FunctionEntry functionEntry, Project project) {
+    public void updateFunction(FunctionEntry functionEntry, ArtifactEntry artifactEntry, Project project) {
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
-        Artifact artifact = projectModel.getArtifact(project);
-        if(artifact == null){
-            showError(project, "JAR-artifact not found.");
-            return;
-        }
-
         String functionName = functionEntry.getFunctionName();
-        final OperationValueResult<FunctionEntry> result = getConnectorModel().updateWithJar(functionName, artifact.getOutputFilePath());
+        final OperationValueResult<FunctionEntry> result = getConnectorModel().updateWithJar(functionName, artifactEntry.getOutputFilePath());
 
         if (!result.success()) {
             showError(project, result.getErrorAsString());
             return;
         }
         connectorSettings.setLastSelectedFunctionName(functionName);
-        connectorSettings.setLastSelectedJarArtifactName(artifact.getName());
-        showInfo(project, "Lambda function \"%s\" has been updated with the artifact \"%s\".", result.getValue().getFunctionName(), artifact.getName());
+        connectorSettings.setLastSelectedJarArtifactName(artifactEntry.getName());
+        showInfo(project, "Lambda function \"%s\" has been updated with the artifact \"%s\".", result.getValue().getFunctionName(), artifactEntry.getName());
 
     }
 
@@ -66,6 +60,13 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
     public void shutdown() {
         if (connectorModel != null)
             connectorModel.shutdown();
+    }
+
+    @Override
+    public void refreshJarArtifactList(Project project) {
+        ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
+        view.setArtifactList(projectModel.getJarArtifacts(project));
+
     }
 
     private ConnectorModel getConnectorModel() {
