@@ -1,0 +1,58 @@
+<idea-plugin>
+  <id>io.github.satr.idea.plugin.lad.connector</id>
+  <name>Connector for AWS Lambda</name>
+  <version>1.1</version>
+  <vendor email="n/a" url="https://satr.github.io">github.com/satr</vendor>
+
+  <description><![CDATA[
+      Update functions powered by AWS Lambda with JAR-artifact.
+      Please read more about AWS Lambda on the following site: https://aws.amazon.com/lambda
+      Amazon Web Services, and AWS Lambda are trademarks of Amazon.com, Inc. or its affiliates in the United States and/or other countries.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      <ul>
+      <li>1.0/li>
+      <li>Update of functions powered by AWS Lambda with jar-file.</li>
+      <li>The function is specified by typing its name in a dialog.</li>
+      <li>The function name is verified with a list of functions.</li>
+      <li>Refresh of the list of Java-functions.</li>
+      <li>JAR-file is automatically taken from the last selected or (if not applicable) - the first JAR-artifact of the selected project.</li>
+      <li>AWS credentials expected to be configured with AWS CLI.</li>
+      <li>The list of functions or last selected function name and jar-file name are stored in settings of the project.</li>
+      <li>Implemeted a tool window with a function list and an update-function button.</li>
+      </ul>
+    ]]>
+  </change-notes>
+
+  <idea-version since-build="IU-171.4694"/>
+  <depends>com.intellij.modules.java</depends>
+  <extensions defaultExtensionNs="com.intellij">
+      <applicationService serviceInterface="io.github.satr.idea.plugin.connector.la.models.ConnectorSettings"
+                          serviceImplementation="io.github.satr.idea.plugin.connector.la.models.ConnectorSettings" />
+      <applicationService serviceInterface="io.github.satr.idea.plugin.connector.la.ui.ConnectorPresenter"
+                          serviceImplementation="io.github.satr.idea.plugin.connector.la.ui.ConnectorPresenterImpl" />
+      <applicationService serviceInterface="io.github.satr.idea.plugin.connector.la.models.ProjectModel"
+                          serviceImplementation="io.github.satr.idea.plugin.connector.la.models.ProjectModelImpl" />
+      <toolWindow id="Connector for AWS Lambda" secondary="true"  icon="/icons/Connector6a5fd3c29d3343Icon16.png" anchor="right"
+                  factoryClass="io.github.satr.idea.plugin.connector.la.ui.ConnectorViewFactory"/>
+  </extensions>
+
+  <actions>
+    <group id="io.github.satr.idea.plugin.connector.la.group" text="Connector for AWS Lambda" description="Operations with AWS Lambda functions">
+        <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </group>
+      <action id="io.github.satr.idea.plugin.connector.la.update.function" class="io.github.satr.idea.plugin.connector.la.actions.UpdateFunctionAction"
+              text="Update function for AWS Lambda"
+              description="Update for AWS Lambda function with JAR-artifact.">
+          <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt L"/>
+          <add-to-group group-id="io.github.satr.idea.plugin.connector.la.group"/>
+      </action>
+      <action id="io.github.satr.idea.plugin.connector.la.update.function.list" class="io.github.satr.idea.plugin.connector.la.actions.RefreshFunctionListAction"
+              text="Refresh list for AWS Lambda"
+              description="Refresh the list for AWS Lambda functions.">
+          <add-to-group group-id="io.github.satr.idea.plugin.connector.la.group"/>
+      </action>
+  </actions>
+
+</idea-plugin>
