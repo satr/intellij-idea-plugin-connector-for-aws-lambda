@@ -1,15 +1,18 @@
 package io.github.satr.idea.plugin.connector.la.ui;
 // Copyright © 2017, github.com/satr, MIT License
 
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.Runtime;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
+import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorModel;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorSettings;
 import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ import static io.github.satr.common.MessageHelper.showError;
 import static io.github.satr.common.MessageHelper.showInfo;
 
 public class ConnectorPresenterImpl implements ConnectorPresenter {
+    private final Regions DEFAULT_REGION = Regions.US_EAST_1;
     private ConnectorModel connectorModel;
     private ConnectorSettings connectorSettings = ConnectorSettings.getInstance();
     private ConnectorView view;
@@ -63,13 +67,42 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
     }
 
     @Override
+    public void refreshRegionList(Project project) {
+        view.setRegionList(getConnectorModel().getRegions(), getLastSelectedRegion());
+    }
+
+    @Override
     public void refreshJarArtifactList(Project project) {
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
         view.setArtifactList(projectModel.getJarArtifacts(project));
 
     }
 
+    @Override
+    public void setRegion(RegionEntry regionEntry) {
+        Regions region = Regions.fromName(regionEntry.getName());
+        if(region == null)
+            return;
+        if(connectorModel != null)
+            connectorModel.shutdown();
+        connectorModel = new ConnectorModel(region);
+        connectorSettings.setLastSelectedRegionName(regionEntry.getName());
+        refreshFunctionList();
+    }
+
     private ConnectorModel getConnectorModel() {
-        return connectorModel != null ? connectorModel : (connectorModel = new ConnectorModel());
+        if (connectorModel != null)
+            return connectorModel;
+        Regions region = getLastSelectedRegion();
+        return connectorModel = new ConnectorModel(region);
+    }
+
+    @NotNull
+    private Regions getLastSelectedRegion() {
+        String lastSelectedRegionName = connectorSettings.getLastSelectedRegionName();
+        Regions region = lastSelectedRegionName == null
+                            ? DEFAULT_REGION
+                            : Regions.fromName(lastSelectedRegionName);
+        return region != null ? region : DEFAULT_REGION;
     }
 }

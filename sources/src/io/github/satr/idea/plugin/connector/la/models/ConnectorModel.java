@@ -1,6 +1,8 @@
 package io.github.satr.idea.plugin.connector.la.models;
 // Copyright © 2017, github.com/satr, MIT License
 
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
@@ -9,23 +11,43 @@ import io.github.satr.common.OperationResult;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
+import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ConnectorModel {
     private AWSLambda awsLambdaClient;
+    private static final Map<String, String> regionDescriptions;
 
-    public ConnectorModel() {
-        awsLambdaClient = AWSLambdaClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+    static {
+        regionDescriptions = new LinkedHashMap<>();
+        regionDescriptions.put("us-east-2", "US East (Ohio)");
+        regionDescriptions.put("us-east-1", "US East (N. Virginia)");
+        regionDescriptions.put("us-west-1", "US West (N. California)");
+        regionDescriptions.put("us-west-2", "US West (Oregon)");
+        regionDescriptions.put("ap-northeast-2", "Asia Pacific (Seoul)");
+        regionDescriptions.put("ap-south-1", "Asia Pacific (Mumbai)");
+        regionDescriptions.put("ap-southeast-1", "Asia Pacific (Singapore)");
+        regionDescriptions.put("ap-southeast-2", "Asia Pacific (Sydney)");
+        regionDescriptions.put("ap-northeast-1", "Asia Pacific (Tokyo)");
+        regionDescriptions.put("ca-central-1", "Canada (Central)");
+        regionDescriptions.put("eu-central-1", "EU (Frankfurt)");
+        regionDescriptions.put("eu-west-1", "EU (Ireland)");
+        regionDescriptions.put("eu-west-2", "EU (London)");
+        regionDescriptions.put("sa-east-1", "South America (São Paulo)");
+    }
+
+    private ArrayList<RegionEntry> regionEntries;
+
+    public ConnectorModel(Regions region) {
+        awsLambdaClient = AWSLambdaClientBuilder.standard().withRegion(region).build();
     }
 
     public List<FunctionEntry> getFunctions(){
@@ -104,5 +126,18 @@ public class ConnectorModel {
             e.printStackTrace();
             operationResult.addError(e.getMessage());
         }
+    }
+
+    public List<RegionEntry> getRegions() {
+        if(regionEntries != null)
+            return regionEntries;
+
+        regionEntries = new ArrayList<>();
+        for(Region region : RegionUtils.getRegions()) {
+            String description = regionDescriptions.get(region.getName());
+            if(description != null)
+                regionEntries.add(new RegionEntry(region, description));
+        }
+        return regionEntries;
     }
 }

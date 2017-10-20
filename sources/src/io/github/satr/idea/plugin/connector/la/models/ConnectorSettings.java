@@ -17,6 +17,7 @@ public class ConnectorSettings  implements PersistentStateComponent<ConnectorSet
     private List<String> functionNames = new ArrayList<>();
     private String lastSelectedFunctionName;
     private String lastSelectedJarArtifactName;
+    private String lastSelectedRegionName;
 
     public String getLastSelectedJarArtifactName() {
         return lastSelectedJarArtifactName;
@@ -57,4 +58,11 @@ public class ConnectorSettings  implements PersistentStateComponent<ConnectorSet
         return ServiceManager.getService(ConnectorSettings.class);
     }
 
+    public void setLastSelectedRegionName(String lastSelectedRegionName) {
+        this.lastSelectedRegionName = lastSelectedRegionName;
+    }
+
+    public String getLastSelectedRegionName() {
+        return lastSelectedRegionName;
+    }
 }

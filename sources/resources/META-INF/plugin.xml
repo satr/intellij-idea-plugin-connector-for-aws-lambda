@@ -2,25 +2,27 @@
   <id>io.github.satr.idea.plugin.connector.la</id>
   <name>Connector for AWS Lambda</name>
   <version>1.1</version>
-  <vendor email="n/a" url="https://satr.github.io">github.com/satr</vendor>
+  <vendor email="satr.github.io@gmail.com" url="https://satr.github.io/intellij-idea-plugin-connector-for-aws-lambda/">github.com/satr</vendor>
 
   <description><![CDATA[
-      Update functions powered by AWS Lambda with JAR-artifact.
-      Please read more about AWS Lambda on the following site: https://aws.amazon.com/lambda
+      View and update functions powered by AWS Lambda with JAR-artifact.<br />
+      Please <a href="https://aws.amazon.com/lambda">read more</a> about AWS Lambda</a><br />
       Amazon Web Services, and AWS Lambda are trademarks of Amazon.com, Inc. or its affiliates in the United States and/or other countries.
     ]]></description>
 
   <change-notes><![CDATA[
       <ul>
-      <li>1.0/li>
-      <li>Update of functions powered by AWS Lambda with jar-file.</li>
-      <li>The function is specified by typing its name in a dialog.</li>
-      <li>The function name is verified with a list of functions.</li>
-      <li>Refresh of the list of Java-functions.</li>
-      <li>JAR-file is automatically taken from the last selected or (if not applicable) - the first JAR-artifact of the selected project.</li>
-      <li>AWS credentials expected to be configured with AWS CLI.</li>
-      <li>The list of functions or last selected function name and jar-file name are stored in settings of the project.</li>
-      <li>Implemeted a tool window with a function list and an update-function button.</li>
+      <li>1.1</li>
+      <li>Added a list of regions - function list can be loaded for a particular region.</li>
+      <li>1.0</li>
+      <li>Update of functions powered by <a href="https://aws.amazon.com/lambda">AWS Lambda</a> with jar-artifact.</li>
+      <li>A tool window with a function list, jar-artifact list and an "update function" button (Main Menu/View/Tool Windows/Connector for AWS Lambda).</li>
+      <li>The function can be entered by typing its name in a dialog (Main Menu/Tools/Update function for AWS Lambda).</li>
+      <li>The function name is verified with a list of functions (Main Menu/Tools/Refresh list for AWS Lambda).</li>
+      <li>JAR-file is automatically taken from the last selected JAR-artifact of the selected project.</li>
+      <li>AWS credentials expected to be configured with <a href="https://aws.amazon.com/cli">AWS CLI</a>.</li>
+      <li>The list of functions or last selected function name and jar-artifact name are stored in settings of the project.</li>
+      <li>A tool window with a function list, jar-artifact list and an "update function" button.</li>
       </ul>
     ]]>
   </change-notes>

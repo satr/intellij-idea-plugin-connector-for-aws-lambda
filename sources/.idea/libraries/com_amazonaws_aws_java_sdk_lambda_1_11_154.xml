@@ -21,6 +21,7 @@
     </JAVADOC>
     <SOURCES>
       <root url="jar://$PROJECT_DIR$/lib/aws-java-sdk-lambda-1.11.154-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.ideaLibSources/aws-java-sdk-core-1.11.154-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
