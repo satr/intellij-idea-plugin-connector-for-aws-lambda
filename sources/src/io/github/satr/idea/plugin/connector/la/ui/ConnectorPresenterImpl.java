@@ -1,12 +1,16 @@
 package io.github.satr.idea.plugin.connector.la.ui;
 // Copyright © 2017, github.com/satr, MIT License
 
+import com.amazonaws.auth.profile.internal.BasicProfile;
+import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.Runtime;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import io.github.satr.common.Constant;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
+import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
 import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorModel;
@@ -19,6 +23,7 @@ import java.util.List;
 
 import static io.github.satr.common.MessageHelper.showError;
 import static io.github.satr.common.MessageHelper.showInfo;
+import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorPresenterImpl implements ConnectorPresenter {
     private final Regions DEFAULT_REGION = Regions.US_EAST_1;
@@ -72,6 +77,11 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
     }
 
     @Override
+    public void refreshCredentialProfilesList(Project project) {
+        view.setCredentialProfilesList(getConnectorModel().getCredentialProfiles(), getLastSelectedCredentialProfile());
+    }
+
+    @Override
     public void refreshJarArtifactList(Project project) {
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
         view.setArtifactList(projectModel.getJarArtifacts(project));
@@ -80,21 +90,53 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
 
     @Override
     public void setRegion(RegionEntry regionEntry) {
-        Regions region = Regions.fromName(regionEntry.getName());
+        Regions region = tryGetRegionBy(regionEntry.getName());
         if(region == null)
             return;
+        setRegionAndProfile(region, connectorSettings.getLastSelectedCredentialProfile());
+    }
+
+    private void setRegionAndProfile(Regions region, String credentialProfile) {
         if(connectorModel != null)
             connectorModel.shutdown();
-        connectorModel = new ConnectorModel(region);
-        connectorSettings.setLastSelectedRegionName(regionEntry.getName());
+        connectorModel = new ConnectorModel(region, credentialProfile);
+        connectorSettings.setLastSelectedRegionName(region.getName());
         refreshFunctionList();
+    }
+
+    @Override
+    public void setCredentialProfile(CredentialProfileEntry credentialProfileEntry) {
+        BasicProfile basicProfile = credentialProfileEntry.getBasicProfile();
+        Regions lastSelectedRegion = getLastSelectedRegion();
+        Regions region = lastSelectedRegion;
+        if(!isEmpty(basicProfile.getRegion())) {
+            region = tryGetRegionBy(basicProfile.getRegion());
+        }
+        if(region == null){
+            region = lastSelectedRegion;
+        }
+        String credentialProfile = credentialProfileEntry.getName();
+        connectorSettings.setLastSelectedCredentialProfile(credentialProfile);
+        setRegionAndProfile(region, credentialProfile);
+        if(!lastSelectedRegion.getName().equals(region.getName())){
+            view.setRegion(region);
+        }
+    }
+
+    private Regions tryGetRegionBy(String regionName) {
+        for (Regions region : Regions.values()){
+            if(region.getName().equals(regionName)){
+                return region;
+            }
+        }
+        return null;
     }
 
     private ConnectorModel getConnectorModel() {
         if (connectorModel != null)
             return connectorModel;
         Regions region = getLastSelectedRegion();
-        return connectorModel = new ConnectorModel(region);
+        return connectorModel = new ConnectorModel(region, Constant.CredentialProfile.DEFAULT);
     }
 
     @NotNull
@@ -102,7 +144,16 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
         String lastSelectedRegionName = connectorSettings.getLastSelectedRegionName();
         Regions region = lastSelectedRegionName == null
                             ? DEFAULT_REGION
-                            : Regions.fromName(lastSelectedRegionName);
+                            : tryGetRegionBy(lastSelectedRegionName);
         return region != null ? region : DEFAULT_REGION;
+    }
+
+    @NotNull
+    private String getLastSelectedCredentialProfile() {
+        String lastSelectedCredentialProfile = connectorSettings.getLastSelectedCredentialProfile();
+        String credentialProfile = lastSelectedCredentialProfile == null
+                            ? Constant.CredentialProfile.DEFAULT
+                            : lastSelectedCredentialProfile;
+        return credentialProfile != null ? credentialProfile : Constant.CredentialProfile.DEFAULT;
     }
 }

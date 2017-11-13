@@ -2,6 +2,7 @@ package io.github.satr.idea.plugin.connector.la;
 // Copyright © 2017, github.com/satr, MIT License
 
 import com.amazonaws.regions.Regions;
+import io.github.satr.common.Constant;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorModel;
 import org.junit.After;
 import org.junit.Before;
@@ -13,7 +14,7 @@ public class ConnectorModelTestCasesBase {
 
     @Before
     public void setUp() throws Exception {
-        connectorModel = new ConnectorModel(Regions.US_EAST_1);
+        connectorModel = new ConnectorModel(Regions.US_EAST_1, Constant.CredentialProfile.DEFAULT);
     }
 
     @After

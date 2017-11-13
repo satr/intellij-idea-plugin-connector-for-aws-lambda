@@ -1,7 +1,9 @@
 package io.github.satr.idea.plugin.connector.la.ui;
 // Copyright © 2017, github.com/satr, MIT License
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.lambda.model.AWSLambdaException;
 import com.amazonaws.services.lambda.model.Runtime;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -14,6 +16,7 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import io.github.satr.common.MessageHelper;
 import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
+import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
 import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
@@ -23,6 +26,8 @@ import javax.swing.*;
 import java.awt.event.ItemEvent;
 import java.util.Collection;
 import java.util.List;
+
+import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private final ConnectorPresenter presenter;
@@ -37,8 +42,12 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JButton refreshJarArtifactsButton;
     private JComboBox cbRegions;
     private JButton refreshRegionsButton;
+    private JSeparator sepAdvanced;
+    private JComboBox cbCredentialProfiles;
+    private JButton refreshCredentialProfiles;
     private Project project;
     private boolean operationInProgress = false;
+    private boolean setRegionOperationInProgress;
 
     public ConnectorViewFactory() {
         this(ServiceManager.getService(ConnectorPresenter.class));
@@ -57,23 +66,39 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         refreshRegionsButton.addActionListener(e -> {
             runRefreshRegionList(presenter);
         });
+        refreshCredentialProfiles.addActionListener(e -> {
+            runRefreshCredentialProfilesList(presenter);
+        });
         updateFunctionButton.addActionListener(e -> {
             runUpdateFunction(presenter);
         });
         cbRegions.addItemListener(e -> {
             runSetRegion(presenter, e);
         });
+        cbCredentialProfiles.addItemListener(e -> {
+            runSetCredentialProfile(presenter, e);
+        });
         //runRefreshRegionList(presenter); //region list has not been initialized automatically due to it takes time
         // during loading of IDE but the plugin might not be needed in all projects
     }
 
     private void runSetRegion(ConnectorPresenter presenter, ItemEvent e) {
+        if(operationInProgress || setRegionOperationInProgress
+                || e.getStateChange() != ItemEvent.SELECTED)
+            return;
+        RegionEntry entry = (RegionEntry)e.getItem();
+        if(entry == null)
+            return;
+        runOperation(() -> presenter.setRegion(entry), "Select region: " + entry.toString());
+    }
+
+    private void runSetCredentialProfile(ConnectorPresenter presenter, ItemEvent e) {
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
-        RegionEntry regionEntry = (RegionEntry)e.getItem();
-        if(regionEntry == null)
+        CredentialProfileEntry entry = (CredentialProfileEntry)e.getItem();
+        if(entry == null)
             return;
-        runOperation(() -> presenter.setRegion(regionEntry), "Select region: " + regionEntry.toString());
+        runOperation(() -> presenter.setCredentialProfile(entry), "Select credential profile: " + entry.toString());
     }
 
     private void runUpdateFunction(ConnectorPresenter presenter) {
@@ -99,6 +124,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         runOperation(() -> presenter.refreshRegionList(project), "Refresh list of AWS regions");
     }
 
+    private void runRefreshCredentialProfilesList(ConnectorPresenter presenter) {
+        runOperation(() -> presenter.refreshCredentialProfilesList(project), "Refresh list of Credential Profiles");
+    }
+
     private void runOperation(Runnable runnable, final String title) {
         if(operationInProgress)
             return;
@@ -111,7 +140,14 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                     try {
                         runnable.run();
                     } catch (Throwable t) {
-                        MessageHelper.showError(project, t);
+                        Class<? extends Throwable> exceptionClass = t.getClass();
+                        if(exceptionClass.equals(AWSLambdaException.class)){
+                            MessageHelper.showError(project, t.getMessage());
+                        } else if(exceptionClass.equals(SdkClientException.class)){
+                            MessageHelper.showError(project, t.getMessage());
+                        } else {
+                            MessageHelper.showError(project, t);
+                        }
                     }
                     finally {
                         setControlsEnabled(true);
@@ -173,15 +209,48 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
+    public void setCredentialProfilesList(List<CredentialProfileEntry> credentialProfiles, String selectedCredentialsProfile) {
+        cbCredentialProfiles.removeAllItems();
+        CredentialProfileEntry selectedCredentialsProfileEntry = null;
+        for(CredentialProfileEntry entry : credentialProfiles){
+            cbCredentialProfiles.addItem(entry);
+            if(!isEmpty(selectedCredentialsProfile) && entry.getName().equals(selectedCredentialsProfile))
+                selectedCredentialsProfileEntry = entry;
+        }
+        if(selectedCredentialsProfileEntry != null) {
+            cbCredentialProfiles.setSelectedItem(selectedCredentialsProfileEntry);
+        }
+    }
+
+    @Override
+    public void setRegion(Regions region) {
+        if(setRegionOperationInProgress){
+            return;
+        }
+        try {
+            setRegionOperationInProgress = true;
+            for (int i = 0; i < cbRegions.getItemCount(); i++) {
+                if(((RegionEntry)cbRegions.getItemAt(i)).getName().equals(region.getName())){
+                    cbRegions.setSelectedIndex(i);
+                    return;
+                }
+            }
+        } finally {
+            setRegionOperationInProgress = false;
+        }
+    }
+
+    @Override
     public void setRegionList(List<RegionEntry> regions, Regions selectedRegion) {
         cbRegions.removeAllItems();
         RegionEntry selectedRegionEntry = null;
-        for(RegionEntry regionEntry : regions) {
-            cbRegions.addItem(regionEntry);
-            if(selectedRegion != null && regionEntry.getRegion().getName().equals(selectedRegion.getName()))
-                selectedRegionEntry = regionEntry;
+        for(RegionEntry entry : regions) {
+            cbRegions.addItem(entry);
+            if(selectedRegion != null && entry.getRegion().getName().equals(selectedRegion.getName()))
+                selectedRegionEntry = entry;
         }
-        if(selectedRegionEntry != null)
+        if(selectedRegionEntry != null) {
             cbRegions.setSelectedItem(selectedRegionEntry);
+        }
     }
 }

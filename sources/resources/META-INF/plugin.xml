@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.satr.idea.plugin.connector.la</id>
   <name>Connector for AWS Lambda</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <vendor email="satr.github.io@gmail.com" url="https://satr.github.io/intellij-idea-plugin-connector-for-aws-lambda/">github.com/satr</vendor>
 
   <description><![CDATA[
@@ -12,6 +12,8 @@
 
   <change-notes><![CDATA[
       <ul>
+      <li>1.2 RC1</li>
+      <li>Added a list of profile - profiles from credentials file can be loaded (with a specified region, if exists in credentials file, not in config file). Use command "aws configure --profile YOUR-PROFILE-NAME" to create a profile.</li>
       <li>1.1</li>
       <li>Added a list of regions - function list can be loaded for a particular region.</li>
       <li>1.0</li>

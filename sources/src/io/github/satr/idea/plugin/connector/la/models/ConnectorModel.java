@@ -1,6 +1,9 @@
 package io.github.satr.idea.plugin.connector.la.models;
 // Copyright © 2017, github.com/satr, MIT License
 
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.auth.profile.ProfilesConfigFile;
+import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
@@ -10,6 +13,7 @@ import com.amazonaws.services.lambda.model.*;
 import io.github.satr.common.OperationResult;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
+import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
 import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 
@@ -46,8 +50,14 @@ public class ConnectorModel {
 
     private ArrayList<RegionEntry> regionEntries;
 
-    public ConnectorModel(Regions region) {
-        awsLambdaClient = AWSLambdaClientBuilder.standard().withRegion(region).build();
+    public ConnectorModel(Regions region, String profileName) {
+
+        ProfileCredentialsProvider profileCredentialsProvider = new ProfileCredentialsProvider(profileName);
+
+        awsLambdaClient = AWSLambdaClientBuilder.standard()
+                .withRegion(region)
+                .withCredentials(profileCredentialsProvider)
+                .build();
     }
 
     public List<FunctionEntry> getFunctions(){
@@ -139,5 +149,14 @@ public class ConnectorModel {
                 regionEntries.add(new RegionEntry(region, description));
         }
         return regionEntries;
+    }
+
+    public List<CredentialProfileEntry> getCredentialProfiles() {
+        Map<String, BasicProfile> profiles = new ProfilesConfigFile().getAllBasicProfiles();
+        List<CredentialProfileEntry> credentialProfilesEntries = new ArrayList<>();
+        for (String profileName : profiles.keySet()) {
+            credentialProfilesEntries.add(new CredentialProfileEntry(profileName, profiles.get(profileName)));
+        }
+        return credentialProfilesEntries;
     }
 }

@@ -4,6 +4,7 @@ package io.github.satr.idea.plugin.connector.la.actions;
 import com.amazonaws.regions.Regions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import io.github.satr.common.Constant;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorModel;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorSettings;
 
@@ -24,6 +25,8 @@ public abstract class AbstractFunctionAction extends AnAction {
     public abstract void actionPerformed(AnActionEvent event);
 
     public ConnectorModel getConnectorModel() {
-        return connectorModel != null ? connectorModel : (connectorModel = new ConnectorModel(Regions.US_EAST_1));
+        return connectorModel != null
+                ? connectorModel
+                : (connectorModel = new ConnectorModel(Regions.US_EAST_1, Constant.CredentialProfile.DEFAULT));
     }
 }
