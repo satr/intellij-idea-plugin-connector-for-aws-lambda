@@ -16,4 +16,5 @@ public interface ConnectorView {
     void setRegionList(List<RegionEntry> regions, Regions selectedRegion);
     void setCredentialProfilesList(List<CredentialProfileEntry> credentialProfiles, String selectedCredentialsProfile);
     void setRegion(Regions region);
+    void refreshStatus(String function, String artifact, String region, String credentialProfile);
 }

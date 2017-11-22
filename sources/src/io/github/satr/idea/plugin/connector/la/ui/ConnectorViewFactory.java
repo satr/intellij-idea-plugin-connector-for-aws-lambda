@@ -27,6 +27,7 @@ import java.awt.event.ItemEvent;
 import java.util.Collection;
 import java.util.List;
 
+import static io.github.satr.common.StringUtil.getNotEmptyString;
 import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
@@ -42,9 +43,17 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JButton refreshJarArtifactsButton;
     private JComboBox cbRegions;
     private JButton refreshRegionsButton;
-    private JSeparator sepAdvanced;
     private JComboBox cbCredentialProfiles;
     private JButton refreshCredentialProfiles;
+    private JTabbedPane tabContent;
+    private JPanel tabPanLog;
+    private JTextArea txtLog;
+    private JPanel tabPanSettings;
+    private JTextPane txtStatus;
+    private JButton refreshAllButton;
+    private JPanel pnlToolBar;
+    private JPanel pnlSettings;
+    private JPanel pnlTabs;
     private Project project;
     private boolean operationInProgress = false;
     private boolean setRegionOperationInProgress;
@@ -57,6 +66,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         this.presenter = presenter;
         this.presenter.setView(this);
         presenter.refreshJarArtifactList(project);
+        refreshAllButton.addActionListener(e -> {
+            runRefreshAllList(presenter);
+        });
         refreshFuncListButton.addActionListener(e -> {
             runRefreshFunctionList(presenter);
         });
@@ -71,6 +83,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         });
         updateFunctionButton.addActionListener(e -> {
             runUpdateFunction(presenter);
+        });
+        cbFunctions.addItemListener(e -> {
+            runSetFunction(presenter, e);
         });
         cbRegions.addItemListener(e -> {
             runSetRegion(presenter, e);
@@ -90,6 +105,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if(entry == null)
             return;
         runOperation(() -> presenter.setRegion(entry), "Select region: " + entry.toString());
+    }
+
+    private void runSetFunction(ConnectorPresenter presenter, ItemEvent e) {
+        if(operationInProgress || setRegionOperationInProgress
+                || e.getStateChange() != ItemEvent.SELECTED)
+            return;
+        FunctionEntry entry = (FunctionEntry)e.getItem();
+        if(entry == null)
+            return;
+        runOperation(() -> presenter.setFunction(entry), "Select function: " + entry.toString());
     }
 
     private void runSetCredentialProfile(ConnectorPresenter presenter, ItemEvent e) {
@@ -112,20 +137,38 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                     "Update selected AWS Lambda function with JAR-artefact");
     }
 
+    private void runRefreshAllList(ConnectorPresenter presenter) {
+        runOperation(() -> {
+            presenter.refreshAllLists(project);
+            presenter.refreshStatus();
+        }, "Refresh all lists");
+    }
     private void runRefreshFunctionList(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshFunctionList(), "Refresh list of AWS Lambda functions");
+        runOperation(() -> {
+            presenter.refreshFunctionList();
+            presenter.refreshStatus();
+        }, "Refresh list of AWS Lambda functions");
     }
 
     private void runRefreshJarArtifactList(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshJarArtifactList(project), "Refresh list of JAR-artifacts in the project");
+        runOperation(() -> {
+            presenter.refreshJarArtifactList(project);
+            presenter.refreshStatus();
+        }, "Refresh list of JAR-artifacts in the project");
     }
 
     private void runRefreshRegionList(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshRegionList(project), "Refresh list of AWS regions");
+        runOperation(() -> {
+            presenter.refreshRegionList(project);
+            presenter.refreshStatus();
+        }, "Refresh list of AWS regions");
     }
 
     private void runRefreshCredentialProfilesList(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshCredentialProfilesList(project), "Refresh list of Credential Profiles");
+        runOperation(() -> {
+            presenter.refreshCredentialProfilesList(project);
+            presenter.refreshStatus();
+        }, "Refresh list of Credential Profiles");
     }
 
     private void runOperation(Runnable runnable, final String title) {
@@ -162,13 +205,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void setControlsEnabled(boolean enabled) {
+        refreshAllButton.setEnabled(enabled);
         refreshFuncListButton.setEnabled(enabled);
         refreshJarArtifactsButton.setEnabled(enabled);
         refreshRegionsButton.setEnabled(enabled);
+        refreshCredentialProfiles.setEnabled(enabled);
         updateFunctionButton.setEnabled(enabled);
         cbFunctions.setEnabled(enabled);
         cbJarArtifacts.setEnabled(enabled);
         cbRegions.setEnabled(enabled);
+        cbCredentialProfiles.setEnabled(enabled);
     }
 
     public Project getProject() {
@@ -238,6 +284,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         } finally {
             setRegionOperationInProgress = false;
         }
+    }
+
+    @Override
+    public void refreshStatus(String function, String artifact, String region, String credentialProfile) {
+        txtStatus.setText(String.format("Func:%s; Jar:%s; Reg:%s; Prof:%s;",
+                getNotEmptyString(function, "-"),
+                getNotEmptyString(artifact, "-"),
+                getNotEmptyString(region, "-"),
+                getNotEmptyString(credentialProfile, "-")
+                ));
     }
 
     @Override

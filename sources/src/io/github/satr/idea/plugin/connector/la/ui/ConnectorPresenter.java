@@ -15,6 +15,12 @@ public interface ConnectorPresenter {
     void refreshRegionList(Project project);
     void refreshCredentialProfilesList(Project project);
     void refreshJarArtifactList(Project project);
+
+    void refreshStatus();
+
+    void refreshAllLists(Project project);
     void setRegion(RegionEntry regionEntry);
     void setCredentialProfile(CredentialProfileEntry credentialProfileEntry);
+    void setFunction(FunctionEntry functionEntry);
+    void setJarArtifact(ArtifactEntry artifactEntry);
 }

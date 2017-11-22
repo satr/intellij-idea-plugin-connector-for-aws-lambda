@@ -2,7 +2,6 @@ package io.github.satr.idea.plugin.connector.la.ui;
 // Copyright © 2017, github.com/satr, MIT License
 
 import com.amazonaws.auth.profile.internal.BasicProfile;
-import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.Runtime;
 import com.intellij.openapi.components.ServiceManager;
@@ -23,6 +22,7 @@ import java.util.List;
 
 import static io.github.satr.common.MessageHelper.showError;
 import static io.github.satr.common.MessageHelper.showInfo;
+import static io.github.satr.common.StringUtil.getNotEmptyString;
 import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorPresenterImpl implements ConnectorPresenter {
@@ -82,10 +82,26 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
     }
 
     @Override
+    public void refreshStatus() {
+        String credentialProfile = getLastSelectedCredentialProfile();
+        String region = getLastSelectedRegion().toString();
+        String function = getLastSelectedFunction().toString();
+        String artifact = getLastSelectedJarArtefact().toString();
+        view.refreshStatus(function, artifact, region, credentialProfile);
+    }
+
+    @Override
+    public void refreshAllLists(Project project) {
+        refreshJarArtifactList(project);
+        refreshRegionList(project);
+        refreshCredentialProfilesList(project);
+        refreshFunctionList();
+    }
+
+    @Override
     public void refreshJarArtifactList(Project project) {
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
         view.setArtifactList(projectModel.getJarArtifacts(project));
-
     }
 
     @Override
@@ -123,6 +139,16 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
         }
     }
 
+    @Override
+    public void setFunction(FunctionEntry functionEntry) {
+        //TODO
+    }
+
+    @Override
+    public void setJarArtifact(ArtifactEntry artifactEntry) {
+        //TODO
+    }
+
     private Regions tryGetRegionBy(String regionName) {
         for (Regions region : Regions.values()){
             if(region.getName().equals(regionName)){
@@ -155,5 +181,15 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
                             ? Constant.CredentialProfile.DEFAULT
                             : lastSelectedCredentialProfile;
         return credentialProfile != null ? credentialProfile : Constant.CredentialProfile.DEFAULT;
+    }
+
+    @NotNull
+    private String getLastSelectedFunction() {
+        return getNotEmptyString(connectorSettings.getLastSelectedFunctionName());
+    }
+
+    @NotNull
+    private String getLastSelectedJarArtefact() {
+        return getNotEmptyString(connectorSettings.getLastSelectedJarArtifactName());
     }
 }
