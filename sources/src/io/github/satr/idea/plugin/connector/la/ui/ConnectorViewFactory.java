@@ -49,7 +49,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JPanel tabPanLog;
     private JTextArea txtLog;
     private JPanel tabPanSettings;
-    private JTextPane txtStatus;
+    private JTextPane txtStatus1;
     private JButton refreshAllButton;
     private JPanel pnlToolBar;
     private JPanel pnlSettings;
@@ -96,6 +96,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         cbJarArtifacts.addItemListener(e -> {
             runSetJarArtifact(presenter, e);
         });
+        runRefreshAllList(presenter);
         //runRefreshRegionList(presenter); //region list has not been initialized automatically due to it takes time
         // during loading of IDE but the plugin might not be needed in all projects
     }
@@ -139,14 +140,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void runUpdateFunction(ConnectorPresenter presenter) {
-        if (cbFunctions.getSelectedObjects().length <= 0
-            || cbJarArtifacts.getSelectedObjects().length <= 0)
-            return;
-
-        runOperation(() -> presenter.updateFunction((FunctionEntry)cbFunctions.getSelectedItem(),
-                                                    (ArtifactEntry)cbJarArtifacts.getSelectedItem(),
-                                                    getProject()),
-                    "Update selected AWS Lambda function with JAR-artefact");
+        runOperation(() -> presenter.updateFunction(getProject()),
+                    "Update selected AWS Lambda function with JAR-artifact");
     }
 
     private void runRefreshAllList(ConnectorPresenter presenter) {
@@ -201,7 +196,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                         } else if(exceptionClass.equals(SdkClientException.class)){
                             MessageHelper.showError(project, t.getMessage());
                         } else {
-                            MessageHelper.showError(project, t);
+                            MessageHelper.showCriticalError(project, t);
                         }
                     }
                     finally {
@@ -307,13 +302,39 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public void refreshStatus(String function, String artifact, String region, String credentialProfile) {
-        txtStatus.setText(String.format("Func: \"%s\";  Jar: \"%s\";  Reg: \"%s\"; Prof:\"%s\";",
-                getNotEmptyString(function, "-"),
-                getNotEmptyString(artifact, "-"),
-                getNotEmptyString(region, "-"),
-                getNotEmptyString(credentialProfile, "-")
-                ));
+    public void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile) {
+        txtStatus1.setText(String.format("Func: \"%s\"; Jar: \"%s\"; Region: \"%s\"; Profile:\"%s\"",
+                getNotEmptyString(function, "?"),
+                getNotEmptyString(artifact, "?"),
+                getNotEmptyString(region, "?"),
+                getNotEmptyString(credentialProfile, "?")
+        ));
+        txtStatus1.setToolTipText(String.format("Func: %s\nJar: %s\nRegion: %s\nProfile: %s",
+                getNotEmptyString(function, "?"),
+                getNotEmptyString(artifact, "?"),
+                getNotEmptyString(regionDescription, "?"),
+                getNotEmptyString(credentialProfile, "?")
+        ));
+    }
+
+    @Override
+    public FunctionEntry getSelectedFunctionEntry() {
+        return (FunctionEntry) cbFunctions.getSelectedItem();
+    }
+
+    @Override
+    public ArtifactEntry getSelectedArtifactEntry() {
+        return (ArtifactEntry) cbJarArtifacts.getSelectedItem();
+    }
+
+    @Override
+    public RegionEntry getSelectedRegionEntry() {
+        return (RegionEntry) cbRegions.getSelectedItem();
+    }
+
+    @Override
+    public CredentialProfileEntry getSelectedCredentialProfileEntry() {
+        return (CredentialProfileEntry) cbCredentialProfiles.getSelectedItem();
     }
 
     @Override

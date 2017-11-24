@@ -23,6 +23,16 @@ public final class MessageHelper {
         showMessage(project, MessageType.ERROR, format, args);
     }
 
+    public static void showCriticalError(final Project project, final String format, final Object... args) {
+        showMessage(project, MessageType.ERROR, format, args);
+        log.error(String.format(format, args));
+    }
+
+    public static void showCriticalError(Project project, Throwable t) {
+        showError(project, t.getMessage());
+        log.error(t);
+    }
+
     private static void showMessage(final Project project, final MessageType messageType, final String format, final Object[] args) {
         StatusBar statusBar = windowManager.getStatusBar(project);
         String message = String.format(format, args);
@@ -35,14 +45,11 @@ public final class MessageHelper {
             log.info(message);
         else if(messageType == MessageType.WARNING)
             log.warn(message);
-        else if(messageType == MessageType.ERROR)
-            log.error(message);
         else
             log.debug(message);
     }
 
     public static void showError(Project project, Throwable t) {
         showError(project, t.getMessage());
-        log.error(t);
     }
 }

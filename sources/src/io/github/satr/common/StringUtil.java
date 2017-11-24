@@ -2,6 +2,8 @@ package io.github.satr.common;
 
 import org.jetbrains.annotations.NotNull;
 
+import static org.apache.http.util.TextUtils.isEmpty;
+
 public final class StringUtil {
     @NotNull
     public static String getNotEmptyString(String lastSelectedItem) {
@@ -10,6 +12,6 @@ public final class StringUtil {
 
     @NotNull
     public static String getNotEmptyString(String value, String defaultValue) {
-        return value != null ? value : defaultValue;
+        return isEmpty(value) ? defaultValue : value;
     }
 }

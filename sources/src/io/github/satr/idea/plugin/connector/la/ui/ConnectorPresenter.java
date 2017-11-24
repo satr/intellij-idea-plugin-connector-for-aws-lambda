@@ -10,14 +10,12 @@ import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 public interface ConnectorPresenter {
     void setView(ConnectorView view);
     void refreshFunctionList();
-    void updateFunction(FunctionEntry functionEntry, ArtifactEntry artifactEntry, Project project);
+    void updateFunction(Project project);
     void shutdown();
     void refreshRegionList(Project project);
     void refreshCredentialProfilesList(Project project);
     void refreshJarArtifactList(Project project);
-
     void refreshStatus();
-
     void refreshAllLists(Project project);
     void setRegion(RegionEntry regionEntry);
     void setCredentialProfile(CredentialProfileEntry credentialProfileEntry);
