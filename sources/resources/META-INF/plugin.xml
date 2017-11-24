@@ -12,6 +12,10 @@
 
   <change-notes><![CDATA[
       <ul>
+      <li>1.2 RC2</li>
+      <li>Changed layout, added tabs and toolbar.</li>
+      <li>Saved last selected function and JAR-artifact.</li>
+      <li>Removed actions from Tools menu.</li>
       <li>1.2 RC1</li>
       <li>Added a list of profile - profiles from credentials file can be loaded (with a specified region, if exists in credentials file, not in config file). Use command "aws configure --profile YOUR-PROFILE-NAME" to create a profile.</li>
       <li>1.1</li>
@@ -41,22 +45,4 @@
       <toolWindow id="Connector for AWS Lambda" secondary="true"  icon="/icons/Connector6a5fd3c29d3343Icon16.png" anchor="right"
                   factoryClass="io.github.satr.idea.plugin.connector.la.ui.ConnectorViewFactory"/>
   </extensions>
-
-  <actions>
-    <group id="io.github.satr.idea.plugin.connector.la.group" text="Connector for AWS Lambda" description="Operations with AWS Lambda functions">
-        <add-to-group group-id="ToolsMenu" anchor="last"/>
-    </group>
-      <action id="io.github.satr.idea.plugin.connector.la.update.function" class="io.github.satr.idea.plugin.connector.la.actions.UpdateFunctionAction"
-              text="Update function for AWS Lambda"
-              description="Update for AWS Lambda function with JAR-artifact.">
-          <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt L"/>
-          <add-to-group group-id="io.github.satr.idea.plugin.connector.la.group"/>
-      </action>
-      <action id="io.github.satr.idea.plugin.connector.la.update.function.list" class="io.github.satr.idea.plugin.connector.la.actions.RefreshFunctionListAction"
-              text="Refresh list for AWS Lambda"
-              description="Refresh the list for AWS Lambda functions.">
-          <add-to-group group-id="io.github.satr.idea.plugin.connector.la.group"/>
-      </action>
-  </actions>
-
 </idea-plugin>

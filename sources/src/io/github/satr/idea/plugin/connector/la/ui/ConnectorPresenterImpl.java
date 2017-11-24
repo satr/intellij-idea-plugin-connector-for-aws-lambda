@@ -6,10 +6,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.Runtime;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import io.github.satr.common.Constant;
-import io.github.satr.common.OperationResult;
-import io.github.satr.common.OperationResultImpl;
-import io.github.satr.common.OperationValueResult;
+import io.github.satr.common.*;
 import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
 import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
@@ -23,9 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static io.github.satr.common.MessageHelper.showError;
-import static io.github.satr.common.MessageHelper.showInfo;
-import static io.github.satr.common.StringUtil.getNotEmptyString;
 import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorPresenterImpl extends AbstractConnectorPresenter implements ConnectorPresenter {
@@ -40,8 +34,10 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void refreshFunctionList() {
+        view.logDebug("Refresh function list.");
         ArrayList<String> functionNames = new ArrayList<>();
         List<FunctionEntry> functions = getConnectorModel().getFunctions();
+        view.logDebug("Found %d functions.", functions.size());
         String lastSelectedFunctionName = connectorSettings.getLastSelectedFunctionName();
         FunctionEntry selectedFunctionEntry = null;
         for (FunctionEntry entry : functions) {
@@ -56,11 +52,17 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         connectorSettings.setFunctionNames(functionNames);
         view.setFunctionList(functions, selectedFunctionEntry);
         FunctionEntry functionEntry = view.getSelectedFunctionEntry();
+        if(functionEntry == null) {
+            view.logInfo("Function is not selected.");
+        } else {
+            view.logInfo("Selected function: \"%s\"", functionEntry.getFunctionName());
+        }
         refreshStatus();
     }
 
     @Override
     public void updateFunction(Project project) {
+        view.logDebug("Update function.");
         FunctionEntry functionEntry = view.getSelectedFunctionEntry();
         ArtifactEntry artifactEntry = view.getSelectedArtifactEntry();
         OperationResult validationResult = validateToUpdate(functionEntry, artifactEntry);
@@ -79,6 +81,16 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         connectorSettings.setLastSelectedJarArtifactName(artifactEntry.getName());
         showInfo(project, "Lambda function \"%s\" has been updated with the artifact \"%s\".",
                             result.getValue().getFunctionName(), artifactEntry.getName());
+    }
+
+    private void showError(Project project, String format, Object... args) {
+        MessageHelper.showError(project, format, args);
+        view.logError(format, args);
+    }
+
+    private void showInfo(Project project, String format, Object... args) {
+        MessageHelper.showInfo(project, format, args);
+        view.logInfo(format, args);
     }
 
     private OperationResult validateToUpdate(FunctionEntry functionEntry, ArtifactEntry artifactEntry) {
@@ -100,17 +112,20 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void shutdown() {
+        view.logDebug("Shutdown.");
         shutdownConnectorModel();
     }
 
     @Override
     public void refreshRegionList(Project project) {
+        view.logDebug("Refresh region list.");
         view.setRegionList(getConnectorModel().getRegions(), getLastSelectedRegion());
         refreshStatus();
     }
 
     @Override
     public void refreshCredentialProfilesList(Project project) {
+        view.logDebug("Refresh credential profile list.");
         view.setCredentialProfilesList(getConnectorModel().getCredentialProfiles(), getLastSelectedCredentialProfile());
         refreshStatus();
     }
@@ -131,6 +146,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void refreshAllLists(Project project) {
+        view.logDebug("Refresh all.");
         refreshJarArtifactList(project);
         refreshRegionList(project);
         refreshCredentialProfilesList(project);
@@ -139,6 +155,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void refreshJarArtifactList(Project project) {
+        view.logDebug("Refresh JAR-artifact list.");
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
         String lastSelectedJarArtifactName = connectorSettings.getLastSelectedJarArtifactName();
         ArtifactEntry selectedArtifactEntry = null;
@@ -150,18 +167,28 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             }
         }
         view.setArtifactList(jarArtifacts, selectedArtifactEntry);
+        ArtifactEntry artifactEntry = view.getSelectedArtifactEntry();
+        if(artifactEntry == null) {
+            view.logInfo("JAR-artifact is not selected.");
+        } else {
+            view.logInfo("Selected JAR-artifact: \"%s\"", artifactEntry.getName());
+        }
         refreshStatus();
     }
 
     @Override
     public void setRegion(RegionEntry regionEntry) {
         Regions region = tryGetRegionBy(regionEntry.getName());
-        if(region == null)
+        if(region == null) {
             return;
+        }
+        view.logInfo("Region is set to: %s", region.toString());
         setRegionAndProfile(region, connectorSettings.getLastSelectedCredentialProfile());
     }
 
     private void setRegionAndProfile(Regions region, String credentialProfile) {
+        view.logInfo("Region is set to: %s", region.toString());
+        view.logInfo("Profile is set to: %s", credentialProfile);
         reCreateConnectorModel(region, credentialProfile);
         connectorSettings.setLastSelectedRegionName(region.getName());
         refreshFunctionList();
@@ -184,17 +211,25 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         if(!lastSelectedRegion.getName().equals(region.getName())){
             view.setRegion(region);
         }
+        CredentialProfileEntry profileEntry = view.getSelectedCredentialProfileEntry();
+        if(profileEntry == null) {
+            view.logInfo("Credential profile is not selected.");
+        } else {
+            view.logInfo("Selected Credential profile: \"%s\"", profileEntry.getName());
+        }
         refreshStatus();
     }
 
     @Override
     public void setFunction(FunctionEntry functionEntry) {
+        view.logDebug("Set function.");
         connectorSettings.setLastSelectedFunctionName(functionEntry.getFunctionName());
         refreshStatus();
     }
 
     @Override
     public void setJarArtifact(ArtifactEntry artifactEntry) {
+        view.logDebug("Set JAR-artifact.");
         connectorSettings.setLastSelectedFunctionName(artifactEntry.getName());
         refreshStatus();
     }
@@ -226,15 +261,5 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
                             ? Constant.CredentialProfile.DEFAULT
                             : lastSelectedCredentialProfile;
         return credentialProfile != null ? credentialProfile : Constant.CredentialProfile.DEFAULT;
-    }
-
-    @NotNull
-    protected String getLastSelectedFunction() {
-        return getNotEmptyString(connectorSettings.getLastSelectedFunctionName());
-    }
-
-    @NotNull
-    protected String getLastSelectedJarArtifact() {
-        return getNotEmptyString(connectorSettings.getLastSelectedJarArtifactName());
     }
 }

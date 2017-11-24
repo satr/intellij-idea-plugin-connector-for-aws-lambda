@@ -41,12 +41,15 @@ public final class MessageHelper {
                     .createBalloon()
                     .show(RelativePoint.getNorthEastOf(statusBar.getComponent()), Balloon.Position.atRight);
 
-        if(messageType == MessageType.INFO)
+        if(messageType == MessageType.INFO){
             log.info(message);
-        else if(messageType == MessageType.WARNING)
+        }
+        else if(messageType == MessageType.WARNING) {
             log.warn(message);
-        else
+        }
+        else{
             log.debug(message);
+        }
     }
 
     public static void showError(Project project, Throwable t) {

@@ -20,6 +20,11 @@ import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
 import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
+import org.apache.log4j.AsyncAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -31,6 +36,7 @@ import static io.github.satr.common.StringUtil.getNotEmptyString;
 import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
+    static final Logger logger = LogManager.getLogger(ConnectorViewFactory.class);
     private final ConnectorPresenter presenter;
     private final ProgressManager progressManager = ProgressManager.getInstance();
     private final ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
@@ -49,11 +55,13 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JPanel tabPanLog;
     private JTextArea txtLog;
     private JPanel tabPanSettings;
-    private JTextPane txtStatus1;
+    private JTextPane txtStatus;
     private JButton refreshAllButton;
     private JPanel pnlToolBar;
     private JPanel pnlSettings;
     private JPanel pnlTabs;
+    private JComboBox cbLogLevel;
+    private JButton clearLogButton;
     private Project project;
     private boolean operationInProgress = false;
     private boolean setRegionOperationInProgress;
@@ -63,6 +71,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     public ConnectorViewFactory(ConnectorPresenter presenter) {
+        prepareUiLogger();
         this.presenter = presenter;
         this.presenter.setView(this);
         presenter.refreshJarArtifactList(project);
@@ -84,6 +93,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         updateFunctionButton.addActionListener(e -> {
             runUpdateFunction(presenter);
         });
+        clearLogButton.addActionListener(e -> {
+            clearLog();
+        });
         cbFunctions.addItemListener(e -> {
             runSetFunction(presenter, e);
         });
@@ -97,8 +109,23 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
             runSetJarArtifact(presenter, e);
         });
         runRefreshAllList(presenter);
-        //runRefreshRegionList(presenter); //region list has not been initialized automatically due to it takes time
-        // during loading of IDE but the plugin might not be needed in all projects
+    }
+
+    private void prepareUiLogger() {
+        logger.addAppender(new AsyncAppender(){
+            @Override
+            public void append(LoggingEvent event) {
+                super.append(event);
+                txtLog.append(String.format("\n%s: %s", event.getLevel(), event.getMessage()));
+            }
+        });
+        cbLogLevel.addItem(Level.DEBUG);
+        cbLogLevel.addItem(Level.INFO);
+        cbLogLevel.addItem(Level.ERROR);
+        logger.setLevel(Level.DEBUG);
+        cbLogLevel.addItemListener(e -> {
+            logger.setLevel((Level) e.getItem());
+        });
     }
 
     private void runSetRegion(ConnectorPresenter presenter, ItemEvent e) {
@@ -144,6 +171,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                     "Update selected AWS Lambda function with JAR-artifact");
     }
 
+    private void clearLog() {
+        txtLog.setText("");
+    }
+
     private void runRefreshAllList(ConnectorPresenter presenter) {
         runOperation(() -> {
             presenter.refreshAllLists(project);
@@ -173,9 +204,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     private void runRefreshCredentialProfilesList(ConnectorPresenter presenter) {
         runOperation(() -> {
+            logger.debug("Refresh сredential profile list.");
             presenter.refreshCredentialProfilesList(project);
             presenter.refreshStatus();
-        }, "Refresh list of Credential Profiles");
+        }, "Refresh list of credential profiles");
     }
 
     private void runOperation(Runnable runnable, final String title) {
@@ -303,13 +335,13 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     @Override
     public void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile) {
-        txtStatus1.setText(String.format("Func: \"%s\"; Jar: \"%s\"; Region: \"%s\"; Profile:\"%s\"",
+        txtStatus.setText(String.format("Func: \"%s\"; Jar: \"%s\"; Region: \"%s\"; Profile:\"%s\"",
                 getNotEmptyString(function, "?"),
                 getNotEmptyString(artifact, "?"),
                 getNotEmptyString(region, "?"),
                 getNotEmptyString(credentialProfile, "?")
         ));
-        txtStatus1.setToolTipText(String.format("Func: %s\nJar: %s\nRegion: %s\nProfile: %s",
+        txtStatus.setToolTipText(String.format("Func: %s\nJar: %s\nRegion: %s\nProfile: %s",
                 getNotEmptyString(function, "?"),
                 getNotEmptyString(artifact, "?"),
                 getNotEmptyString(regionDescription, "?"),
@@ -338,13 +370,29 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
+    public void logDebug(String format, Object... args) {
+        logger.debug(String.format(format, args));
+    }
+
+    @Override
+    public void logInfo(String format, Object... args) {
+        logger.info(String.format(format, args));
+    }
+
+    @Override
+    public void logError(String format, Object... args) {
+        logger.error(String.format(format, args));
+    }
+
+    @Override
     public void setRegionList(List<RegionEntry> regions, Regions selectedRegion) {
         cbRegions.removeAllItems();
         RegionEntry selectedRegionEntry = null;
         for(RegionEntry entry : regions) {
             cbRegions.addItem(entry);
-            if(selectedRegion != null && entry.getRegion().getName().equals(selectedRegion.getName()))
+            if(selectedRegion != null && entry.getRegion().getName().equals(selectedRegion.getName())) {
                 selectedRegionEntry = entry;
+            }
         }
         if(selectedRegionEntry != null) {
             cbRegions.setSelectedItem(selectedRegionEntry);

@@ -164,7 +164,7 @@
                   </vspacer>
                 </children>
               </grid>
-              <grid id="1aa89" binding="tabPanLog" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="1aa89" binding="tabPanLog" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <tabbedpane title="Log"/>
@@ -176,12 +176,44 @@
                 <children>
                   <component id="215a3" class="javax.swing.JTextArea" binding="txtLog">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <lineWrap value="false"/>
+                    </properties>
                   </component>
+                  <grid id="d3177" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <hspacer id="8075a">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </hspacer>
+                      <component id="94c51" class="javax.swing.JButton" binding="clearLogButton">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Clear"/>
+                          <toolTipText value="Clear log"/>
+                        </properties>
+                      </component>
+                      <component id="376b9" class="javax.swing.JComboBox" binding="cbLogLevel">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                    </children>
+                  </grid>
                 </children>
               </grid>
             </children>
@@ -223,7 +255,7 @@
           </grid>
         </children>
       </grid>
-      <component id="9c155" class="javax.swing.JTextPane" binding="txtStatus1">
+      <component id="9c155" class="javax.swing.JTextPane" binding="txtStatus">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="7" anchor="2" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>

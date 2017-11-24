@@ -21,4 +21,8 @@ public interface ConnectorView {
     ArtifactEntry getSelectedArtifactEntry();
     RegionEntry getSelectedRegionEntry();
     CredentialProfileEntry getSelectedCredentialProfileEntry();
+    void logDebug(String format, Object... args);
+    void logInfo(String format, Object... args);
+    void logError(String format, Object... args);
+
 }
