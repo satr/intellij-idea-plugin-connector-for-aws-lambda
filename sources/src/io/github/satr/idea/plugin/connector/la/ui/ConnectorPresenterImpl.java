@@ -18,6 +18,7 @@ import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static io.github.satr.common.MessageHelper.showError;
@@ -40,13 +41,18 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
     public void refreshFunctionList() {
         ArrayList<String> functionNames = new ArrayList<>();
         List<FunctionEntry> functions = getConnectorModel().getFunctions();
+        String lastSelectedFunctionName = connectorSettings.getLastSelectedFunctionName();
+        FunctionEntry selectedFunctionEntry = null;
         for (FunctionEntry entry : functions) {
             if (!entry.getRuntime().equals(Runtime.Java8))
                 continue;
             functionNames.add(entry.getFunctionName());
+            if(entry.getFunctionName().equals(lastSelectedFunctionName)){
+                selectedFunctionEntry = entry;
+            }
         }
         connectorSettings.setFunctionNames(functionNames);
-        view.setFunctionList(functions);
+        view.setFunctionList(functions, selectedFunctionEntry);
     }
 
     @Override
@@ -54,7 +60,6 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
         String functionName = functionEntry.getFunctionName();
         final OperationValueResult<FunctionEntry> result = getConnectorModel().updateWithJar(functionName, artifactEntry.getOutputFilePath());
-
         if (!result.success()) {
             showError(project, result.getErrorAsString());
             return;
@@ -101,7 +106,16 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
     @Override
     public void refreshJarArtifactList(Project project) {
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
-        view.setArtifactList(projectModel.getJarArtifacts(project));
+        String lastSelectedJarArtifactName = connectorSettings.getLastSelectedJarArtifactName();
+        ArtifactEntry selectedArtifactEntry = null;
+        Collection<? extends ArtifactEntry> jarArtifacts = projectModel.getJarArtifacts(project);
+        for(ArtifactEntry entry : jarArtifacts){
+            if(entry.getName().equals(lastSelectedJarArtifactName)){
+                selectedArtifactEntry = entry;
+                break;
+            }
+        }
+        view.setArtifactList(jarArtifacts, selectedArtifactEntry);
     }
 
     @Override
@@ -113,8 +127,9 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
     }
 
     private void setRegionAndProfile(Regions region, String credentialProfile) {
-        if(connectorModel != null)
+        if(connectorModel != null) {
             connectorModel.shutdown();
+        }
         connectorModel = new ConnectorModel(region, credentialProfile);
         connectorSettings.setLastSelectedRegionName(region.getName());
         refreshFunctionList();
@@ -141,12 +156,12 @@ public class ConnectorPresenterImpl implements ConnectorPresenter {
 
     @Override
     public void setFunction(FunctionEntry functionEntry) {
-        //TODO
+        connectorSettings.setLastSelectedFunctionName(functionEntry.getFunctionName());
     }
 
     @Override
     public void setJarArtifact(ArtifactEntry artifactEntry) {
-        //TODO
+        connectorSettings.setLastSelectedFunctionName(artifactEntry.getName());
     }
 
     private Regions tryGetRegionBy(String regionName) {

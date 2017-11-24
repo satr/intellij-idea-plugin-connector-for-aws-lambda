@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ConnectorView {
-    void setFunctionList(List<FunctionEntry> functions);
-    void setArtifactList(Collection<? extends ArtifactEntry> artifacts);
+    void setFunctionList(List<FunctionEntry> functions, FunctionEntry selectedFunctionEntry);
+    void setArtifactList(Collection<? extends ArtifactEntry> artifacts, ArtifactEntry selectedArtifactEntry);
     void setRegionList(List<RegionEntry> regions, Regions selectedRegion);
     void setCredentialProfilesList(List<CredentialProfileEntry> credentialProfiles, String selectedCredentialsProfile);
     void setRegion(Regions region);

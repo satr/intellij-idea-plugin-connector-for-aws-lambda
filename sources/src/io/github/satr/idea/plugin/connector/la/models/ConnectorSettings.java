@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.http.util.TextUtils.isEmpty;
+
 @State(name = "ConnectorSettings", storages = @Storage("connector-settings.xml"))
 public class ConnectorSettings  implements PersistentStateComponent<ConnectorSettings> {
 
@@ -60,7 +62,15 @@ public class ConnectorSettings  implements PersistentStateComponent<ConnectorSet
     }
 
     public void setLastSelectedRegionName(String lastSelectedRegionName) {
+        clearLastSelectedFunctionOnChangedRegion(lastSelectedRegionName);
         this.lastSelectedRegionName = lastSelectedRegionName;
+    }
+
+    private void clearLastSelectedFunctionOnChangedRegion(String lastSelectedRegionName) {
+        if((isEmpty(lastSelectedRegionName) && !isEmpty(this.lastSelectedRegionName))
+                || (!isEmpty(lastSelectedRegionName) && !lastSelectedRegionName.equals(this.lastSelectedRegionName))){
+            setLastSelectedFunctionName("");
+        }
     }
 
     public String getLastSelectedRegionName() {

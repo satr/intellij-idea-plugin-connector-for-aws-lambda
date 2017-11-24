@@ -93,6 +93,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         cbCredentialProfiles.addItemListener(e -> {
             runSetCredentialProfile(presenter, e);
         });
+        cbJarArtifacts.addItemListener(e -> {
+            runSetJarArtifact(presenter, e);
+        });
         //runRefreshRegionList(presenter); //region list has not been initialized automatically due to it takes time
         // during loading of IDE but the plugin might not be needed in all projects
     }
@@ -124,6 +127,15 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if(entry == null)
             return;
         runOperation(() -> presenter.setCredentialProfile(entry), "Select credential profile: " + entry.toString());
+    }
+
+    private void runSetJarArtifact(ConnectorPresenter presenter, ItemEvent e) {
+        if(e.getStateChange() != ItemEvent.SELECTED)
+            return;
+        ArtifactEntry entry = (ArtifactEntry) e.getItem();
+        if(entry == null)
+            return;
+        runOperation(() -> presenter.setJarArtifact(entry), "Select JAR-artifact: " + entry.toString());
     }
 
     private void runUpdateFunction(ConnectorPresenter presenter) {
@@ -239,19 +251,27 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public void setFunctionList(List<FunctionEntry> functions) {
+    public void setFunctionList(List<FunctionEntry> functions, FunctionEntry selectedFunctionEntry) {
         cbFunctions.removeAllItems();
         for (FunctionEntry entry : functions) {
-            if (entry.getRuntime().equals(Runtime.Java8))
+            if (entry.getRuntime().equals(Runtime.Java8)) {
                 cbFunctions.addItem(entry);
+            }
+        }
+        if(selectedFunctionEntry != null){
+            cbFunctions.setSelectedItem(selectedFunctionEntry);
         }
     }
 
     @Override
-    public void setArtifactList(Collection<? extends ArtifactEntry> artifacts) {
+    public void setArtifactList(Collection<? extends ArtifactEntry> artifacts, ArtifactEntry selectedArtifactEntry) {
         cbJarArtifacts.removeAllItems();
-        for(ArtifactEntry artifactEntry : artifacts)
+        for(ArtifactEntry artifactEntry : artifacts) {
             cbJarArtifacts.addItem(artifactEntry);
+        }
+        if(selectedArtifactEntry != null){
+            cbJarArtifacts.setSelectedItem(selectedArtifactEntry);
+        }
     }
 
     @Override
@@ -288,7 +308,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     @Override
     public void refreshStatus(String function, String artifact, String region, String credentialProfile) {
-        txtStatus.setText(String.format("Func:%s; Jar:%s; Reg:%s; Prof:%s;",
+        txtStatus.setText(String.format("Func: \"%s\";  Jar: \"%s\";  Reg: \"%s\"; Prof:\"%s\";",
                 getNotEmptyString(function, "-"),
                 getNotEmptyString(artifact, "-"),
                 getNotEmptyString(region, "-"),
