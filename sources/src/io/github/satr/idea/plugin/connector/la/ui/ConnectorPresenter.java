@@ -2,10 +2,9 @@ package io.github.satr.idea.plugin.connector.la.ui;
 // Copyright © 2017, github.com/satr, MIT License
 
 import com.intellij.openapi.project.Project;
-import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
-import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
-import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
-import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
+import io.github.satr.idea.plugin.connector.la.entities.*;
+
+import java.io.File;
 
 public interface ConnectorPresenter {
     void setView(ConnectorView view);
@@ -22,5 +21,8 @@ public interface ConnectorPresenter {
     void setFunction(FunctionEntry functionEntry);
     void setJarArtifact(ArtifactEntry artifactEntry);
     void runFunctionTest(Project project, String text);
-    void openFunctionTestInputFile(String filename);
+    void openTestFunctionInputFile(File filename);
+    String getLastSelectedTestFunctionInputFilePath();
+    void setLastSelectedTestFunctionInputFilePath(String path);
+    void setSetTestFunctionInputFromRecent(TestFunctionInputEntry entry);
 }

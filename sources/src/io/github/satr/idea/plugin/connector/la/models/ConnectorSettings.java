@@ -21,6 +21,7 @@ public class ConnectorSettings  implements PersistentStateComponent<ConnectorSet
     private String lastSelectedJarArtifactName;
     private String lastSelectedRegionName;
     private String lastSelectedCredentialProfile;
+    private String lastSelectedTestFunctionInputFilePath;
 
     public String getLastSelectedJarArtifactName() {
         return lastSelectedJarArtifactName;
@@ -83,5 +84,13 @@ public class ConnectorSettings  implements PersistentStateComponent<ConnectorSet
 
     public void setLastSelectedCredentialProfile(String lastSelectedCredentialProfile) {
         this.lastSelectedCredentialProfile = lastSelectedCredentialProfile;
+    }
+
+    public String getLastSelectedTestFunctionInputFilePath() {
+        return this.lastSelectedTestFunctionInputFilePath;
+    }
+
+    public void setLastSelectedTestFunctionInputFilePath(String path) {
+        this.lastSelectedTestFunctionInputFilePath = path;
     }
 }

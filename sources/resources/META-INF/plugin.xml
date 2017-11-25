@@ -12,6 +12,9 @@
 
   <change-notes><![CDATA[
       <ul>
+      <li>1.2 RC3</li>
+      <li>Run function tests.</li>
+      <li>Load from json-files inputs for function tests.</li>
       <li>1.2 RC2</li>
       <li>Changed the layout, added tabs and a toolbar.</li>
       <li>Saved last selected functions and JAR-artifacts.</li>

@@ -7,18 +7,15 @@ import com.amazonaws.services.lambda.model.Runtime;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import io.github.satr.common.*;
-import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
-import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
-import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
-import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
+import io.github.satr.idea.plugin.connector.la.entities.*;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorSettings;
 import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import static org.apache.http.util.TextUtils.isEmpty;
@@ -27,6 +24,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     private final Regions DEFAULT_REGION = Regions.US_EAST_1;
     private ConnectorSettings connectorSettings = ConnectorSettings.getInstance();
     private ConnectorView view;
+    private List<TestFunctionInputEntry> testFunctionInputRecentEntryList = new ArrayList<>();
 
     @Override
     public void setView(ConnectorView view) {
@@ -261,9 +259,41 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     @Override
-    public void openFunctionTestInputFile(String filename) {
-        view.logDebug("Read function test input from file: %s", filename);
-        view.setFunctionTestInput("input from file:" + filename);
+    public void openTestFunctionInputFile(File file) {
+        try {
+            String filePath = file.getCanonicalPath();
+            view.logDebug("Read function test input from file: %s", filePath);
+            byte[] buffer = Files.readAllBytes(file.toPath());
+            String inputText = new String(buffer);
+            view.setTestFunctionInput(inputText);
+            for(TestFunctionInputEntry entry : testFunctionInputRecentEntryList){
+                if(entry.getFilePath().equals(filePath)){
+                    testFunctionInputRecentEntryList.remove(entry);
+                    break;
+                }
+            }
+            testFunctionInputRecentEntryList.add(new TestFunctionInputEntry(filePath, file.getName(), inputText));
+            view.setTestFunctionInputRecentEntryList(testFunctionInputRecentEntryList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            view.logError(e);
+        }
+    }
+
+    @Override
+    public String getLastSelectedTestFunctionInputFilePath() {
+        String filePath = connectorSettings.getLastSelectedTestFunctionInputFilePath();
+        return isEmpty(filePath) ? "" : filePath;
+    }
+
+    @Override
+    public void setLastSelectedTestFunctionInputFilePath(String path) {
+        connectorSettings.setLastSelectedTestFunctionInputFilePath(path);
+    }
+
+    @Override
+    public void setSetTestFunctionInputFromRecent(TestFunctionInputEntry entry) {
+        view.setTestFunctionInput(entry.getInputText());
     }
 
     private Regions tryGetRegionBy(String regionName) {

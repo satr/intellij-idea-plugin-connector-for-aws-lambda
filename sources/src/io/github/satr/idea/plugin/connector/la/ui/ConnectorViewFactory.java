@@ -15,10 +15,7 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import io.github.satr.common.MessageHelper;
-import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntry;
-import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
-import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
-import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
+import io.github.satr.idea.plugin.connector.la.entities.*;
 import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
 import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.Level;
@@ -28,7 +25,9 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ItemEvent;
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
@@ -65,9 +64,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JPanel runFunctionTestTab;
     private JTextArea functionTestOutputText;
     private JTextArea functionTestInputText;
-    private JButton openFunctionTestInputFileButton;
-    private JButton runtFunctionTestButton;
-    private JComboBox functionTestFavoritesList;
+    private JButton openTestFunctionInputFileButton;
+    private JButton runTestFunctionButton;
+    private JComboBox testFunctionInputRecentFileList;
     private JPanel logPan;
     private JPanel logSettingsPan;
     private Project project;
@@ -105,11 +104,14 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         clearLogButton.addActionListener(e -> {
             clearLog();
         });
-        runtFunctionTestButton.addActionListener(e -> {
+        runTestFunctionButton.addActionListener(e -> {
             runFunctionTest(presenter);
         });
-        openFunctionTestInputFileButton.addActionListener(e -> {
+        openTestFunctionInputFileButton.addActionListener(e -> {
             openFunctionTestInputFile(presenter);
+        });
+        testFunctionInputRecentFileList.addItemListener(e -> {
+            runSetTestFunctionInputFromRecent(presenter, e);
         });
         functionList.addItemListener(e -> {
             runSetFunction(presenter, e);
@@ -130,9 +132,29 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if(runFunctionTestOperationInProgress){
             return;
         }
-        MessageHelper.showInfo(project, "Open test");
-        String filename = "filename";
-        runOperation(() -> presenter.openFunctionTestInputFile(filename), "Read test function test input file." + filename);
+
+        String path = presenter.getLastSelectedTestFunctionInputFilePath();
+        File file = new File(path);
+        if(!file.isDirectory() || !file.exists()){
+            file = new File("");
+        }
+        JFileChooser fileChooser = new JFileChooser(file);
+        fileChooser.setDialogTitle("Test Function Input");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON", "json");
+        fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
+        fileChooser.setFileFilter(filter);
+        fileChooser.setMultiSelectionEnabled(false);
+        if(fileChooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION){
+            return;
+        }
+        try {
+            File selectedFile = fileChooser.getSelectedFile();
+            presenter.setLastSelectedTestFunctionInputFilePath(fileChooser.getCurrentDirectory().getCanonicalPath());
+            runOperation(() -> presenter.openTestFunctionInputFile(selectedFile), "Read test function input file \"%s\".", selectedFile.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logError(e.getMessage());
+        }
     }
 
     private void prepareUiLogger() {
@@ -171,6 +193,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if(entry == null)
             return;
         runOperation(() -> presenter.setFunction(entry), "Select function: " + entry.toString());
+    }
+
+    private void runSetTestFunctionInputFromRecent(ConnectorPresenter presenter, ItemEvent e) {
+        if(operationInProgress
+                || e.getStateChange() != ItemEvent.SELECTED)
+            return;
+        TestFunctionInputEntry entry = (TestFunctionInputEntry)e.getItem();
+        if(entry == null)
+            return;
+        runOperation(() -> presenter.setSetTestFunctionInputFromRecent(entry), "Select test function input from file: ", entry.getFileName());
     }
 
     private void runFunctionTest(ConnectorPresenter presenter) {
@@ -292,10 +324,13 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         refreshRegionsButton.setEnabled(enabled);
         refreshCredentialProfiles.setEnabled(enabled);
         updateFunctionButton.setEnabled(enabled);
+        runTestFunctionButton.setEnabled(enabled);
+        openTestFunctionInputFileButton.setEnabled(enabled);
         functionList.setEnabled(enabled);
         jarArtifactList.setEnabled(enabled);
         regionList.setEnabled(enabled);
         credentialProfileList.setEnabled(enabled);
+        testFunctionInputRecentFileList.setEnabled(enabled);
     }
 
     public Project getProject() {
@@ -316,6 +351,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         Content content = contentFactory.createContent(toolPanel, "", false);
         toolWindow.getContentManager().addContent(content);
         this.project = project;
+        this.presenter.refreshJarArtifactList(this.project);
     }
 
     @Override
@@ -426,13 +462,29 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
+    public void logError(Throwable throwable) {
+        logError(throwable.getMessage());
+    }
+
+    @Override
     public void setFunctionTestOutput(String outputText) {
         functionTestOutputText.setText(outputText);
     }
 
     @Override
-    public void setFunctionTestInput(String inputText) {
+    public void setTestFunctionInput(String inputText) {
         functionTestInputText.setText(inputText);
+    }
+
+    @Override
+    public void setTestFunctionInputRecentEntryList(List<TestFunctionInputEntry> entries) {
+        testFunctionInputRecentFileList.removeAllItems();
+        for(TestFunctionInputEntry entry : entries){
+            testFunctionInputRecentFileList.addItem(entry);
+        }
+        if(entries.size() > 0) {
+            testFunctionInputRecentFileList.setSelectedIndex(entries.size() - 1);//select last added entry
+        }
     }
 
     @Override
