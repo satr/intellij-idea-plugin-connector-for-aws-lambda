@@ -53,7 +53,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JButton refreshCredentialProfiles;
     private JTabbedPane tabContent;
     private JPanel tabPanLog;
-    private JTextArea txtLog;
+    private JTextArea logTextBox;
     private JPanel tabPanSettings;
     private JTextPane txtStatus;
     private JButton refreshAllButton;
@@ -62,6 +62,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JPanel pnlTabs;
     private JComboBox cbLogLevel;
     private JButton clearLogButton;
+    private JScrollPane logScrollPan;
     private Project project;
     private boolean operationInProgress = false;
     private boolean setRegionOperationInProgress;
@@ -116,13 +117,14 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
             @Override
             public void append(LoggingEvent event) {
                 super.append(event);
-                txtLog.append(String.format("\n%s: %s", event.getLevel(), event.getMessage()));
+                logTextBox.append(String.format("\n%s: %s", event.getLevel(), event.getMessage()));
             }
         });
         cbLogLevel.addItem(Level.DEBUG);
         cbLogLevel.addItem(Level.INFO);
         cbLogLevel.addItem(Level.ERROR);
-        logger.setLevel(Level.DEBUG);
+        logger.setLevel(Level.INFO);
+        cbLogLevel.setSelectedItem(Level.INFO);
         cbLogLevel.addItemListener(e -> {
             logger.setLevel((Level) e.getItem());
         });
@@ -172,7 +174,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void clearLog() {
-        txtLog.setText("");
+        logTextBox.setText("");
     }
 
     private void runRefreshAllList(ConnectorPresenter presenter) {
@@ -204,7 +206,6 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     private void runRefreshCredentialProfilesList(ConnectorPresenter presenter) {
         runOperation(() -> {
-            logger.debug("Refresh сredential profile list.");
             presenter.refreshCredentialProfilesList(project);
             presenter.refreshStatus();
         }, "Refresh list of credential profiles");
@@ -220,15 +221,19 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                 @Override
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     try {
+                        logDebug(title);
                         runnable.run();
                     } catch (Throwable t) {
                         Class<? extends Throwable> exceptionClass = t.getClass();
                         if(exceptionClass.equals(AWSLambdaException.class)){
                             MessageHelper.showError(project, t.getMessage());
+                            logError(t.getMessage());
                         } else if(exceptionClass.equals(SdkClientException.class)){
                             MessageHelper.showError(project, t.getMessage());
+                            logError(t.getMessage());
                         } else {
                             MessageHelper.showCriticalError(project, t);
+                            logError(t.getMessage());
                         }
                     }
                     finally {
@@ -274,7 +279,6 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         Content content = contentFactory.createContent(toolPanel, "", false);
         toolWindow.getContentManager().addContent(content);
         this.project = project;
-        this.presenter.refreshJarArtifactList(this.project);
     }
 
     @Override

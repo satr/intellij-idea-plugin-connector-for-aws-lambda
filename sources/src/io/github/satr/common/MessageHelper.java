@@ -35,6 +35,9 @@ public final class MessageHelper {
 
     private static void showMessage(final Project project, final MessageType messageType, final String format, final Object[] args) {
         StatusBar statusBar = windowManager.getStatusBar(project);
+        if(statusBar == null || statusBar.getComponent() == null){
+            return;
+        }
         String message = String.format(format, args);
         jbPopupFactory.createHtmlTextBalloonBuilder(message, messageType, null)
                     .setFadeoutTime(7500)

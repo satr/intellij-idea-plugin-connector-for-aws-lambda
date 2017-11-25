@@ -37,9 +37,9 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         view.logDebug("Refresh function list.");
         ArrayList<String> functionNames = new ArrayList<>();
         List<FunctionEntry> functions = getConnectorModel().getFunctions();
-        view.logDebug("Found %d functions.", functions.size());
         String lastSelectedFunctionName = connectorSettings.getLastSelectedFunctionName();
         FunctionEntry selectedFunctionEntry = null;
+        int functionCount = 0;
         for (FunctionEntry entry : functions) {
             if (!entry.getRuntime().equals(Runtime.Java8)) {
                 continue;
@@ -48,7 +48,9 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             if(entry.getFunctionName().equals(lastSelectedFunctionName)){
                 selectedFunctionEntry = entry;
             }
+            functionCount++;
         }
+        view.logDebug("Found %d Java-8 functions.", functionCount);
         connectorSettings.setFunctionNames(functionNames);
         view.setFunctionList(functions, selectedFunctionEntry);
         FunctionEntry functionEntry = view.getSelectedFunctionEntry();
@@ -79,7 +81,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         }
         connectorSettings.setLastSelectedFunctionName(functionName);
         connectorSettings.setLastSelectedJarArtifactName(artifactEntry.getName());
-        showInfo(project, "Lambda function \"%s\" has been updated with the artifact \"%s\".",
+        showInfo(project, "Lambda function \"%s\" has been updated with the JAR-artifact \"%s\".",
                             result.getValue().getFunctionName(), artifactEntry.getName());
     }
 
@@ -126,7 +128,9 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void refreshCredentialProfilesList(Project project) {
         view.logDebug("Refresh credential profile list.");
-        view.setCredentialProfilesList(getConnectorModel().getCredentialProfiles(), getLastSelectedCredentialProfile());
+        List<CredentialProfileEntry> credentialProfiles = getConnectorModel().getCredentialProfiles();
+        view.setCredentialProfilesList(credentialProfiles, getLastSelectedCredentialProfile());
+        view.logInfo("Found %d credential profiles.", credentialProfiles.size());
         refreshStatus();
     }
 
@@ -182,7 +186,6 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         if(region == null) {
             return;
         }
-        view.logInfo("Region is set to: %s", region.toString());
         setRegionAndProfile(region, connectorSettings.getLastSelectedCredentialProfile());
     }
 
