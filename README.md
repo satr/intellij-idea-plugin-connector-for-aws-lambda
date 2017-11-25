@@ -20,7 +20,7 @@ Latest releases and pre-releases: https://github.com/satr/intellij-idea-plugin-c
 * Open the tool window ![](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/Connector6a5fd3c29d3343Icon16.png) "Connector for AWS Lambda".
 * Refresh ![Refresh](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/Refresh6a5fd3c29d3343Icon20.png) lists with AWS Lambda functions, JAR-artifacts, regions and profiles.
 * Select in the list an AWS Lambda function to update it or run a test for it. 
-* Update the function with the button ![Update Function](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/UpdateFuntion6a5fd3c29d3343Icon20.png). 
+* Update the function with the button ![Update Function](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/UpdateFuntion6a5fd3c29d3343Icon20.png) (do not forget first to build an updated function). 
 * Type an input for a function test or load it with the button ![Open Test Input](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/OpenFunctionTestInput6a5fd3c29d3343Icon20.png) from a json-file. 
 * Hit the button ![Run Function](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/RunFunctionTest6a5fd3c29d3343Icon20.png) to run the test for a selected function. 
 * Track activities in the Log window. Clean the log with the button ![Clean log](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/ClearLog6a5fd3c29d3343Icon20.png?raw=true)
