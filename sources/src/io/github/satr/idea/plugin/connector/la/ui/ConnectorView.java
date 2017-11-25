@@ -24,5 +24,6 @@ public interface ConnectorView {
     void logDebug(String format, Object... args);
     void logInfo(String format, Object... args);
     void logError(String format, Object... args);
-
+    void setFunctionTestOutput(String outputText);
+    void setFunctionTestInput(String inputText);
 }

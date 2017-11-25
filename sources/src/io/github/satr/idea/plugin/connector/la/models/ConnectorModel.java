@@ -11,6 +11,7 @@ import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.*;
 import io.github.satr.common.OperationResult;
+import io.github.satr.common.OperationResultImpl;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
 import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
@@ -20,11 +21,14 @@ import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorModel {
     private AWSLambda awsLambdaClient;
@@ -120,6 +124,32 @@ public class ConnectorModel {
                 .withZipFile(buffer);
         final UpdateFunctionCodeResult result = awsLambdaClient.updateFunctionCode(request);
         return new FunctionEntry(result);
+    }
+
+    public OperationValueResult<String> invokeFunction(final String functionName, final String inputText) {
+        OperationValueResult<String> operationResult = new OperationValueResultImpl<>();
+        try {
+            InvokeRequest invokeRequest = new InvokeRequest();
+            invokeRequest.setFunctionName(functionName);
+            invokeRequest.setPayload(inputText);
+            final InvokeResult invokeResult = awsLambdaClient.invoke(invokeRequest);
+            operationResult.addInfo("Invoked function \"%s\". Result status code: %d", functionName, invokeResult.getStatusCode());
+            String functionError = invokeResult.getFunctionError();
+            if(!isEmpty(functionError)){
+                operationResult.addError(functionError);
+            }
+            String logResult = invokeResult.getLogResult();
+            if(!isEmpty(logResult)){
+                operationResult.addInfo(logResult);
+            }
+            ByteBuffer byteBuffer = invokeResult.getPayload();
+            String rawJson = new String(byteBuffer.array(), "UTF-8");
+            operationResult.setValue(rawJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+            operationResult.addError(e.getMessage());
+        }
+        return operationResult;
     }
 
     private void validateLambdaFunctionJarFile(File file, OperationResult operationResult) {

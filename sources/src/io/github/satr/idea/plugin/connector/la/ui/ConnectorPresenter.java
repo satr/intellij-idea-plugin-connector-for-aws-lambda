@@ -21,4 +21,6 @@ public interface ConnectorPresenter {
     void setCredentialProfile(CredentialProfileEntry credentialProfileEntry);
     void setFunction(FunctionEntry functionEntry);
     void setJarArtifact(ArtifactEntry artifactEntry);
+    void runFunctionTest(Project project, String text);
+    void openFunctionTestInputFile(String filename);
 }

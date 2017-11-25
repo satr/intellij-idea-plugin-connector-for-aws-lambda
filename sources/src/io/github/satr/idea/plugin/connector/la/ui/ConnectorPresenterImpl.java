@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import static org.apache.http.util.TextUtils.isEmpty;
@@ -235,6 +236,34 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         view.logDebug("Set JAR-artifact.");
         connectorSettings.setLastSelectedFunctionName(artifactEntry.getName());
         refreshStatus();
+    }
+
+    @Override
+    public void runFunctionTest(Project project, String inputText) {
+        FunctionEntry functionEntry = view.getSelectedFunctionEntry();
+        if(functionEntry == null) {
+            view.logError("Cannot run function - function is not selected.");
+            return;
+        }
+        if(isEmpty(inputText.trim())){
+            view.logError("Cannot run function \"%s\" - input is empty.", functionEntry.getFunctionName());
+            return;
+        }
+        view.logDebug("Run function \"%s\".", functionEntry.getFunctionName());
+        OperationValueResult<String> result = getConnectorModel().invokeFunction(functionEntry.getFunctionName(), inputText);
+        if(result.hasInfo()){
+            view.logInfo(result.getInfoAsString());
+        }
+        if(result.failed()) {
+            view.logError("Run function test failed:\n%s", result.getErrorAsString());
+        }
+        view.setFunctionTestOutput(result.getValue());
+    }
+
+    @Override
+    public void openFunctionTestInputFile(String filename) {
+        view.logDebug("Read function test input from file: %s", filename);
+        view.setFunctionTestInput("input from file:" + filename);
     }
 
     private Regions tryGetRegionBy(String regionName) {

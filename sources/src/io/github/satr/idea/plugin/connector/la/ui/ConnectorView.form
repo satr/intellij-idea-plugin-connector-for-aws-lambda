@@ -8,7 +8,7 @@
     <properties/>
     <border type="empty"/>
     <children>
-      <grid id="66b2" binding="pnlTabs" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="66b2" binding="pnlTabs" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -16,165 +16,329 @@
         <properties/>
         <border type="none"/>
         <children>
-          <tabbedpane id="8c190" binding="tabContent">
+          <grid id="9784d" binding="pnlToolBar" layout-manager="GridLayoutManager" row-count="8" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <grid row="0" column="1" row-span="3" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                <preferred-size width="200" height="-1"/>
-              </grid>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="1" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties>
-              <tabLayoutPolicy value="1"/>
-              <tabPlacement value="1"/>
-            </properties>
+            <properties/>
             <border type="none"/>
             <children>
-              <grid id="ae26f" binding="tabPanSettings" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
+              <component id="ece73" class="javax.swing.JButton" binding="updateFunctionButton">
                 <constraints>
-                  <tabbedpane title="Settings"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <toolTipText value="Select Function, JAR-artefact, Profile, Region"/>
+                  <icon value="icons/UpdateFuntion6a5fd3c29d3343Icon20.png"/>
+                  <text value=""/>
+                  <toolTipText value="Update function"/>
+                </properties>
+              </component>
+              <vspacer id="309bc">
+                <constraints>
+                  <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+              <component id="687a8" class="javax.swing.JButton" binding="refreshAllButton">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
+                  <text value=""/>
+                  <toolTipText value="Refresh All"/>
+                </properties>
+              </component>
+              <component id="a922d" class="javax.swing.JToolBar$Separator">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="e633f" class="javax.swing.JToolBar$Separator">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="94c51" class="javax.swing.JButton" binding="clearLogButton">
+                <constraints>
+                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <icon value="icons/ClearLog6a5fd3c29d3343Icon20.png"/>
+                  <text value=""/>
+                  <toolTipText value="Clear log"/>
+                </properties>
+              </component>
+              <component id="d96c9" class="javax.swing.JButton" binding="openFunctionTestInputFileButton">
+                <constraints>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="false"/>
+                  <icon value="icons/OpenFunctionTestInput6a5fd3c29d3343Icon20.png"/>
+                  <text value=""/>
+                  <toolTipText value="Open function test input file"/>
+                </properties>
+              </component>
+              <component id="a9051" class="javax.swing.JButton" binding="runtFunctionTestButton">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <icon value="icons/RunFunctionTest6a5fd3c29d3343Icon20.png"/>
+                  <text value=""/>
+                  <toolTipText value="Run test of the function"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <splitpane id="14299">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="200" height="200"/>
+              </grid>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <tabbedpane id="8c190" binding="tabContent">
+                <constraints>
+                  <splitpane position="left"/>
+                </constraints>
+                <properties>
+                  <tabLayoutPolicy value="1"/>
+                  <tabPlacement value="1"/>
                 </properties>
                 <border type="none"/>
                 <children>
-                  <grid id="1c822" binding="pnlSettings" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="ae26f" binding="tabPanSettings" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <tabbedpane title="Settings"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="Select Function, JAR-artefact, Profile, Region"/>
+                    </properties>
                     <border type="none"/>
                     <children>
-                      <component id="f3c5a" class="javax.swing.JLabel">
+                      <grid id="1c822" binding="pnlSettings" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
-                        <properties>
-                          <text value="Function"/>
-                        </properties>
-                      </component>
-                      <component id="9aa4" class="javax.swing.JComboBox" binding="cbFunctions">
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="f3c5a" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="Function"/>
+                            </properties>
+                          </component>
+                          <component id="9aa4" class="javax.swing.JComboBox" binding="functionList">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <toolTipText value="List of AWS Lambda functions"/>
+                            </properties>
+                          </component>
+                          <component id="c58f9" class="javax.swing.JButton" binding="refreshFuncListButton">
+                            <constraints>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
+                              <text value=""/>
+                              <toolTipText value="Refresh list of functions"/>
+                            </properties>
+                          </component>
+                          <component id="37cc1" class="javax.swing.JComboBox" binding="jarArtifactList">
+                            <constraints>
+                              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <toolTipText value="JAR-Artifact of the project"/>
+                            </properties>
+                          </component>
+                          <component id="fc473" class="javax.swing.JButton" binding="refreshJarArtifactsButton">
+                            <constraints>
+                              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
+                              <text value=""/>
+                              <toolTipText value="Refresh list of JAR artifacts"/>
+                            </properties>
+                          </component>
+                          <component id="e394e" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="JAR Artifact"/>
+                            </properties>
+                          </component>
+                          <component id="5b36a" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                                <preferred-size width="49" height="20"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <text value="Profiles"/>
+                            </properties>
+                          </component>
+                          <component id="39d39" class="javax.swing.JComboBox" binding="credentialProfileList">
+                            <constraints>
+                              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                <preferred-size width="43" height="20"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <toolTipText value="List of Credential Profiles"/>
+                            </properties>
+                          </component>
+                          <component id="91065" class="javax.swing.JButton" binding="refreshCredentialProfiles">
+                            <constraints>
+                              <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <horizontalAlignment value="0"/>
+                              <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
+                              <text value=""/>
+                              <toolTipText value="Refresh list of Credential Profiles"/>
+                            </properties>
+                          </component>
+                          <component id="18ef9" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="Region"/>
+                            </properties>
+                          </component>
+                          <component id="79cc7" class="javax.swing.JComboBox" binding="regionList">
+                            <constraints>
+                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <toolTipText value="List of AWS Lambda functions"/>
+                            </properties>
+                          </component>
+                          <component id="90611" class="javax.swing.JButton" binding="refreshRegionsButton">
+                            <constraints>
+                              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
+                              <text value=""/>
+                              <toolTipText value="Refresh list of regions"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <vspacer id="45b57">
                         <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                         </constraints>
-                        <properties>
-                          <toolTipText value="List of AWS Lambda functions"/>
-                        </properties>
-                      </component>
-                      <component id="c58f9" class="javax.swing.JButton" binding="refreshFuncListButton">
-                        <constraints>
-                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
-                          <text value=""/>
-                          <toolTipText value="Refresh list of functions"/>
-                        </properties>
-                      </component>
-                      <component id="37cc1" class="javax.swing.JComboBox" binding="cbJarArtifacts">
-                        <constraints>
-                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <toolTipText value="JAR-Artifact of the project"/>
-                        </properties>
-                      </component>
-                      <component id="fc473" class="javax.swing.JButton" binding="refreshJarArtifactsButton">
-                        <constraints>
-                          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
-                          <text value=""/>
-                          <toolTipText value="Refresh list of JAR artifacts"/>
-                        </properties>
-                      </component>
-                      <component id="e394e" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="JAR Artifact"/>
-                        </properties>
-                      </component>
-                      <component id="5b36a" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                            <preferred-size width="49" height="20"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <text value="Profiles"/>
-                        </properties>
-                      </component>
-                      <component id="39d39" class="javax.swing.JComboBox" binding="cbCredentialProfiles">
-                        <constraints>
-                          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="43" height="20"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <toolTipText value="List of Credential Profiles"/>
-                        </properties>
-                      </component>
-                      <component id="91065" class="javax.swing.JButton" binding="refreshCredentialProfiles">
-                        <constraints>
-                          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <horizontalAlignment value="0"/>
-                          <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
-                          <text value=""/>
-                          <toolTipText value="Refresh list of Credential Profiles"/>
-                        </properties>
-                      </component>
-                      <component id="18ef9" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Region"/>
-                        </properties>
-                      </component>
-                      <component id="79cc7" class="javax.swing.JComboBox" binding="cbRegions">
-                        <constraints>
-                          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <toolTipText value="List of AWS Lambda functions"/>
-                        </properties>
-                      </component>
-                      <component id="90611" class="javax.swing.JButton" binding="refreshRegionsButton">
-                        <constraints>
-                          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
-                          <text value=""/>
-                          <toolTipText value="Refresh list of regions"/>
-                        </properties>
-                      </component>
+                      </vspacer>
                     </children>
                   </grid>
-                  <vspacer id="45b57">
+                  <grid id="44742" binding="runFunctionTestTab" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                      <tabbedpane title="Run Test"/>
                     </constraints>
-                  </vspacer>
+                    <properties>
+                      <toolTipText value="Run test of the function"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <grid id="de110" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="7" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="6849d" class="javax.swing.JComboBox" binding="functionTestFavoritesList">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <toolTipText value="Favorite function test files"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <grid id="7140f" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <splitpane id="e5ff1">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <resizeWeight value="0.5"/>
+                            </properties>
+                            <border type="none"/>
+                            <children>
+                              <scrollpane id="7587a">
+                                <constraints>
+                                  <splitpane position="left"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none"/>
+                                <children>
+                                  <component id="661fe" class="javax.swing.JTextArea" binding="functionTestInputText">
+                                    <constraints/>
+                                    <properties>
+                                      <lineWrap value="false"/>
+                                    </properties>
+                                  </component>
+                                </children>
+                              </scrollpane>
+                              <scrollpane id="7bc00">
+                                <constraints>
+                                  <splitpane position="right"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none"/>
+                                <children>
+                                  <component id="cac5a" class="javax.swing.JTextArea" binding="functionTestOutputText">
+                                    <constraints/>
+                                    <properties/>
+                                  </component>
+                                </children>
+                              </scrollpane>
+                            </children>
+                          </splitpane>
+                        </children>
+                      </grid>
+                    </children>
+                  </grid>
                 </children>
-              </grid>
-              <grid id="1aa89" binding="tabPanLog" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              </tabbedpane>
+              <grid id="45ae8" binding="logPan" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <tabbedpane title="Log"/>
+                  <splitpane position="right"/>
                 </constraints>
-                <properties>
-                  <toolTipText value="Log"/>
-                </properties>
+                <properties/>
                 <border type="none"/>
                 <children>
-                  <grid id="d3177" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="d3177" binding="logSettingsPan" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -184,19 +348,10 @@
                     <children>
                       <hspacer id="8075a">
                         <constraints>
-                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                       </hspacer>
-                      <component id="94c51" class="javax.swing.JButton" binding="clearLogButton">
-                        <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Clear"/>
-                          <toolTipText value="Clear log"/>
-                        </properties>
-                      </component>
-                      <component id="376b9" class="javax.swing.JComboBox" binding="cbLogLevel">
+                      <component id="376b9" class="javax.swing.JComboBox" binding="logLevelList">
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -222,42 +377,7 @@
                 </children>
               </grid>
             </children>
-          </tabbedpane>
-          <grid id="9784d" binding="pnlToolBar" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="1" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="ece73" class="javax.swing.JButton" binding="updateFunctionButton">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <icon value="icons/UpdateFuntion6a5fd3c29d3343Icon20.png"/>
-                  <text value=""/>
-                  <toolTipText value="Update function"/>
-                </properties>
-              </component>
-              <vspacer id="309bc">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </vspacer>
-              <component id="687a8" class="javax.swing.JButton" binding="refreshAllButton">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <icon value="icons/Refresh6a5fd3c29d3343Icon20.png"/>
-                  <text value=""/>
-                  <toolTipText value="Refresh All"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
+          </splitpane>
         </children>
       </grid>
       <component id="9c155" class="javax.swing.JTextPane" binding="txtStatus">

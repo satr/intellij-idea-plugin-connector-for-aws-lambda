@@ -41,18 +41,17 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private final ProgressManager progressManager = ProgressManager.getInstance();
     private final ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
 
-    private JComboBox cbFunctions;
+    private JComboBox functionList;
     private JButton refreshFuncListButton;
     private JButton updateFunctionButton;
     private JPanel toolPanel;
-    private JComboBox cbJarArtifacts;
+    private JComboBox jarArtifactList;
     private JButton refreshJarArtifactsButton;
-    private JComboBox cbRegions;
+    private JComboBox regionList;
     private JButton refreshRegionsButton;
-    private JComboBox cbCredentialProfiles;
+    private JComboBox credentialProfileList;
     private JButton refreshCredentialProfiles;
     private JTabbedPane tabContent;
-    private JPanel tabPanLog;
     private JTextArea logTextBox;
     private JPanel tabPanSettings;
     private JTextPane txtStatus;
@@ -60,12 +59,21 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JPanel pnlToolBar;
     private JPanel pnlSettings;
     private JPanel pnlTabs;
-    private JComboBox cbLogLevel;
+    private JComboBox logLevelList;
     private JButton clearLogButton;
     private JScrollPane logScrollPan;
+    private JPanel runFunctionTestTab;
+    private JTextArea functionTestOutputText;
+    private JTextArea functionTestInputText;
+    private JButton openFunctionTestInputFileButton;
+    private JButton runtFunctionTestButton;
+    private JComboBox functionTestFavoritesList;
+    private JPanel logPan;
+    private JPanel logSettingsPan;
     private Project project;
     private boolean operationInProgress = false;
     private boolean setRegionOperationInProgress;
+    private boolean runFunctionTestOperationInProgress;
 
     public ConnectorViewFactory() {
         this(ServiceManager.getService(ConnectorPresenter.class));
@@ -97,19 +105,34 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         clearLogButton.addActionListener(e -> {
             clearLog();
         });
-        cbFunctions.addItemListener(e -> {
+        runtFunctionTestButton.addActionListener(e -> {
+            runFunctionTest(presenter);
+        });
+        openFunctionTestInputFileButton.addActionListener(e -> {
+            openFunctionTestInputFile(presenter);
+        });
+        functionList.addItemListener(e -> {
             runSetFunction(presenter, e);
         });
-        cbRegions.addItemListener(e -> {
+        regionList.addItemListener(e -> {
             runSetRegion(presenter, e);
         });
-        cbCredentialProfiles.addItemListener(e -> {
+        credentialProfileList.addItemListener(e -> {
             runSetCredentialProfile(presenter, e);
         });
-        cbJarArtifacts.addItemListener(e -> {
+        jarArtifactList.addItemListener(e -> {
             runSetJarArtifact(presenter, e);
         });
         runRefreshAllList(presenter);
+    }
+
+    private void openFunctionTestInputFile(ConnectorPresenter presenter) {
+        if(runFunctionTestOperationInProgress){
+            return;
+        }
+        MessageHelper.showInfo(project, "Open test");
+        String filename = "filename";
+        runOperation(() -> presenter.openFunctionTestInputFile(filename), "Read test function test input file." + filename);
     }
 
     private void prepareUiLogger() {
@@ -120,12 +143,12 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                 logTextBox.append(String.format("\n%s: %s", event.getLevel(), event.getMessage()));
             }
         });
-        cbLogLevel.addItem(Level.DEBUG);
-        cbLogLevel.addItem(Level.INFO);
-        cbLogLevel.addItem(Level.ERROR);
+        logLevelList.addItem(Level.DEBUG);
+        logLevelList.addItem(Level.INFO);
+        logLevelList.addItem(Level.ERROR);
         logger.setLevel(Level.INFO);
-        cbLogLevel.setSelectedItem(Level.INFO);
-        cbLogLevel.addItemListener(e -> {
+        logLevelList.setSelectedItem(Level.INFO);
+        logLevelList.addItemListener(e -> {
             logger.setLevel((Level) e.getItem());
         });
     }
@@ -148,6 +171,19 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if(entry == null)
             return;
         runOperation(() -> presenter.setFunction(entry), "Select function: " + entry.toString());
+    }
+
+    private void runFunctionTest(ConnectorPresenter presenter) {
+        if(operationInProgress || runFunctionTestOperationInProgress)
+            return;
+        runOperation(() -> {
+            runFunctionTestOperationInProgress = true;
+            try {
+                presenter.runFunctionTest(project, functionTestInputText.getText());
+            } finally {
+                runFunctionTestOperationInProgress = false;
+            }
+        }, "Run test of the function");
     }
 
     private void runSetCredentialProfile(ConnectorPresenter presenter, ItemEvent e) {
@@ -211,7 +247,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         }, "Refresh list of credential profiles");
     }
 
-    private void runOperation(Runnable runnable, final String title) {
+    private void runOperation(Runnable runnable, final String format, Object... args) {
+        String title = String.format(format, args);
         if(operationInProgress)
             return;
         try {
@@ -255,10 +292,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         refreshRegionsButton.setEnabled(enabled);
         refreshCredentialProfiles.setEnabled(enabled);
         updateFunctionButton.setEnabled(enabled);
-        cbFunctions.setEnabled(enabled);
-        cbJarArtifacts.setEnabled(enabled);
-        cbRegions.setEnabled(enabled);
-        cbCredentialProfiles.setEnabled(enabled);
+        functionList.setEnabled(enabled);
+        jarArtifactList.setEnabled(enabled);
+        regionList.setEnabled(enabled);
+        credentialProfileList.setEnabled(enabled);
     }
 
     public Project getProject() {
@@ -283,39 +320,39 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     @Override
     public void setFunctionList(List<FunctionEntry> functions, FunctionEntry selectedFunctionEntry) {
-        cbFunctions.removeAllItems();
+        functionList.removeAllItems();
         for (FunctionEntry entry : functions) {
             if (entry.getRuntime().equals(Runtime.Java8)) {
-                cbFunctions.addItem(entry);
+                functionList.addItem(entry);
             }
         }
         if(selectedFunctionEntry != null){
-            cbFunctions.setSelectedItem(selectedFunctionEntry);
+            functionList.setSelectedItem(selectedFunctionEntry);
         }
     }
 
     @Override
     public void setArtifactList(Collection<? extends ArtifactEntry> artifacts, ArtifactEntry selectedArtifactEntry) {
-        cbJarArtifacts.removeAllItems();
+        jarArtifactList.removeAllItems();
         for(ArtifactEntry artifactEntry : artifacts) {
-            cbJarArtifacts.addItem(artifactEntry);
+            jarArtifactList.addItem(artifactEntry);
         }
         if(selectedArtifactEntry != null){
-            cbJarArtifacts.setSelectedItem(selectedArtifactEntry);
+            jarArtifactList.setSelectedItem(selectedArtifactEntry);
         }
     }
 
     @Override
     public void setCredentialProfilesList(List<CredentialProfileEntry> credentialProfiles, String selectedCredentialsProfile) {
-        cbCredentialProfiles.removeAllItems();
+        credentialProfileList.removeAllItems();
         CredentialProfileEntry selectedCredentialsProfileEntry = null;
         for(CredentialProfileEntry entry : credentialProfiles){
-            cbCredentialProfiles.addItem(entry);
+            credentialProfileList.addItem(entry);
             if(!isEmpty(selectedCredentialsProfile) && entry.getName().equals(selectedCredentialsProfile))
                 selectedCredentialsProfileEntry = entry;
         }
         if(selectedCredentialsProfileEntry != null) {
-            cbCredentialProfiles.setSelectedItem(selectedCredentialsProfileEntry);
+            credentialProfileList.setSelectedItem(selectedCredentialsProfileEntry);
         }
     }
 
@@ -326,9 +363,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         }
         try {
             setRegionOperationInProgress = true;
-            for (int i = 0; i < cbRegions.getItemCount(); i++) {
-                if(((RegionEntry)cbRegions.getItemAt(i)).getName().equals(region.getName())){
-                    cbRegions.setSelectedIndex(i);
+            for (int i = 0; i < regionList.getItemCount(); i++) {
+                if(((RegionEntry) regionList.getItemAt(i)).getName().equals(region.getName())){
+                    regionList.setSelectedIndex(i);
                     return;
                 }
             }
@@ -355,22 +392,22 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     @Override
     public FunctionEntry getSelectedFunctionEntry() {
-        return (FunctionEntry) cbFunctions.getSelectedItem();
+        return (FunctionEntry) functionList.getSelectedItem();
     }
 
     @Override
     public ArtifactEntry getSelectedArtifactEntry() {
-        return (ArtifactEntry) cbJarArtifacts.getSelectedItem();
+        return (ArtifactEntry) jarArtifactList.getSelectedItem();
     }
 
     @Override
     public RegionEntry getSelectedRegionEntry() {
-        return (RegionEntry) cbRegions.getSelectedItem();
+        return (RegionEntry) regionList.getSelectedItem();
     }
 
     @Override
     public CredentialProfileEntry getSelectedCredentialProfileEntry() {
-        return (CredentialProfileEntry) cbCredentialProfiles.getSelectedItem();
+        return (CredentialProfileEntry) credentialProfileList.getSelectedItem();
     }
 
     @Override
@@ -389,17 +426,27 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
+    public void setFunctionTestOutput(String outputText) {
+        functionTestOutputText.setText(outputText);
+    }
+
+    @Override
+    public void setFunctionTestInput(String inputText) {
+        functionTestInputText.setText(inputText);
+    }
+
+    @Override
     public void setRegionList(List<RegionEntry> regions, Regions selectedRegion) {
-        cbRegions.removeAllItems();
+        regionList.removeAllItems();
         RegionEntry selectedRegionEntry = null;
         for(RegionEntry entry : regions) {
-            cbRegions.addItem(entry);
+            regionList.addItem(entry);
             if(selectedRegion != null && entry.getRegion().getName().equals(selectedRegion.getName())) {
                 selectedRegionEntry = entry;
             }
         }
         if(selectedRegionEntry != null) {
-            cbRegions.setSelectedItem(selectedRegionEntry);
+            regionList.setSelectedItem(selectedRegionEntry);
         }
     }
 }
