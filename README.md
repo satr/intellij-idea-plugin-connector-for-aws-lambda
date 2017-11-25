@@ -17,13 +17,13 @@ Latest releases and pre-releases: https://github.com/satr/intellij-idea-plugin-c
 * Install the plugin. 
 * Open a project with an AWS Lambda function. 
 * Configure a JAR-artifact for the project. 
-* Open the tool window "Connector for AWS Lambda". 
-* Refresh lists with AWS Lambda functions, JAR-artifacts, regions and profiles.
+* Open the tool window ![](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/Connector6a5fd3c29d3343Icon16.png) "Connector for AWS Lambda".
+* Refresh ![Refresh](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/Refresh6a5fd3c29d3343Icon20.png) lists with AWS Lambda functions, JAR-artifacts, regions and profiles.
 * Select in the list an AWS Lambda function to update it or run a test for it. 
-* Hit the button "Update Function". 
-* Type an input for a function test or hit the "Open" button to load it from a json-file. 
-* Hit the "Run" button to run the test for a selected function. 
-* Track activities in the Log window.
+* Update the function with the button ![Update Function](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/UpdateFuntion6a5fd3c29d3343Icon20.png). 
+* Type an input for a function test or load it with the button ![Open Test Input](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/OpenFunctionTestInput6a5fd3c29d3343Icon20.png) from a json-file. 
+* Hit the button ![Run Function](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/RunFunctionTest6a5fd3c29d3343Icon20.png) to run the test for a selected function. 
+* Track activities in the Log window. Clean the log with the button ![Clean log](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/ClearLog6a5fd3c29d3343Icon20.png?raw=true)
 
 ![](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/blob/master/docs/intellij-idea-plugin-connector-for-aws-lambda-01.png?raw=true)
 
