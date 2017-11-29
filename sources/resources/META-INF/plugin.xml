@@ -12,15 +12,13 @@
 
   <change-notes><![CDATA[
       <ul>
-      <li>1.2 RC3</li>
+      <li>1.2</li>
       <li>Run function tests.</li>
       <li>Load from json-files inputs for function tests.</li>
-      <li>1.2 RC2</li>
       <li>Changed the layout, added tabs and a toolbar.</li>
       <li>Saved last selected functions and JAR-artifacts.</li>
       <li>Removed actions from the Tools menu.</li>
       <li>Added a tab with an operation log.</li>
-      <li>1.2 RC1</li>
       <li>Added a list of profile - profiles from credentials file can be loaded (with a specified region, if exists in credentials file, not in config file). Use command "aws configure --profile YOUR-PROFILE-NAME" to create a profile.</li>
       <li>1.1</li>
       <li>Added a list of regions - function list can be loaded for a particular region.</li>
