@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
 public class ConnectorModelTestCases extends ConnectorModelTestCasesBase {
 

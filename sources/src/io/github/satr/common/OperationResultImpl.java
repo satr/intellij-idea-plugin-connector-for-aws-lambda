@@ -1,11 +1,14 @@
 package io.github.satr.common;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OperationResultImpl implements OperationResult {
     private final List<String> errorMessages = new ArrayList<>();
+    private final List<String> warningMessages = new ArrayList<>();
     private final List<String> infoMessages = new ArrayList<>();
 
     @Override
@@ -16,6 +19,11 @@ public class OperationResultImpl implements OperationResult {
     @Override
     public void addError(String format, Object... args) {
         errorMessages.add(String.format(format, args));
+    }
+
+    @Override
+    public void addWarning(String format, Object... args) {
+        warningMessages.add(String.format(format, args));
     }
 
     @Override
@@ -34,19 +42,36 @@ public class OperationResultImpl implements OperationResult {
     }
 
     @Override
-    public String getErrorAsString() {
-        StringBuilder builder = new StringBuilder();
-        for(String message : errorMessages)
-            builder.append(message + "\n");
-        return builder.toString();
+    public boolean hasWarnings() {
+        return warningMessages.size() > 0;
     }
 
+    @Override
+    public boolean hasErrors() {
+        return errorMessages.size() > 0;
+    }
+
+    @Override
+    public String getErrorAsString() {
+        return join(errorMessages);
+    }
+
+    @Override
+    public String getWarningsAsString() {
+        return join(warningMessages);
+    }
 
     @Override
     public String getInfoAsString() {
+        return join(infoMessages);
+    }
+
+    @NotNull
+    private String join(List<String> messages) {
         StringBuilder builder = new StringBuilder();
-        for(String message : infoMessages)
+        for (String message : messages) {
             builder.append(message + "\n");
+        }
         return builder.toString();
     }
 }

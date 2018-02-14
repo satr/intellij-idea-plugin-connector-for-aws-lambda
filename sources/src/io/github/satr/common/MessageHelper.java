@@ -1,5 +1,5 @@
 package io.github.satr.common;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -17,6 +17,10 @@ public final class MessageHelper {
 
     public static void showInfo(final Project project, final String format, final Object... args) {
         showMessage(project, MessageType.INFO, format, args);
+    }
+
+    public static void showWarning(final Project project, final String format, final Object... args) {
+        showMessage(project, MessageType.WARNING, format, args);
     }
 
     public static void showError(final Project project, final String format, final Object... args) {

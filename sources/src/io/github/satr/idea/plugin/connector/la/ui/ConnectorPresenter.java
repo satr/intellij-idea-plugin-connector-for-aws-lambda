@@ -1,5 +1,5 @@
 package io.github.satr.idea.plugin.connector.la.ui;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
 import com.intellij.openapi.project.Project;
 import io.github.satr.idea.plugin.connector.la.entities.*;

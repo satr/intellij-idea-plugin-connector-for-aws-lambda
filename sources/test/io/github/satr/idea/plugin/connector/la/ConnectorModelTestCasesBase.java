@@ -1,5 +1,5 @@
 package io.github.satr.idea.plugin.connector.la;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
 import com.amazonaws.regions.Regions;
 import io.github.satr.common.Constant;

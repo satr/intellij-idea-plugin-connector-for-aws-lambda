@@ -1,9 +1,12 @@
 package io.github.satr.idea.plugin.connector.la.models;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfilesConfigFile;
 import com.amazonaws.auth.profile.internal.BasicProfile;
+import com.amazonaws.profile.path.AwsProfileFileLocationProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
@@ -11,7 +14,6 @@ import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.*;
 import io.github.satr.common.OperationResult;
-import io.github.satr.common.OperationResultImpl;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
 import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
@@ -40,28 +42,35 @@ public class ConnectorModel {
         regionDescriptions.put("us-east-1", "US East (N. Virginia)");
         regionDescriptions.put("us-west-1", "US West (N. California)");
         regionDescriptions.put("us-west-2", "US West (Oregon)");
+        regionDescriptions.put("ap-northeast-1", "Asia Pacific (Tokyo)");
         regionDescriptions.put("ap-northeast-2", "Asia Pacific (Seoul)");
         regionDescriptions.put("ap-south-1", "Asia Pacific (Mumbai)");
         regionDescriptions.put("ap-southeast-1", "Asia Pacific (Singapore)");
         regionDescriptions.put("ap-southeast-2", "Asia Pacific (Sydney)");
-        regionDescriptions.put("ap-northeast-1", "Asia Pacific (Tokyo)");
         regionDescriptions.put("ca-central-1", "Canada (Central)");
+        regionDescriptions.put("cn-north-1", "China (Beijing)");
         regionDescriptions.put("eu-central-1", "EU (Frankfurt)");
         regionDescriptions.put("eu-west-1", "EU (Ireland)");
         regionDescriptions.put("eu-west-2", "EU (London)");
-        regionDescriptions.put("sa-east-1", "South America (São Paulo)");
+        regionDescriptions.put("eu-west-3", "EU (Paris)");
+        regionDescriptions.put("sa-east-1", "South America (Sao Paulo)");
     }
 
     private ArrayList<RegionEntry> regionEntries;
 
-    public ConnectorModel(Regions region, String profileName) {
+    public ConnectorModel(Regions region, String credentialProfileName) {
 
-        ProfileCredentialsProvider profileCredentialsProvider = new ProfileCredentialsProvider(profileName);
-
+        AWSCredentialsProvider credentialsProvider = getCredentialsProvider(credentialProfileName);
         awsLambdaClient = AWSLambdaClientBuilder.standard()
                 .withRegion(region)
-                .withCredentials(profileCredentialsProvider)
+                .withCredentials(credentialsProvider)
                 .build();
+    }
+
+    private AWSCredentialsProvider getCredentialsProvider(String credentialProfileName) {
+        return validateCredentialProfile(credentialProfileName)
+                                                        ? new ProfileCredentialsProvider(credentialProfileName)
+                                                        : DefaultAWSCredentialsProviderChain.getInstance();
     }
 
     public List<FunctionEntry> getFunctions(){
@@ -181,12 +190,29 @@ public class ConnectorModel {
         return regionEntries;
     }
 
-    public List<CredentialProfileEntry> getCredentialProfiles() {
-        Map<String, BasicProfile> profiles = new ProfilesConfigFile().getAllBasicProfiles();
-        List<CredentialProfileEntry> credentialProfilesEntries = new ArrayList<>();
-        for (String profileName : profiles.keySet()) {
-            credentialProfilesEntries.add(new CredentialProfileEntry(profileName, profiles.get(profileName)));
+    public OperationValueResult<List<CredentialProfileEntry>> getCredentialProfiles() {
+        OperationValueResult<List<CredentialProfileEntry>> valueResult = new OperationValueResultImpl<>();
+        ArrayList<CredentialProfileEntry> credentialProfilesEntries = new ArrayList<>();
+        valueResult.setValue(credentialProfilesEntries);
+        if(!validateCredentialProfilesExist()) {
+            valueResult.addWarning("No credential profiles file found.\n To create one - please follow the instruction:\n https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html ");
+            return valueResult;
         }
-        return credentialProfilesEntries;
+        ProfilesConfigFile profilesConfigFile = new ProfilesConfigFile();
+        Map<String, BasicProfile> profiles = profilesConfigFile.getAllBasicProfiles();
+        for (String credentialProfileName : profiles.keySet()) {
+            credentialProfilesEntries.add(new CredentialProfileEntry(credentialProfileName, profiles.get(credentialProfileName)));
+        }
+        valueResult.addInfo("Found %d credential profiles.", credentialProfilesEntries.size());
+        return valueResult;
+    }
+
+    private boolean validateCredentialProfile(String credentialProfileName) {
+        return !isEmpty(credentialProfileName)
+                && validateCredentialProfilesExist()
+                && new ProfilesConfigFile().getAllBasicProfiles().containsKey(credentialProfileName);
+    }
+    private boolean validateCredentialProfilesExist() {
+        return AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation() != null;
     }
 }

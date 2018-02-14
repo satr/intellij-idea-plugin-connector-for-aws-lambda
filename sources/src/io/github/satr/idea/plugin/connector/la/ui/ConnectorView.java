@@ -1,7 +1,8 @@
 package io.github.satr.idea.plugin.connector.la.ui;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
 import com.amazonaws.regions.Regions;
+import io.github.satr.common.OperationResult;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 
 import java.util.Collection;
@@ -18,7 +19,9 @@ public interface ConnectorView {
     ArtifactEntry getSelectedArtifactEntry();
     RegionEntry getSelectedRegionEntry();
     CredentialProfileEntry getSelectedCredentialProfileEntry();
+    void log(OperationResult operationResult);
     void logDebug(String format, Object... args);
+    void logWarning(String format, Object... args);
     void logInfo(String format, Object... args);
     void logError(String format, Object... args);
     void logError(Throwable throwable);

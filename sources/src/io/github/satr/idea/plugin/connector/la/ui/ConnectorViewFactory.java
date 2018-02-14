@@ -1,5 +1,5 @@
 package io.github.satr.idea.plugin.connector.la.ui;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
@@ -15,6 +15,7 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import io.github.satr.common.MessageHelper;
+import io.github.satr.common.OperationResult;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
 import org.apache.log4j.AsyncAppender;
@@ -167,6 +168,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         });
         logLevelList.addItem(Level.DEBUG);
         logLevelList.addItem(Level.INFO);
+        logLevelList.addItem(Level.WARN);
         logLevelList.addItem(Level.ERROR);
         logger.setLevel(Level.INFO);
         logLevelList.setSelectedItem(Level.INFO);
@@ -447,6 +449,19 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
+    public void log(OperationResult operationResult) {
+        if(operationResult.hasInfo()) {
+            logInfo(operationResult.getInfoAsString());
+        }
+        if(operationResult.hasWarnings()) {
+            logWarning(operationResult.getWarningsAsString());
+        }
+        if(operationResult.hasErrors()) {
+            logInfo(operationResult.getErrorAsString());
+        }
+    }
+
+    @Override
     public void logDebug(String format, Object... args) {
         logger.debug(String.format(format, args));
     }
@@ -454,6 +469,11 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     @Override
     public void logInfo(String format, Object... args) {
         logger.info(String.format(format, args));
+    }
+
+    @Override
+    public void logWarning(String format, Object... args) {
+        logger.warn(String.format(format, args));
     }
 
     @Override

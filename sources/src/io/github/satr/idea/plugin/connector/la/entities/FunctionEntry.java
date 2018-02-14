@@ -1,5 +1,5 @@
 package io.github.satr.idea.plugin.connector.la.entities;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
 import com.amazonaws.services.lambda.model.FunctionConfiguration;
 import com.amazonaws.services.lambda.model.Runtime;

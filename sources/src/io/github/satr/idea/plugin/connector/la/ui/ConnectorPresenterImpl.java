@@ -1,5 +1,5 @@
 package io.github.satr.idea.plugin.connector.la.ui;
-// Copyright © 2017, github.com/satr, MIT License
+// Copyright © 2018, github.com/satr, MIT License
 
 import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.regions.Regions;
@@ -127,9 +127,10 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void refreshCredentialProfilesList(Project project) {
         view.logDebug("Refresh credential profile list.");
-        List<CredentialProfileEntry> credentialProfiles = getConnectorModel().getCredentialProfiles();
+        OperationValueResult<List<CredentialProfileEntry>> credentialProfilesResult = getConnectorModel().getCredentialProfiles();
+        List<CredentialProfileEntry> credentialProfiles = credentialProfilesResult.getValue();
         view.setCredentialProfilesList(credentialProfiles, getLastSelectedCredentialProfile());
-        view.logInfo("Found %d credential profiles.", credentialProfiles.size());
+        view.log(credentialProfilesResult);
         refreshStatus();
     }
 
@@ -158,6 +159,9 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void refreshJarArtifactList(Project project) {
+        if(project == null) {
+            return;
+        }
         view.logDebug("Refresh JAR-artifact list.");
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
         String lastSelectedJarArtifactName = connectorSettings.getLastSelectedJarArtifactName();
@@ -170,11 +174,24 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             }
         }
         view.setArtifactList(jarArtifacts, selectedArtifactEntry);
+
+        if(jarArtifacts.size() == 0) {
+            view.logInfo("No JAR-artifacts found.");
+            refreshStatus();
+            return;
+        }
+
         ArtifactEntry artifactEntry = view.getSelectedArtifactEntry();
         if(artifactEntry == null) {
             view.logInfo("JAR-artifact is not selected.");
-        } else {
-            view.logInfo("Selected JAR-artifact: \"%s\"", artifactEntry.getName());
+            refreshStatus();
+            return;
+        }
+
+        view.logInfo("Selected JAR-artifact: \"%s\"", artifactEntry.getName());
+        String outputFilePath = artifactEntry.getOutputFilePath();
+        if(!new File(outputFilePath).exists()){
+            view.logError("JAR-artifact file does not exist with the path:\n%s", outputFilePath);
         }
         refreshStatus();
     }
