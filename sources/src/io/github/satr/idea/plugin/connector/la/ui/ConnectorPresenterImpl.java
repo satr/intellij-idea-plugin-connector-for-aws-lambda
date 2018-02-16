@@ -8,6 +8,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import io.github.satr.common.*;
 import io.github.satr.idea.plugin.connector.la.entities.*;
+import io.github.satr.idea.plugin.connector.la.models.ConnectorModel;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorSettings;
 import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
 import org.jetbrains.annotations.NotNull;
@@ -145,7 +146,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         String function = functionEntry != null ? functionEntry.toString() : null;
         ArtifactEntry artifactEntry = view.getSelectedArtifactEntry();
         String artifact = artifactEntry != null ? artifactEntry.toString() : null;
-        view.refreshStatus(function, artifact, region, regionDescription, credentialProfile);
+        String proxyDetails = getConnectorModel().getProxyDetails();
+        view.refreshStatus(function, artifact, region, regionDescription, credentialProfile, proxyDetails);
     }
 
     @Override
@@ -311,6 +313,13 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void setSetTestFunctionInputFromRecent(TestFunctionInputEntry entry) {
         view.setTestFunctionInput(entry.getInputText());
+    }
+
+    @Override
+    public void setProxySettings() {
+        ConnectorModel model = this.getConnectorModel();
+        reCreateConnectorModel(model.getRegion(), model.getCredentialProfileName());
+        refreshStatus();
     }
 
     private Regions tryGetRegionBy(String regionName) {

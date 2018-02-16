@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.util.Collection;
@@ -70,6 +71,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JComboBox testFunctionInputRecentFileList;
     private JPanel logPan;
     private JPanel logSettingsPan;
+    private JButton updateProxySettingsButton;
+    private JTextField textProxyHost;
+    private JTextField textProxyPort;
+    private JCheckBox cbUseProxy;
     private Project project;
     private boolean operationInProgress = false;
     private boolean setRegionOperationInProgress;
@@ -126,8 +131,12 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         jarArtifactList.addItemListener(e -> {
             runSetJarArtifact(presenter, e);
         });
+        updateProxySettingsButton.addActionListener(e -> {
+            updateProxySetting(presenter, e);
+        });
         runRefreshAllList(presenter);
     }
+
 
     private void openFunctionTestInputFile(ConnectorPresenter presenter) {
         if(runFunctionTestOperationInProgress){
@@ -227,6 +236,13 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if(entry == null)
             return;
         runOperation(() -> presenter.setCredentialProfile(entry), "Select credential profile: " + entry.toString());
+    }
+
+
+    private void updateProxySetting(ConnectorPresenter presenter, ActionEvent e) {
+        runOperation(() -> {
+            presenter.setProxySettings();
+        }, "Update proxy settings from IDEA settings.");
     }
 
     private void runSetJarArtifact(ConnectorPresenter presenter, ItemEvent e) {
@@ -413,18 +429,21 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile) {
-        txtStatus.setText(String.format("Func: \"%s\"; Jar: \"%s\"; Region: \"%s\"; Profile:\"%s\"",
+    public void refreshStatus(String function, String artifact, String region, String regionDescription,
+                              String credentialProfile, String proxyDetails) {
+        txtStatus.setText(String.format("Func: \"%s\"; Jar: \"%s\"; Region: \"%s\"; Profile:\"%s\"; Proxy:\"%s\"",
                 getNotEmptyString(function, "?"),
                 getNotEmptyString(artifact, "?"),
                 getNotEmptyString(region, "?"),
-                getNotEmptyString(credentialProfile, "?")
+                getNotEmptyString(credentialProfile, "?"),
+                getNotEmptyString(proxyDetails, "?")
         ));
-        txtStatus.setToolTipText(String.format("Func: %s\nJar: %s\nRegion: %s\nProfile: %s",
+        txtStatus.setToolTipText(String.format("Func: %s\nJar: %s\nRegion: %s\nProfile: %s; \nProxy: %s",
                 getNotEmptyString(function, "?"),
                 getNotEmptyString(artifact, "?"),
                 getNotEmptyString(regionDescription, "?"),
-                getNotEmptyString(credentialProfile, "?")
+                getNotEmptyString(credentialProfile, "?"),
+                getNotEmptyString(proxyDetails, "?")
         ));
     }
 

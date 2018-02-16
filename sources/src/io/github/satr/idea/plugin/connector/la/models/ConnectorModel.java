@@ -1,6 +1,7 @@
 package io.github.satr.idea.plugin.connector.la.models;
 // Copyright © 2018, github.com/satr, MIT License
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
@@ -13,6 +14,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.*;
+import com.intellij.util.net.HttpConfigurable;
 import io.github.satr.common.OperationResult;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
@@ -33,6 +35,7 @@ import java.util.jar.JarFile;
 import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorModel {
+    private final Regions region;
     private AWSLambda awsLambdaClient;
     private static final Map<String, String> regionDescriptions;
 
@@ -57,14 +60,43 @@ public class ConnectorModel {
     }
 
     private ArrayList<RegionEntry> regionEntries;
+    private String credentialProfileName;
+    private String proxyDetails = "Unknown";
 
     public ConnectorModel(Regions region, String credentialProfileName) {
-
+        this.region = region;
+        this.credentialProfileName = credentialProfileName;
         AWSCredentialsProvider credentialsProvider = getCredentialsProvider(credentialProfileName);
         awsLambdaClient = AWSLambdaClientBuilder.standard()
                 .withRegion(region)
+                .withClientConfiguration(getClientConfiguration())
                 .withCredentials(credentialsProvider)
                 .build();
+    }
+
+    private ClientConfiguration getClientConfiguration() {
+        HttpConfigurable httpConfigurable = HttpConfigurable.getInstance();
+        ClientConfiguration clientConfiguration = new ClientConfiguration();
+        boolean useProxyAuto = httpConfigurable.USE_PROXY_PAC;
+        if (useProxyAuto) {
+            proxyDetails = "Auto";
+        } else if (!httpConfigurable.USE_HTTP_PROXY) {
+            proxyDetails = "Not used";
+            return clientConfiguration;
+        }
+        String proxyHost = httpConfigurable.PROXY_HOST;
+        int proxyPort = httpConfigurable.PROXY_PORT;
+        clientConfiguration = clientConfiguration.withProxyHost(proxyHost)
+                                                 .withProxyPort(proxyPort);
+        if(!useProxyAuto) {
+            proxyDetails = String.format("%s:%s;", proxyHost, proxyPort);
+        }
+        if (httpConfigurable.PROXY_AUTHENTICATION) {
+            String proxyLogin = httpConfigurable.getProxyLogin();
+            clientConfiguration = clientConfiguration.withProxyPassword(httpConfigurable.getPlainProxyPassword())
+                                                    .withProxyUsername(proxyLogin);
+        }
+        return clientConfiguration;
     }
 
     private AWSCredentialsProvider getCredentialsProvider(String credentialProfileName) {
@@ -214,5 +246,17 @@ public class ConnectorModel {
     }
     private boolean validateCredentialProfilesExist() {
         return AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation() != null;
+    }
+
+    public Regions getRegion() {
+        return region;
+    }
+
+    public String getCredentialProfileName() {
+        return credentialProfileName;
+    }
+
+    public String getProxyDetails() {
+        return proxyDetails;
     }
 }
