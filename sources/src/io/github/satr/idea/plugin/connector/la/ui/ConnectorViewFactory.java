@@ -5,15 +5,25 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.AWSLambdaException;
 import com.amazonaws.services.lambda.model.Runtime;
+import com.intellij.ide.AppLifecycleListener;
+import com.intellij.ide.ui.UISettings;
+import com.intellij.ide.ui.UISettingsListener;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.packaging.artifacts.Artifact;
+import com.intellij.packaging.artifacts.ArtifactListener;
+import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.intellij.util.messages.MessageBus;
+import com.intellij.util.messages.MessageBusConnection;
 import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
 import io.github.satr.idea.plugin.connector.la.entities.*;
@@ -27,9 +37,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -66,8 +76,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JPanel runFunctionTestTab;
     private JTextArea functionTestOutputText;
     private JTextArea functionTestInputText;
-    private JButton openTestFunctionInputFileButton;
-    private JButton runTestFunctionButton;
+    private JButton openFunctionInputFileButton;
+    private JButton runFunctionTestButton;
     private JComboBox testFunctionInputRecentFileList;
     private JPanel logPan;
     private JPanel logSettingsPan;
@@ -79,15 +89,18 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private boolean operationInProgress = false;
     private boolean setRegionOperationInProgress;
     private boolean runFunctionTestOperationInProgress;
+    final private List<JButton> buttons = new ArrayList<>();
 
     public ConnectorViewFactory() {
         this(ServiceManager.getService(ConnectorPresenter.class));
     }
 
-    public ConnectorViewFactory(ConnectorPresenter presenter) {
+    public ConnectorViewFactory(final ConnectorPresenter presenter) {
+        prepareButtons();
         prepareUiLogger();
         this.presenter = presenter;
         this.presenter.setView(this);
+
         presenter.refreshJarArtifactList(project);
         refreshAllButton.addActionListener(e -> {
             runRefreshAllList(presenter);
@@ -110,10 +123,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         clearLogButton.addActionListener(e -> {
             clearLog();
         });
-        runTestFunctionButton.addActionListener(e -> {
+        runFunctionTestButton.addActionListener(e -> {
             runFunctionTest(presenter);
         });
-        openTestFunctionInputFileButton.addActionListener(e -> {
+        openFunctionInputFileButton.addActionListener(e -> {
             openFunctionTestInputFile(presenter);
         });
         testFunctionInputRecentFileList.addItemListener(e -> {
@@ -132,11 +145,53 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
             runSetJarArtifact(presenter, e);
         });
         updateProxySettingsButton.addActionListener(e -> {
-            updateProxySetting(presenter, e);
+            updateProxySetting(presenter);
         });
         runRefreshAllList(presenter);
     }
 
+    @NotNull
+    private MessageBusConnection getMessageBusConnector() {
+        return ApplicationManager.getApplication().getMessageBus().connect();
+    }
+
+    private void prepareButtons() {
+        setupButton(updateFunctionButton, IconLoader.getIcon("/icons/iconUpdateFunction.png"));
+        setupButton(refreshAllButton, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(runFunctionTestButton, IconLoader.getIcon("/icons/iconRunFunctionTest.png"));
+        setupButton(openFunctionInputFileButton, IconLoader.getIcon("/icons/iconOpenFunctionInputFile.png"));
+        setupButton(updateProxySettingsButton, IconLoader.getIcon("/icons/iconUpdateProxySettings.png"));
+        setupButton(clearLogButton, IconLoader.getIcon("/icons/iconClearLog.png"));
+        setupButton(refreshFuncListButton, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(refreshJarArtifactsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(refreshRegionsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
+
+        getMessageBusConnector().subscribe(UISettingsListener.TOPIC, this::uiSettingsChanged);
+    }
+
+    private void uiSettingsChanged(UISettings uiSettings) {
+        fixButtonsAfterPotentiallyChangedTheme();
+    }
+
+    private void fixButtonsAfterPotentiallyChangedTheme() {
+        for(JButton button: buttons) {
+            removeButtonBorder(button);
+        }
+    }
+
+    private void setupButton(JButton button, Icon icon) {
+        button.setIcon(icon);
+        removeButtonBorder(button);
+        buttons.add(button);
+    }
+
+    private static void removeButtonBorder(JButton button) {
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setBorder(null);
+    }
 
     private void openFunctionTestInputFile(ConnectorPresenter presenter) {
         if(runFunctionTestOperationInProgress){
@@ -239,7 +294,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
 
-    private void updateProxySetting(ConnectorPresenter presenter, ActionEvent e) {
+    private void updateProxySetting(ConnectorPresenter presenter) {
         runOperation(() -> {
             presenter.setProxySettings();
         }, "Update proxy settings from IDEA settings.");
@@ -342,8 +397,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         refreshRegionsButton.setEnabled(enabled);
         refreshCredentialProfiles.setEnabled(enabled);
         updateFunctionButton.setEnabled(enabled);
-        runTestFunctionButton.setEnabled(enabled);
-        openTestFunctionInputFileButton.setEnabled(enabled);
+        runFunctionTestButton.setEnabled(enabled);
+        openFunctionInputFileButton.setEnabled(enabled);
         functionList.setEnabled(enabled);
         jarArtifactList.setEnabled(enabled);
         regionList.setEnabled(enabled);
@@ -357,8 +412,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     @Override
     protected void finalize() throws Throwable {
-        if (presenter != null)
+        if (presenter != null) {
             presenter.shutdown();
+        }
 
         super.finalize();
     }

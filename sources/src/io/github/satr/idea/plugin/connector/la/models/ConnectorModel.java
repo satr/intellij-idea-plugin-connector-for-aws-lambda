@@ -89,8 +89,9 @@ public class ConnectorModel {
         clientConfiguration = clientConfiguration.withProxyHost(proxyHost)
                                                  .withProxyPort(proxyPort);
         if(!useProxyAuto) {
-            proxyDetails = String.format("%s:%s;", proxyHost, proxyPort);
+            proxyDetails = String.format("%s:%s", proxyHost, proxyPort);
         }
+
         if (httpConfigurable.PROXY_AUTHENTICATION) {
             String proxyLogin = httpConfigurable.getProxyLogin();
             clientConfiguration = clientConfiguration.withProxyPassword(httpConfigurable.getPlainProxyPassword())
