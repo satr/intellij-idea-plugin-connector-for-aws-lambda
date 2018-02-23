@@ -5,7 +5,6 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.AWSLambdaException;
 import com.amazonaws.services.lambda.model.Runtime;
-import com.intellij.ide.AppLifecycleListener;
 import com.intellij.ide.ui.UISettings;
 import com.intellij.ide.ui.UISettingsListener;
 import com.intellij.openapi.application.ApplicationManager;
@@ -17,12 +16,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.packaging.artifacts.Artifact;
-import com.intellij.packaging.artifacts.ArtifactListener;
-import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.MessageBusConnection;
 import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
@@ -82,6 +77,15 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JPanel logPan;
     private JPanel logSettingsPan;
     private JButton updateProxySettingsButton;
+    private JTextField functionArn;
+    private JTextField functionLastModified;
+    private JTextField functionRole;
+    private JTextField functionTimeout;
+    private JTextField functionMemorySize;
+    private JTextField functionTracingConfigMode;
+    private JTextField functionHandler;
+    private JTextField functionDescription;
+    private JTextField functionRuntime;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -256,8 +260,6 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                 || e.getStateChange() != ItemEvent.SELECTED)
             return;
         FunctionEntry entry = (FunctionEntry)e.getItem();
-        if(entry == null)
-            return;
         runOperation(() -> presenter.setFunction(entry), "Select function: " + entry.toString());
     }
 
@@ -436,9 +438,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                 functionList.addItem(entry);
             }
         }
-        if(selectedFunctionEntry != null){
-            functionList.setSelectedItem(selectedFunctionEntry);
-        }
+        presenter.setFunction(selectedFunctionEntry);
     }
 
     @Override
@@ -580,6 +580,31 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if(entries.size() > 0) {
             testFunctionInputRecentFileList.setSelectedIndex(entries.size() - 1);//select last added entry
         }
+    }
+
+    @Override
+    public void setFunctionProperties(FunctionEntry functionEntry) {
+        if (functionEntry == null) {
+            functionDescription.setText("");
+            functionHandler.setText("");
+            functionArn.setText("");
+            functionLastModified.setText("");
+            functionRole.setText("");
+            functionRuntime.setText("");
+            functionMemorySize.setText("");
+            functionTimeout.setText("");
+            functionTracingConfigMode.setText("");
+            return;
+        }
+        functionDescription.setText(functionEntry.getDescription());
+        functionHandler.setText(functionEntry.getHandler());
+        functionArn.setText(functionEntry.getArn());
+        functionLastModified.setText(functionEntry.getLastModified());
+        functionRole.setText(functionEntry.getRole());
+        functionRuntime.setText(functionEntry.getRuntime().name());
+        functionMemorySize.setText(functionEntry.getMemorySize().toString());
+        functionTimeout.setText(functionEntry.getTimeout().toString());
+        functionTracingConfigMode.setText(functionEntry.getTracingConfigMode().name());
     }
 
     @Override

@@ -28,4 +28,5 @@ public interface ConnectorView {
     void setFunctionTestOutput(String outputText);
     void setTestFunctionInput(String inputText);
     void setTestFunctionInputRecentEntryList(List<TestFunctionInputEntry> filePathList);
+    void setFunctionProperties(FunctionEntry functionEntry);
 }

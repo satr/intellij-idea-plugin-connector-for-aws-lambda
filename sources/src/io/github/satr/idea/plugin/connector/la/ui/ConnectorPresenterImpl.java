@@ -59,6 +59,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         } else {
             view.logInfo("Selected function: \"%s\"", functionEntry.getFunctionName());
         }
+        view.setFunctionProperties(functionEntry);
         refreshStatus();
     }
 
@@ -243,8 +244,14 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void setFunction(FunctionEntry functionEntry) {
-        view.logDebug("Set function.");
-        connectorSettings.setLastSelectedFunctionName(functionEntry.getFunctionName());
+        if(functionEntry != null) {
+            String functionName = functionEntry.getFunctionName();
+            connectorSettings.setLastSelectedFunctionName(functionName);
+            view.logDebug("Set function %s.", functionName);
+        } else {
+            view.logDebug("Function not set.");
+        }
+        view.setFunctionProperties(functionEntry);
         refreshStatus();
     }
 

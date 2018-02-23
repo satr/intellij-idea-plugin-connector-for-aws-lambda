@@ -9,7 +9,7 @@ public class FunctionEntry {
     private final Runtime runtime;
     private String handler;
     private String description;
-    private String functionArn;
+    private String arn;
     private String lastModified;
     private String role;
     private Integer timeout;
@@ -21,7 +21,7 @@ public class FunctionEntry {
         runtime = Runtime.fromValue(configuration.getRuntime());
         handler = configuration.getHandler();
         description = configuration.getDescription();
-        functionArn = configuration.getFunctionArn();
+        arn = configuration.getFunctionArn();
         lastModified = configuration.getLastModified();
         role = configuration.getRole();
         timeout = configuration.getTimeout();
@@ -59,12 +59,12 @@ public class FunctionEntry {
         this.description = description;
     }
 
-    public String getFunctionArn() {
-        return functionArn;
+    public String getArn() {
+        return arn;
     }
 
-    public void setFunctionArn(String functionArn) {
-        this.functionArn = functionArn;
+    public void setArn(String arn) {
+        this.arn = arn;
     }
 
     public String getLastModified() {
