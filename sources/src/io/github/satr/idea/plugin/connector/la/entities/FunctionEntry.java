@@ -11,28 +11,28 @@ public class FunctionEntry {
     private String description;
     private String arn;
     private String lastModified;
-    private String role;
+    private RoleEntity roleEntity;
     private Integer timeout;
     private Integer memorySize;
-    private TracingMode tracingConfigMode;
-
-    public FunctionEntry(FunctionConfiguration configuration) {
-        functionName = configuration.getFunctionName();
-        runtime = Runtime.fromValue(configuration.getRuntime());
-        handler = configuration.getHandler();
-        description = configuration.getDescription();
-        arn = configuration.getFunctionArn();
-        lastModified = configuration.getLastModified();
-        role = configuration.getRole();
-        timeout = configuration.getTimeout();
-        memorySize = configuration.getMemorySize();
-        tracingConfigMode = TracingMode.fromValue(configuration.getTracingConfig().getMode());
-    }
+    private TracingModeEntity tracingModeEntity;
 
     public FunctionEntry(UpdateFunctionCodeResult updateFunctionCodeResult) {
         functionName = updateFunctionCodeResult.getFunctionName();
         runtime = Runtime.fromValue(updateFunctionCodeResult.getRuntime());
         handler = updateFunctionCodeResult.getHandler();
+    }
+
+    public FunctionEntry(FunctionConfiguration functionConfiguration, RoleEntity roleEntity) {
+        functionName = functionConfiguration.getFunctionName();
+        runtime = Runtime.fromValue(functionConfiguration.getRuntime());
+        handler = functionConfiguration.getHandler();
+        description = functionConfiguration.getDescription();
+        arn = functionConfiguration.getFunctionArn();
+        lastModified = functionConfiguration.getLastModified();
+        this.roleEntity = roleEntity;
+        timeout = functionConfiguration.getTimeout();
+        memorySize = functionConfiguration.getMemorySize();
+        tracingModeEntity = TracingModeEntity.fromValue(functionConfiguration.getTracingConfig().getMode());
     }
 
     public String getFunctionName() {
@@ -75,12 +75,12 @@ public class FunctionEntry {
         this.lastModified = lastModified;
     }
 
-    public String getRole() {
-        return role;
+    public RoleEntity getRoleEntity() {
+        return roleEntity;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRole(RoleEntity role) {
+        this.roleEntity = role;
     }
 
     public Integer getTimeout() {
@@ -99,12 +99,12 @@ public class FunctionEntry {
         this.memorySize = memorySize;
     }
 
-    public TracingMode getTracingConfigMode() {
-        return tracingConfigMode;
+    public TracingModeEntity getTracingModeEntity() {
+        return tracingModeEntity;
     }
 
-    public void setTracingConfigMode(TracingMode tracingConfigMode) {
-        this.tracingConfigMode = tracingConfigMode;
+    public void setTracingModeEntity(TracingModeEntity tracingModeEntity) {
+        this.tracingModeEntity = tracingModeEntity;
     }
 
     @Override

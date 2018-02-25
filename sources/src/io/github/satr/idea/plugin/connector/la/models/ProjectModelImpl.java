@@ -16,13 +16,15 @@ public class ProjectModelImpl implements ProjectModel {
 
     @Override
     public Collection<? extends ArtifactEntry> getJarArtifacts(Project project) {
-        if(project == null)
+        if(project == null) {
             return Collections.emptyList();
-        ArtifactManager artifactManager = ArtifactManager.getInstance(project);
+        }
+        final ArtifactManager artifactManager = ArtifactManager.getInstance(project);
         final Collection<? extends Artifact> jarArtifacts = artifactManager.getArtifactsByType(ArtifactType.findById(JAR_ARTIFACT_TYPE));
-        ArrayList<ArtifactEntry> artifactEntries = new ArrayList<>();
-        for(Artifact artifact : jarArtifacts)
+        final ArrayList<ArtifactEntry> artifactEntries = new ArrayList<>();
+        for(Artifact artifact : jarArtifacts) {
             artifactEntries.add(new ArtifactEntry(artifact));
+        }
         return artifactEntries;
     }
 }

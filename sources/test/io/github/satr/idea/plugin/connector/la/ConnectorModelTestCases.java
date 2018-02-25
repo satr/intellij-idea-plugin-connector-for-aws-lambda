@@ -1,5 +1,6 @@
 package io.github.satr.idea.plugin.connector.la;
 
+import io.github.satr.common.OperationValueResult;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ public class ConnectorModelTestCases extends ConnectorModelTestCasesBase {
 
     @Test
     public void getFunctions() throws Exception {
-        List<FunctionEntry> functionEntries = connectorModel.getFunctions();
+        OperationValueResult<List<FunctionEntry>> functionEntries = connectorModel.getFunctions();
         assertNotNull(functionEntries);
     }
 }

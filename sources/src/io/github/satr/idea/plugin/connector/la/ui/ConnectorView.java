@@ -12,6 +12,7 @@ public interface ConnectorView {
     void setFunctionList(List<FunctionEntry> functions, FunctionEntry selectedFunctionEntry);
     void setArtifactList(Collection<? extends ArtifactEntry> artifacts, ArtifactEntry selectedArtifactEntry);
     void setRegionList(List<RegionEntry> regions, Regions selectedRegion);
+    void setTracingModeList(Collection<TracingModeEntity> tracingModeEntities);
     void setCredentialProfilesList(List<CredentialProfileEntry> credentialProfiles, String selectedCredentialsProfile);
     void setRegion(Regions region);
     void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile, String proxyDetails);
@@ -29,4 +30,5 @@ public interface ConnectorView {
     void setTestFunctionInput(String inputText);
     void setTestFunctionInputRecentEntryList(List<TestFunctionInputEntry> filePathList);
     void setFunctionProperties(FunctionEntry functionEntry);
+    void setRoleList(List<RoleEntity> roles);
 }

@@ -36,11 +36,15 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     public void refreshFunctionList() {
         view.logDebug("Refresh function list.");
         ArrayList<String> functionNames = new ArrayList<>();
-        List<FunctionEntry> functions = getConnectorModel().getFunctions();
+        OperationValueResult<List<FunctionEntry>> functionListResult = getConnectorModel().getFunctions();
+        view.log(functionListResult);
+        refreshRolesList();
+
         String lastSelectedFunctionName = connectorSettings.getLastSelectedFunctionName();
         FunctionEntry selectedFunctionEntry = null;
         int functionCount = 0;
-        for (FunctionEntry entry : functions) {
+        List<FunctionEntry> functionList = functionListResult.getValue();
+        for (FunctionEntry entry : functionList) {
             if (!entry.getRuntime().equals(Runtime.Java8)) {
                 continue;
             }
@@ -52,7 +56,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         }
         view.logDebug("Found %d Java-8 functions.", functionCount);
         connectorSettings.setFunctionNames(functionNames);
-        view.setFunctionList(functions, selectedFunctionEntry);
+        view.setFunctionList(functionList, selectedFunctionEntry);
         FunctionEntry functionEntry = view.getSelectedFunctionEntry();
         if(functionEntry == null) {
             view.logInfo("Function is not selected.");
@@ -123,7 +127,12 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     public void refreshRegionList(Project project) {
         view.logDebug("Refresh region list.");
         view.setRegionList(getConnectorModel().getRegions(), getLastSelectedRegion());
-        refreshStatus();
+    }
+
+    @Override
+    public void refreshTracingModeList() {
+        view.logDebug("Refresh trace mode list.");
+        view.setTracingModeList(TracingModeEntity.values());
     }
 
     @Override
@@ -152,12 +161,13 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     @Override
-    public void refreshAllLists(Project project) {
+    public void refreshAll(Project project) {
         view.logDebug("Refresh all.");
         refreshJarArtifactList(project);
         refreshRegionList(project);
         refreshCredentialProfilesList(project);
         refreshFunctionList();
+        refreshStatus();
     }
 
     @Override
@@ -214,6 +224,20 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         reCreateConnectorModel(region, credentialProfile);
         connectorSettings.setLastSelectedRegionName(region.getName());
         refreshFunctionList();
+    }
+
+    private void refreshRolesList() {
+        view.logDebug("Refresh role list.");
+        ArrayList<String> roleNames = new ArrayList<>();
+        List<RoleEntity> roles = getConnectorModel().getRoles();
+        int count = 0;
+        for (RoleEntity entity : roles) {
+            //Check if applicable to Lambda?
+            roleNames.add(entity.getName());
+            count++;
+        }
+        view.logDebug("Found %d roles.", count);
+        view.setRoleList(roles);
     }
 
     @Override

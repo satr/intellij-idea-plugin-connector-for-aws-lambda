@@ -11,6 +11,12 @@ import com.amazonaws.profile.path.AwsProfileFileLocationProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
+import com.amazonaws.services.identitymanagement.model.AmazonIdentityManagementException;
+import com.amazonaws.services.identitymanagement.model.ListRolesRequest;
+import com.amazonaws.services.identitymanagement.model.ListRolesResult;
+import com.amazonaws.services.identitymanagement.model.Role;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.*;
@@ -21,6 +27,7 @@ import io.github.satr.common.OperationValueResultImpl;
 import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
 import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
+import io.github.satr.idea.plugin.connector.la.entities.RoleEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,27 +43,37 @@ import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorModel {
     private final Regions region;
+    private final AmazonIdentityManagement identityManagementClient;
+    private static final int MAX_FETCHED_ROLE_COUNT = 50;
     private AWSLambda awsLambdaClient;
     private static final Map<String, String> regionDescriptions;
+    private ArrayList<RoleEntity> roleEntities;
+    private Map<String, RoleEntity> roleEntityMap;
 
     static {
-        regionDescriptions = new LinkedHashMap<>();
-        regionDescriptions.put("us-east-2", "US East (Ohio)");
-        regionDescriptions.put("us-east-1", "US East (N. Virginia)");
-        regionDescriptions.put("us-west-1", "US West (N. California)");
-        regionDescriptions.put("us-west-2", "US West (Oregon)");
-        regionDescriptions.put("ap-northeast-1", "Asia Pacific (Tokyo)");
-        regionDescriptions.put("ap-northeast-2", "Asia Pacific (Seoul)");
-        regionDescriptions.put("ap-south-1", "Asia Pacific (Mumbai)");
-        regionDescriptions.put("ap-southeast-1", "Asia Pacific (Singapore)");
-        regionDescriptions.put("ap-southeast-2", "Asia Pacific (Sydney)");
-        regionDescriptions.put("ca-central-1", "Canada (Central)");
-        regionDescriptions.put("cn-north-1", "China (Beijing)");
-        regionDescriptions.put("eu-central-1", "EU (Frankfurt)");
-        regionDescriptions.put("eu-west-1", "EU (Ireland)");
-        regionDescriptions.put("eu-west-2", "EU (London)");
-        regionDescriptions.put("eu-west-3", "EU (Paris)");
-        regionDescriptions.put("sa-east-1", "South America (Sao Paulo)");
+        regionDescriptions = createRegionDescriptionsMap();
+    }
+
+
+    private static Map<String, String> createRegionDescriptionsMap() {
+        HashMap<String, String> map = new LinkedHashMap<>();
+        map.put("us-east-2", "US East (Ohio)");
+        map.put("us-east-1", "US East (N. Virginia)");
+        map.put("us-west-1", "US West (N. California)");
+        map.put("us-west-2", "US West (Oregon)");
+        map.put("ap-northeast-1", "Asia Pacific (Tokyo)");
+        map.put("ap-northeast-2", "Asia Pacific (Seoul)");
+        map.put("ap-south-1", "Asia Pacific (Mumbai)");
+        map.put("ap-southeast-1", "Asia Pacific (Singapore)");
+        map.put("ap-southeast-2", "Asia Pacific (Sydney)");
+        map.put("ca-central-1", "Canada (Central)");
+        map.put("cn-north-1", "China (Beijing)");
+        map.put("eu-central-1", "EU (Frankfurt)");
+        map.put("eu-west-1", "EU (Ireland)");
+        map.put("eu-west-2", "EU (London)");
+        map.put("eu-west-3", "EU (Paris)");
+        map.put("sa-east-1", "South America (Sao Paulo)");
+        return map;
     }
 
     private ArrayList<RegionEntry> regionEntries;
@@ -67,12 +84,20 @@ public class ConnectorModel {
         this.region = region;
         this.credentialProfileName = credentialProfileName;
         AWSCredentialsProvider credentialsProvider = getCredentialsProvider(credentialProfileName);
+        ClientConfiguration clientConfiguration = getClientConfiguration();
         awsLambdaClient = AWSLambdaClientBuilder.standard()
                 .withRegion(region)
-                .withClientConfiguration(getClientConfiguration())
+                .withClientConfiguration(clientConfiguration)
                 .withCredentials(credentialsProvider)
                 .build();
+        identityManagementClient = AmazonIdentityManagementClientBuilder.standard()
+                .withRegion(region)
+                .withCredentials(credentialsProvider)
+                .withClientConfiguration(clientConfiguration)
+                .build();
+        populateRoleListAndMap();
     }
+
 
     private ClientConfiguration getClientConfiguration() {
         HttpConfigurable httpConfigurable = HttpConfigurable.getInstance();
@@ -106,14 +131,37 @@ public class ConnectorModel {
                                                         : DefaultAWSCredentialsProviderChain.getInstance();
     }
 
-    public List<FunctionEntry> getFunctions(){
-        final ListFunctionsResult result = awsLambdaClient.listFunctions();
-        final ArrayList<FunctionEntry> entries = new ArrayList<>();
+    public OperationValueResult<List<FunctionEntry>> getFunctions(){
+        final List<FunctionEntry> entries = new ArrayList<>();
+        final OperationValueResult<List<FunctionEntry>> operationResult = new OperationValueResultImpl<List<FunctionEntry>>().withValue(entries);
+        try {
+            final ListFunctionsResult functionRequestResult = awsLambdaClient.listFunctions();
+            for(FunctionConfiguration functionConfiguration : functionRequestResult.getFunctions()) {
+                final String roleArn = functionConfiguration.getRole();
+                final RoleEntity roleEntity = getRoleEntity(roleArn);
+                if(roleEntity == null) {
+                    addRoleToListAndMap(new Role().withArn(roleArn).withRoleName("-"));
+                    operationResult.addInfo("Added a role \"%s\" from a function \"%s\".",
+                                            roleArn, functionConfiguration);
+                    continue;
+                }
+                entries.add(new FunctionEntry(functionConfiguration, roleEntity));
+            }
+            operationResult.setValue(entries);
+        } catch (com.amazonaws.services.lambda.model.AWSLambdaException e) {
+            if("AccessDeniedException".equals(e.getErrorCode())) {
+                operationResult.addError("User has not access to a list of functions.");
+            } else {
+                operationResult.addError(e.getMessage());
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return operationResult;
+    }
 
-        for(FunctionConfiguration configuration : result.getFunctions())
-            entries.add(new FunctionEntry(configuration));
-
-        return entries;
+    private RoleEntity getRoleEntity(String roleName) {
+        return roleEntityMap.get(roleName);
     }
 
     @Override
@@ -211,8 +259,9 @@ public class ConnectorModel {
     }
 
     public List<RegionEntry> getRegions() {
-        if(regionEntries != null)
+        if(regionEntries != null) {
             return regionEntries;
+        }
 
         regionEntries = new ArrayList<>();
         for(Region region : RegionUtils.getRegions()) {
@@ -259,5 +308,37 @@ public class ConnectorModel {
 
     public String getProxyDetails() {
         return proxyDetails;
+    }
+
+    public List<RoleEntity> getRoles() {
+        return roleEntities;
+    }
+
+    private void populateRoleListAndMap() {
+        roleEntities = new ArrayList<>();
+        roleEntityMap = new LinkedHashMap<>();
+        try {
+            ListRolesRequest listRolesRequest = new ListRolesRequest().withMaxItems(MAX_FETCHED_ROLE_COUNT);
+            ListRolesResult listRolesResult = identityManagementClient.listRoles(listRolesRequest);
+            List<Role> roles = listRolesResult.getRoles();
+            for (Role role: roles) {
+                addRoleToListAndMap(role);
+            }
+        } catch (AmazonIdentityManagementException e) {
+            if("AccessDenied".equals(e.getErrorCode())) {
+                //"User has not access to a list of roles.
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addRoleToListAndMap(Role role) {
+        if (roleEntityMap.containsKey(role.getArn())) {
+            return;
+        }
+        RoleEntity roleEntity = new RoleEntity(role);
+        roleEntityMap.put(role.getArn(), roleEntity);
+        roleEntities.add(roleEntity);
     }
 }

@@ -12,10 +12,11 @@ public interface ConnectorPresenter {
     void updateFunction(Project project);
     void shutdown();
     void refreshRegionList(Project project);
+    void refreshTracingModeList();
     void refreshCredentialProfilesList(Project project);
     void refreshJarArtifactList(Project project);
     void refreshStatus();
-    void refreshAllLists(Project project);
+    void refreshAll(Project project);
     void setRegion(RegionEntry regionEntry);
     void setCredentialProfile(CredentialProfileEntry credentialProfileEntry);
     void setFunction(FunctionEntry functionEntry);

@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="lambda-connector:jar">
+  <artifact type="jar" name="lambda-connector:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/lambda_connector_jar</output-path>
     <root id="archive" name="lambda-connector.jar">
       <element id="module-output" name="connector-for-aws-lambda" />

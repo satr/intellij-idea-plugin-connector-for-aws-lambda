@@ -16,13 +16,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.messages.MessageBusConnection;
 import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
 import io.github.satr.idea.plugin.connector.la.entities.*;
-import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
 import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -45,8 +43,6 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     static final Logger logger = LogManager.getLogger(ConnectorViewFactory.class);
     private final ConnectorPresenter presenter;
     private final ProgressManager progressManager = ProgressManager.getInstance();
-    private final ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
-
     private JComboBox functionList;
     private JButton refreshFuncListButton;
     private JButton updateFunctionButton;
@@ -77,15 +73,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JPanel logPan;
     private JPanel logSettingsPan;
     private JButton updateProxySettingsButton;
-    private JTextField functionArn;
-    private JTextField functionLastModified;
-    private JTextField functionRole;
-    private JTextField functionTimeout;
-    private JTextField functionMemorySize;
-    private JTextField functionTracingConfigMode;
-    private JTextField functionHandler;
-    private JTextField functionDescription;
-    private JTextField functionRuntime;
+    private JFormattedTextField functionArn;
+    private JFormattedTextField functionLastModified;
+    private JComboBox functionRoles;
+    private JFormattedTextField functionTimeout;
+    private JFormattedTextField functionMemorySize;
+    private JFormattedTextField functionHandler;
+    private JFormattedTextField functionDescription;
+    private JLabel functionRuntime;
+    private JComboBox functionTracingConfigModes;
+    private JButton refreshFunctionProperties;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -105,9 +102,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         this.presenter = presenter;
         this.presenter.setView(this);
 
-        presenter.refreshJarArtifactList(project);
         refreshAllButton.addActionListener(e -> {
-            runRefreshAllList(presenter);
+            runRefreshAll(presenter);
         });
         refreshFuncListButton.addActionListener(e -> {
             runRefreshFunctionList(presenter);
@@ -151,7 +147,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         updateProxySettingsButton.addActionListener(e -> {
             updateProxySetting(presenter);
         });
-        runRefreshAllList(presenter);
+        presenter.refreshTracingModeList();
+        presenter.refreshJarArtifactList(project);
+        runRefreshAll(presenter);
     }
 
     @NotNull
@@ -198,7 +196,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void openFunctionTestInputFile(ConnectorPresenter presenter) {
-        if(runFunctionTestOperationInProgress){
+        if(runFunctionTestOperationInProgress) {
             return;
         }
 
@@ -247,8 +245,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     private void runSetRegion(ConnectorPresenter presenter, ItemEvent e) {
         if(operationInProgress || setRegionOperationInProgress
-                || e.getStateChange() != ItemEvent.SELECTED)
+                || e.getStateChange() != ItemEvent.SELECTED) {
             return;
+        }
         RegionEntry entry = (RegionEntry)e.getItem();
         if(entry == null)
             return;
@@ -257,16 +256,18 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     private void runSetFunction(ConnectorPresenter presenter, ItemEvent e) {
         if(operationInProgress || setRegionOperationInProgress
-                || e.getStateChange() != ItemEvent.SELECTED)
+                || e.getStateChange() != ItemEvent.SELECTED) {
             return;
+        }
         FunctionEntry entry = (FunctionEntry)e.getItem();
         runOperation(() -> presenter.setFunction(entry), "Select function: " + entry.toString());
     }
 
     private void runSetTestFunctionInputFromRecent(ConnectorPresenter presenter, ItemEvent e) {
         if(operationInProgress
-                || e.getStateChange() != ItemEvent.SELECTED)
+                || e.getStateChange() != ItemEvent.SELECTED) {
             return;
+        }
         TestFunctionInputEntry entry = (TestFunctionInputEntry)e.getItem();
         if(entry == null)
             return;
@@ -274,8 +275,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void runFunctionTest(ConnectorPresenter presenter) {
-        if(operationInProgress || runFunctionTestOperationInProgress)
+        if(operationInProgress || runFunctionTestOperationInProgress) {
             return;
+        }
         runOperation(() -> {
             runFunctionTestOperationInProgress = true;
             try {
@@ -290,24 +292,24 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
         CredentialProfileEntry entry = (CredentialProfileEntry)e.getItem();
-        if(entry == null)
+        if(entry == null) {
             return;
+        }
         runOperation(() -> presenter.setCredentialProfile(entry), "Select credential profile: " + entry.toString());
     }
 
 
     private void updateProxySetting(ConnectorPresenter presenter) {
-        runOperation(() -> {
-            presenter.setProxySettings();
-        }, "Update proxy settings from IDEA settings.");
+        runOperation(() -> presenter.setProxySettings(), "Update proxy settings from IDEA settings.");
     }
 
     private void runSetJarArtifact(ConnectorPresenter presenter, ItemEvent e) {
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
         ArtifactEntry entry = (ArtifactEntry) e.getItem();
-        if(entry == null)
+        if(entry == null) {
             return;
+        }
         runOperation(() -> presenter.setJarArtifact(entry), "Select JAR-artifact: " + entry.toString());
     }
 
@@ -320,47 +322,33 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         logTextBox.setText("");
     }
 
-    private void runRefreshAllList(ConnectorPresenter presenter) {
-        runOperation(() -> {
-            presenter.refreshAllLists(project);
-            presenter.refreshStatus();
-        }, "Refresh all lists");
+    private void runRefreshAll(ConnectorPresenter presenter) {
+        runOperation(() -> presenter.refreshAll(project), "Refresh all");
     }
     private void runRefreshFunctionList(ConnectorPresenter presenter) {
-        runOperation(() -> {
-            presenter.refreshFunctionList();
-            presenter.refreshStatus();
-        }, "Refresh list of AWS Lambda functions");
+        runOperation(() -> presenter.refreshFunctionList(), "Refresh list of AWS Lambda functions");
     }
 
     private void runRefreshJarArtifactList(ConnectorPresenter presenter) {
-        runOperation(() -> {
-            presenter.refreshJarArtifactList(project);
-            presenter.refreshStatus();
-        }, "Refresh list of JAR-artifacts in the project");
+        runOperation(() -> presenter.refreshJarArtifactList(project), "Refresh list of JAR-artifacts in the project");
     }
 
     private void runRefreshRegionList(ConnectorPresenter presenter) {
-        runOperation(() -> {
-            presenter.refreshRegionList(project);
-            presenter.refreshStatus();
-        }, "Refresh list of AWS regions");
+        runOperation(() -> presenter.refreshRegionList(project), "Refresh list of AWS regions");
     }
 
     private void runRefreshCredentialProfilesList(ConnectorPresenter presenter) {
-        runOperation(() -> {
-            presenter.refreshCredentialProfilesList(project);
-            presenter.refreshStatus();
-        }, "Refresh list of credential profiles");
+        runOperation(() -> presenter.refreshCredentialProfilesList(project), "Refresh list of credential profiles");
     }
 
     private void runOperation(Runnable runnable, final String format, Object... args) {
-        String title = String.format(format, args);
-        if(operationInProgress)
+        if(operationInProgress) {
             return;
+        }
         try {
             operationInProgress = true;
             setControlsEnabled(false);
+            final String title = String.format(format, args);
             progressManager.run(new Task.Backgroundable(project, title, true) {
                 @Override
                 public void run(@NotNull ProgressIndicator progressIndicator) {
@@ -417,17 +405,14 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         if (presenter != null) {
             presenter.shutdown();
         }
-
         super.finalize();
     }
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        Content content = contentFactory.createContent(toolPanel, "", false);
-        toolWindow.getContentManager().addContent(content);
+        toolWindow.getContentManager().addContent(ContentFactory.SERVICE.getInstance().createContent(toolPanel, "", false));
         this.project = project;
-        this.presenter.refreshJarArtifactList(this.project);
+//TODO        this.presenter.init(this.project);
     }
 
     @Override
@@ -585,26 +570,40 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     @Override
     public void setFunctionProperties(FunctionEntry functionEntry) {
         if (functionEntry == null) {
-            functionDescription.setText("");
-            functionHandler.setText("");
-            functionArn.setText("");
-            functionLastModified.setText("");
-            functionRole.setText("");
-            functionRuntime.setText("");
-            functionMemorySize.setText("");
-            functionTimeout.setText("");
-            functionTracingConfigMode.setText("");
+            clearFunctionProperties();
             return;
         }
         functionDescription.setText(functionEntry.getDescription());
         functionHandler.setText(functionEntry.getHandler());
         functionArn.setText(functionEntry.getArn());
         functionLastModified.setText(functionEntry.getLastModified());
-        functionRole.setText(functionEntry.getRole());
+        functionRoles.setSelectedItem(functionEntry.getRoleEntity());
         functionRuntime.setText(functionEntry.getRuntime().name());
         functionMemorySize.setText(functionEntry.getMemorySize().toString());
         functionTimeout.setText(functionEntry.getTimeout().toString());
-        functionTracingConfigMode.setText(functionEntry.getTracingConfigMode().name());
+        functionTracingConfigModes.setSelectedItem(functionEntry.getTracingModeEntity());
+    }
+
+    private void clearFunctionProperties() {
+        functionDescription.setText("");
+        functionHandler.setText("");
+        functionArn.setText("");
+        functionLastModified.setText("");
+        if(functionRoles.getItemCount() > 0) {
+            functionRoles.setSelectedIndex(0);
+        }
+        functionRuntime.setText("");
+        functionMemorySize.setText("");
+        functionTimeout.setText("");
+        functionTracingConfigModes.setSelectedIndex(0);
+    }
+
+    @Override
+    public void setRoleList(List<RoleEntity> roles) {
+        functionRoles.removeAllItems();
+        for(RoleEntity entity : roles) {
+            functionRoles.addItem(entity);
+        }
     }
 
     @Override
@@ -619,6 +618,14 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         }
         if(selectedRegionEntry != null) {
             regionList.setSelectedItem(selectedRegionEntry);
+        }
+    }
+
+    @Override
+    public void setTracingModeList(Collection<TracingModeEntity> tracingModeEntities) {
+        functionTracingConfigModes.removeAllItems();
+        for(TracingModeEntity entity : tracingModeEntities) {
+            functionTracingConfigModes.addItem(entity);
         }
     }
 }

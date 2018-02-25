@@ -13,4 +13,10 @@ public class OperationValueResultImpl <T> extends OperationResultImpl implements
     public T getValue() {
         return value;
     }
+
+    @Override
+    public OperationValueResult<T> withValue(T value) {
+        setValue(value);
+        return this;
+    }
 }

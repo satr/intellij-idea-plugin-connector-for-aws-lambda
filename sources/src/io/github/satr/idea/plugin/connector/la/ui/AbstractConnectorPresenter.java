@@ -19,8 +19,9 @@ public abstract class AbstractConnectorPresenter {
     }
 
     protected ConnectorModel getConnectorModel() {
-        if (connectorModel != null)
+        if (connectorModel != null) {
             return connectorModel;
+        }
         return connectorModel = createConnectorModel(getLastSelectedRegion(), getLastSelectedCredentialProfile());
     }
 
