@@ -1,16 +1,21 @@
 package io.github.satr.idea.plugin.connector.la.entities;
 // Copyright © 2018, github.com/satr, MIT License
 
-import com.amazonaws.services.lambda.model.*;
+import com.amazonaws.services.lambda.model.FunctionConfiguration;
 import com.amazonaws.services.lambda.model.Runtime;
+import com.amazonaws.services.lambda.model.UpdateFunctionCodeResult;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FunctionEntry {
     private final String functionName;
     private final Runtime runtime;
+    private final static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     private String handler;
     private String description;
     private String arn;
-    private String lastModified;
+    private LocalDateTime lastModified;
     private RoleEntity roleEntity;
     private Integer timeout;
     private Integer memorySize;
@@ -28,7 +33,7 @@ public class FunctionEntry {
         handler = functionConfiguration.getHandler();
         description = functionConfiguration.getDescription();
         arn = functionConfiguration.getFunctionArn();
-        lastModified = functionConfiguration.getLastModified();
+        lastModified = LocalDateTime.parse(functionConfiguration.getLastModified(), dateTimeFormatter);
         this.roleEntity = roleEntity;
         timeout = functionConfiguration.getTimeout();
         memorySize = functionConfiguration.getMemorySize();
@@ -67,11 +72,11 @@ public class FunctionEntry {
         this.arn = arn;
     }
 
-    public String getLastModified() {
+    public LocalDateTime getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(String lastModified) {
+    public void setLastModified(LocalDateTime lastModified) {
         this.lastModified = lastModified;
     }
 

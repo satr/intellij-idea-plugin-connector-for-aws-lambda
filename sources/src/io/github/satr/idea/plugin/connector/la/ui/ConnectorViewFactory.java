@@ -32,8 +32,12 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DateFormatter;
 import java.awt.event.ItemEvent;
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -92,7 +96,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private boolean operationInProgress = false;
     private boolean setRegionOperationInProgress;
     private boolean runFunctionTestOperationInProgress;
-    final private List<JButton> buttons = new ArrayList<>();
+    private final List<JButton> buttons = new ArrayList<>();
+    private final DateFormatter dateFormatter = new DateFormatter();
 
     public ConnectorViewFactory() {
         this(ServiceManager.getService(ConnectorPresenter.class));
@@ -172,6 +177,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         setupButton(refreshJarArtifactsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshRegionsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(refreshFunctionProperties, IconLoader.getIcon("/icons/iconRefresh.png"));
 
         getMessageBusConnector().subscribe(UISettingsListener.TOPIC, this::uiSettingsChanged);
     }
@@ -398,6 +404,13 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         regionList.setEnabled(enabled);
         credentialProfileList.setEnabled(enabled);
         testFunctionInputRecentFileList.setEnabled(enabled);
+        functionDescription.setEnabled(enabled);
+        functionHandler.setEnabled(enabled);
+        functionRoles.setEnabled(enabled);
+        functionTimeout.setEnabled(enabled);
+        functionMemorySize.setEnabled(enabled);
+        functionTracingConfigModes.setEnabled(enabled);
+        refreshFunctionProperties.setEnabled(enabled);
     }
 
     public Project getProject() {
@@ -578,10 +591,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
             return;
         }
         functionDescription.setText(functionEntry.getDescription());
+        functionDescription.setToolTipText(functionEntry.getDescription());
         functionHandler.setText(functionEntry.getHandler());
+        functionHandler.setToolTipText(functionEntry.getHandler());
         functionArn.setText(functionEntry.getArn());
-        functionLastModified.setText(functionEntry.getLastModified());
+        functionArn.setToolTipText(functionEntry.getArn());
+        LocalDateTime lastModified = functionEntry.getLastModified();
+        String format = lastModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
+        functionLastModified.setText(format);
         functionRoles.setSelectedItem(functionEntry.getRoleEntity());
+        functionRoles.setToolTipText(functionEntry.getRoleEntity().toString());
         functionRuntime.setText(functionEntry.getRuntime().name());
         functionMemorySize.setText(functionEntry.getMemorySize().toString());
         functionTimeout.setText(functionEntry.getTimeout().toString());
@@ -590,12 +609,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     private void clearFunctionProperties() {
         functionDescription.setText("");
+        functionDescription.setToolTipText(null);
         functionHandler.setText("");
+        functionHandler.setToolTipText(null);
         functionArn.setText("");
+        functionArn.setToolTipText(null);
         functionLastModified.setText("");
         if(functionRoles.getItemCount() > 0) {
             functionRoles.setSelectedIndex(0);
         }
+        functionRoles.setToolTipText(null);
         functionRuntime.setText("");
         functionMemorySize.setText("");
         functionTimeout.setText("");
@@ -606,7 +629,6 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     public void setRoleList(List<RoleEntity> roles) {
         functionRoles.removeAllItems();
         for(RoleEntity entity : roles) {
-//            functionRoles.addItem(entity);
             functionRoles.addItem(new JComboBoxToolTipProviderImpl(entity.getName(), entity.toString()));
         }
     }
