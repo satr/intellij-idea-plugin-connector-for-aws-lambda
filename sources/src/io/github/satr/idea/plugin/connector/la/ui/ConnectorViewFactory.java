@@ -21,6 +21,8 @@ import com.intellij.util.messages.MessageBusConnection;
 import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
 import io.github.satr.idea.plugin.connector.la.entities.*;
+import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxItemToolTipRenderer;
+import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxToolTipProviderImpl;
 import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -99,6 +101,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     public ConnectorViewFactory(final ConnectorPresenter presenter) {
         prepareButtons();
         prepareUiLogger();
+        functionRoles.setRenderer(new JComboBoxItemToolTipRenderer(functionRoles));
+
         this.presenter = presenter;
         this.presenter.setView(this);
 
@@ -602,7 +606,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     public void setRoleList(List<RoleEntity> roles) {
         functionRoles.removeAllItems();
         for(RoleEntity entity : roles) {
-            functionRoles.addItem(entity);
+//            functionRoles.addItem(entity);
+            functionRoles.addItem(new JComboBoxToolTipProviderImpl(entity.getName(), entity.toString()));
         }
     }
 
