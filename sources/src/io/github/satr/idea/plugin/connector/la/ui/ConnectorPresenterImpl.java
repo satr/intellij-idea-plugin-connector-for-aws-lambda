@@ -86,8 +86,10 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         }
         connectorSettings.setLastSelectedFunctionName(functionName);
         connectorSettings.setLastSelectedJarArtifactName(artifactEntry.getName());
+        FunctionEntry updatedFunctionEntry = result.getValue();
+        view.updateFunctionEntry(updatedFunctionEntry);
         showInfo(project, "Lambda function \"%s\" has been updated with the JAR-artifact \"%s\".",
-                            result.getValue().getFunctionName(), artifactEntry.getName());
+                            updatedFunctionEntry.getFunctionName(), artifactEntry.getName());
     }
 
     private void showError(Project project, String format, Object... args) {
@@ -351,6 +353,23 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         ConnectorModel model = this.getConnectorModel();
         reCreateConnectorModel(model.getRegion(), model.getCredentialProfileName());
         refreshStatus();
+    }
+
+    @Override
+    public void refreshFunctionProperties(Project project) {
+        view.logDebug("Update function properties.");
+        FunctionEntry functionEntry = view.getSelectedFunctionEntry();
+        if(functionEntry == null) {
+            showError(project, "No function selected to refresh its properties.");
+            return;
+        }
+        String functionName = functionEntry.getFunctionName();
+        final OperationValueResult<FunctionEntry> result = getConnectorModel().getFunctionBy(functionName);
+        if (!result.success()) {
+            showError(project, result.getErrorAsString());
+            return;
+        }
+        setFunction(result.getValue());
     }
 
     private Regions tryGetRegionBy(String regionName) {

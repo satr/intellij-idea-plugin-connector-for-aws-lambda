@@ -3,6 +3,7 @@ package io.github.satr.idea.plugin.connector.la.entities;
 
 import com.amazonaws.services.lambda.model.FunctionConfiguration;
 import com.amazonaws.services.lambda.model.Runtime;
+import com.amazonaws.services.lambda.model.TracingConfigResponse;
 import com.amazonaws.services.lambda.model.UpdateFunctionCodeResult;
 
 import java.time.LocalDateTime;
@@ -21,23 +22,47 @@ public class FunctionEntry {
     private Integer memorySize;
     private TracingModeEntity tracingModeEntity;
 
-    public FunctionEntry(UpdateFunctionCodeResult updateFunctionCodeResult) {
-        functionName = updateFunctionCodeResult.getFunctionName();
-        runtime = Runtime.fromValue(updateFunctionCodeResult.getRuntime());
-        handler = updateFunctionCodeResult.getHandler();
+    public FunctionEntry(UpdateFunctionCodeResult updateFunctionCodeResult, RoleEntity roleEntity) {
+        this(roleEntity,
+            updateFunctionCodeResult.getFunctionName(),
+            updateFunctionCodeResult.getRuntime(),
+            updateFunctionCodeResult.getHandler(),
+            updateFunctionCodeResult.getDescription(),
+            updateFunctionCodeResult.getFunctionArn(),
+            updateFunctionCodeResult.getLastModified(),
+            updateFunctionCodeResult.getTimeout(),
+            updateFunctionCodeResult.getMemorySize(),
+            updateFunctionCodeResult.getTracingConfig()
+        );
     }
 
     public FunctionEntry(FunctionConfiguration functionConfiguration, RoleEntity roleEntity) {
-        functionName = functionConfiguration.getFunctionName();
-        runtime = Runtime.fromValue(functionConfiguration.getRuntime());
-        handler = functionConfiguration.getHandler();
-        description = functionConfiguration.getDescription();
-        arn = functionConfiguration.getFunctionArn();
-        lastModified = LocalDateTime.parse(functionConfiguration.getLastModified(), dateTimeFormatter);
+        this(roleEntity,
+            functionConfiguration.getFunctionName(),
+            functionConfiguration.getRuntime(),
+            functionConfiguration.getHandler(),
+            functionConfiguration.getDescription(),
+            functionConfiguration.getFunctionArn(),
+            functionConfiguration.getLastModified(),
+            functionConfiguration.getTimeout(),
+            functionConfiguration.getMemorySize(),
+            functionConfiguration.getTracingConfig()
+            );
+    }
+
+    private FunctionEntry(RoleEntity roleEntity, String functionName, String runtime, String handler,
+                          String description, String functionArn, String lastModified, Integer timeout,
+                          Integer memorySize, TracingConfigResponse tracingConfig) {
+        this.functionName = functionName;
+        this.runtime = Runtime.fromValue(runtime);
+        this.handler = handler;
+        this.description = description;
+        arn = functionArn;
+        this.lastModified = LocalDateTime.parse(lastModified, dateTimeFormatter);
         this.roleEntity = roleEntity;
-        timeout = functionConfiguration.getTimeout();
-        memorySize = functionConfiguration.getMemorySize();
-        tracingModeEntity = TracingModeEntity.fromValue(functionConfiguration.getTracingConfig().getMode());
+        this.timeout = timeout;
+        this.memorySize = memorySize;
+        tracingModeEntity = TracingModeEntity.fromValue(tracingConfig.getMode());
     }
 
     public String getFunctionName() {

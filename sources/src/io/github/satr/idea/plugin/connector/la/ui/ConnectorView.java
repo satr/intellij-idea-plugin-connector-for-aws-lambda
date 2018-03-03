@@ -31,4 +31,5 @@ public interface ConnectorView {
     void setTestFunctionInputRecentEntryList(List<TestFunctionInputEntry> filePathList);
     void setFunctionProperties(FunctionEntry functionEntry);
     void setRoleList(List<RoleEntity> roles);
+    void updateFunctionEntry(FunctionEntry functionEntry);
 }

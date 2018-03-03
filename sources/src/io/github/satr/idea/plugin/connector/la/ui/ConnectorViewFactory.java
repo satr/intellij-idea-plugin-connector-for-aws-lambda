@@ -22,6 +22,7 @@ import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxItemToolTipRenderer;
+import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxToolTipProvider;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxToolTipProviderImpl;
 import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.Level;
@@ -116,6 +117,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         });
         refreshFuncListButton.addActionListener(e -> {
             runRefreshFunctionList(presenter);
+        });
+        refreshFunctionProperties.addActionListener(e -> {
+            runRefreshFunctionProperties(presenter);
         });
         refreshJarArtifactsButton.addActionListener(e -> {
             runRefreshJarArtifactList(presenter);
@@ -270,6 +274,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
             return;
         }
         FunctionEntry entry = (FunctionEntry)e.getItem();
+        runSetFunction(presenter, entry);
+    }
+
+    private void runSetFunction(ConnectorPresenter presenter, FunctionEntry entry) {
         runOperation(() -> presenter.setFunction(entry), "Select function: " + entry.toString());
     }
 
@@ -335,8 +343,13 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private void runRefreshAll(ConnectorPresenter presenter) {
         runOperation(() -> presenter.refreshAll(project), "Refresh all");
     }
+
     private void runRefreshFunctionList(ConnectorPresenter presenter) {
         runOperation(() -> presenter.refreshFunctionList(), "Refresh list of AWS Lambda functions");
+    }
+
+    private void runRefreshFunctionProperties(ConnectorPresenter presenter) {
+        runOperation(() -> presenter.refreshFunctionProperties(project), "Refresh AWS Lambda function properties");
     }
 
     private void runRefreshJarArtifactList(ConnectorPresenter presenter) {
@@ -599,12 +612,22 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         LocalDateTime lastModified = functionEntry.getLastModified();
         String format = lastModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
         functionLastModified.setText(format);
-        functionRoles.setSelectedItem(functionEntry.getRoleEntity());
+        selectRoleInList(functionEntry.getRoleEntity());
         functionRoles.setToolTipText(functionEntry.getRoleEntity().toString());
         functionRuntime.setText(functionEntry.getRuntime().name());
         functionMemorySize.setText(functionEntry.getMemorySize().toString());
         functionTimeout.setText(functionEntry.getTimeout().toString());
         functionTracingConfigModes.setSelectedItem(functionEntry.getTracingModeEntity());
+    }
+
+    private void selectRoleInList(RoleEntity roleEntity) {
+        for (int i = 0; i < functionRoles.getItemCount(); i++) {
+            Object itemEntity = ((JComboBoxToolTipProvider) functionRoles.getItemAt(i)).getEntity();
+            if(roleEntity.equals(itemEntity)) {
+                functionRoles.setSelectedIndex(i);
+                break;
+            }
+        }
     }
 
     private void clearFunctionProperties() {
@@ -629,8 +652,36 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     public void setRoleList(List<RoleEntity> roles) {
         functionRoles.removeAllItems();
         for(RoleEntity entity : roles) {
-            functionRoles.addItem(new JComboBoxToolTipProviderImpl(entity.getName(), entity.toString()));
+            functionRoles.addItem(new JComboBoxToolTipProviderImpl(entity.getName(), entity.toString()).withEntity(entity));
         }
+    }
+
+    @Override
+    public void updateFunctionEntry(FunctionEntry functionEntry) {
+        boolean itemSetToList = false;
+        for (int i = 0; i < functionList.getItemCount(); i++) {
+            FunctionEntry functionEntryItem = (FunctionEntry) functionList.getItemAt(i);
+            if (!functionEntryItem.getFunctionName().equals(functionEntry.getFunctionName())) {
+                continue;
+            }
+            Object selectedItem = functionList.getSelectedItem();
+            functionList.removeItem(functionEntryItem);
+            functionList.insertItemAt(functionEntry, i);
+            if(functionEntryItem.equals(selectedItem)) {
+                functionList.setSelectedItem(functionEntry);
+            }
+            itemSetToList = true;
+            break;
+        }
+        if(!itemSetToList && functionEntry.getRuntime().equals(Runtime.Java8)) {
+            functionList.addItem(functionEntry);
+            itemSetToList = true;
+        }
+        if(!itemSetToList){
+            return;
+        }
+        functionList.setSelectedItem(functionEntry);
+        runSetFunction(presenter, functionEntry);
     }
 
     @Override

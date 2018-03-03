@@ -28,6 +28,8 @@ import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
 import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
 import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
 import io.github.satr.idea.plugin.connector.la.entities.RoleEntity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -137,15 +139,8 @@ public class ConnectorModel {
         try {
             final ListFunctionsResult functionRequestResult = awsLambdaClient.listFunctions();
             for(FunctionConfiguration functionConfiguration : functionRequestResult.getFunctions()) {
-                final String roleArn = functionConfiguration.getRole();
-                final RoleEntity roleEntity = getRoleEntity(roleArn);
-                if(roleEntity == null) {
-                    addRoleToListAndMap(new Role().withArn(roleArn).withRoleName("-"));
-                    operationResult.addInfo("Added a role \"%s\" from a function \"%s\".",
-                                            roleArn, functionConfiguration);
-                    continue;
-                }
-                entries.add(new FunctionEntry(functionConfiguration, roleEntity));
+                FunctionEntry functionEntry = createFunctionEntry(functionConfiguration, operationResult);
+                entries.add(functionEntry);
             }
             operationResult.setValue(entries);
         } catch (com.amazonaws.services.lambda.model.AWSLambdaException e) {
@@ -158,6 +153,25 @@ public class ConnectorModel {
             e.printStackTrace();
         }
         return operationResult;
+    }
+
+    @NotNull
+    private FunctionEntry createFunctionEntry(FunctionConfiguration functionConfiguration, OperationResult operationResult) {
+        final String roleArn = functionConfiguration.getRole();
+        final RoleEntity roleEntity = getRoleEntity(functionConfiguration.getFunctionName(), roleArn, operationResult);
+        return new FunctionEntry(functionConfiguration, roleEntity);
+    }
+
+    @Nullable
+    private RoleEntity getRoleEntity(String functionName, String roleArn, OperationResult operationResult) {
+        RoleEntity roleEntity = getRoleEntity(roleArn);
+        if (roleEntity != null) {
+            return roleEntity;
+        }
+        roleEntity = addRoleToListAndMap(new Role().withArn(roleArn).withRoleName("-"));
+        operationResult.addInfo("Added a role \"%s\" from a function \"%s\".", roleArn, functionName);
+        //TODO - refresh role list?
+        return roleEntity;
     }
 
     private RoleEntity getRoleEntity(String roleName) {
@@ -192,8 +206,7 @@ public class ConnectorModel {
             final String readOnlyAccessFileMode = "r";
             try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, readOnlyAccessFileMode);
                  final FileChannel fileChannel = randomAccessFile.getChannel()) {
-                    final FunctionEntry functionEntry = updateFunctionCode(functionName, fileChannel);
-                    operationResult.setValue(functionEntry);
+                    return updateFunctionCode(functionName, fileChannel);
             }
         }catch (InvalidParameterValueException e) {
             operationResult.addError("Invalid request parameters: %s", e.getMessage());
@@ -206,14 +219,23 @@ public class ConnectorModel {
         return operationResult;
     }
 
-    private FunctionEntry updateFunctionCode(final String functionName, final FileChannel fileChannel) throws IOException {
-        final MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
-        buffer.load();
-        final UpdateFunctionCodeRequest request = new UpdateFunctionCodeRequest()
-                .withFunctionName(functionName)
-                .withZipFile(buffer);
-        final UpdateFunctionCodeResult result = awsLambdaClient.updateFunctionCode(request);
-        return new FunctionEntry(result);
+    private OperationValueResult<FunctionEntry> updateFunctionCode(final String functionName, final FileChannel fileChannel) throws IOException {
+        final OperationValueResultImpl<FunctionEntry> valueResult = new OperationValueResultImpl<>();
+        try {
+            final MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
+            buffer.load();
+            final UpdateFunctionCodeRequest request = new UpdateFunctionCodeRequest()
+                                                            .withFunctionName(functionName)
+                                                            .withZipFile(buffer);
+            final UpdateFunctionCodeResult updateFunctionResult = awsLambdaClient.updateFunctionCode(request);
+            final String roleName = updateFunctionResult.getRole();
+            final RoleEntity roleEntity = getRoleEntity(updateFunctionResult.getFunctionName(), roleName, valueResult);
+            valueResult.setValue(new FunctionEntry(updateFunctionResult, roleEntity));
+        } catch (IOException e) {
+            e.printStackTrace();
+            valueResult.addError("Update function error: %s", e.getMessage());
+        }
+        return valueResult;
     }
 
     public OperationValueResult<String> invokeFunction(final String functionName, final String inputText) {
@@ -333,12 +355,24 @@ public class ConnectorModel {
         }
     }
 
-    private void addRoleToListAndMap(Role role) {
-        if (roleEntityMap.containsKey(role.getArn())) {
-            return;
+    private RoleEntity addRoleToListAndMap(Role role) {
+        RoleEntity roleEntity = roleEntityMap.get(role.getArn());
+        if (roleEntity != null) {
+            return roleEntity;
         }
-        RoleEntity roleEntity = new RoleEntity(role);
+        roleEntity = new RoleEntity(role);
         roleEntityMap.put(role.getArn(), roleEntity);
         roleEntities.add(roleEntity);
+        return roleEntity;
+    }
+
+    public OperationValueResult<FunctionEntry> getFunctionBy(String name) {
+        GetFunctionRequest getFunctionRequest = new GetFunctionRequest().withFunctionName(name);
+        GetFunctionResult function = awsLambdaClient.getFunction(getFunctionRequest);
+        OperationValueResultImpl<FunctionEntry> valueResult = new OperationValueResultImpl<>();
+        FunctionConfiguration functionConfiguration = function.getConfiguration();
+        FunctionEntry functionEntry = createFunctionEntry(functionConfiguration, valueResult);
+        valueResult.setValue(functionEntry);
+        return valueResult;
     }
 }

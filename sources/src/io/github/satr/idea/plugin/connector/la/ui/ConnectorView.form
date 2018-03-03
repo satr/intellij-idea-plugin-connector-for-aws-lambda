@@ -196,7 +196,7 @@
                               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
-                              <text value="Function              "/>
+                              <text value="Function"/>
                             </properties>
                           </component>
                           <component id="9aa4" class="javax.swing.JComboBox" binding="functionList">
@@ -245,9 +245,7 @@
                           </component>
                           <component id="5b36a" class="javax.swing.JLabel">
                             <constraints>
-                              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                                <preferred-size width="49" height="20"/>
-                              </grid>
+                              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <text value="Profiles"/>
@@ -387,13 +385,13 @@
                         <children>
                           <component id="b424d" class="javax.swing.JButton" binding="refreshFunctionProperties">
                             <constraints>
-                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <horizontalAlignment value="0"/>
                               <icon value="icons/iconRefresh.png"/>
                               <text value=""/>
-                              <toolTipText value="Refresh list of Credential Profiles"/>
+                              <toolTipText value="Refresh function properties"/>
                             </properties>
                           </component>
                           <component id="b207" class="javax.swing.JLabel" binding="functionRuntime">

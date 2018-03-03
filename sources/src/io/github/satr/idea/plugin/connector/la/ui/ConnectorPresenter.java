@@ -27,4 +27,5 @@ public interface ConnectorPresenter {
     void setLastSelectedTestFunctionInputFilePath(String path);
     void setSetTestFunctionInputFromRecent(TestFunctionInputEntry entry);
     void setProxySettings();
+    void refreshFunctionProperties(Project project);
 }
