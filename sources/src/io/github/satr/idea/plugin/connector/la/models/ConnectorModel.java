@@ -169,8 +169,8 @@ public class ConnectorModel {
             return roleEntity;
         }
         roleEntity = addRoleToListAndMap(new Role().withArn(roleArn).withRoleName("-"));
-        operationResult.addInfo("Added a role \"%s\" from a function \"%s\".", roleArn, functionName);
-        //TODO - refresh role list?
+        operationResult.addInfo("Added a role \"%s\" from a function \"%s\".",
+                                roleArn, functionName);
         return roleEntity;
     }
 
@@ -230,7 +230,11 @@ public class ConnectorModel {
             final UpdateFunctionCodeResult updateFunctionResult = awsLambdaClient.updateFunctionCode(request);
             final String roleName = updateFunctionResult.getRole();
             final RoleEntity roleEntity = getRoleEntity(updateFunctionResult.getFunctionName(), roleName, valueResult);
-            valueResult.setValue(new FunctionEntry(updateFunctionResult, roleEntity));
+            if(roleEntity == null) {
+                valueResult.addError("Not found role by name \"%s\"", roleName);
+            } else {
+                valueResult.setValue(new FunctionEntry(updateFunctionResult, roleEntity));
+            }
         } catch (IOException e) {
             e.printStackTrace();
             valueResult.addError("Update function error: %s", e.getMessage());

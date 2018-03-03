@@ -681,7 +681,6 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
             return;
         }
         functionList.setSelectedItem(functionEntry);
-        runSetFunction(presenter, functionEntry);
     }
 
     @Override

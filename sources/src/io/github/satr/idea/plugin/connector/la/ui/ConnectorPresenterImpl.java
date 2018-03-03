@@ -88,6 +88,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         connectorSettings.setLastSelectedJarArtifactName(artifactEntry.getName());
         FunctionEntry updatedFunctionEntry = result.getValue();
         view.updateFunctionEntry(updatedFunctionEntry);
+        setFunction(updatedFunctionEntry);
         showInfo(project, "Lambda function \"%s\" has been updated with the JAR-artifact \"%s\".",
                             updatedFunctionEntry.getFunctionName(), artifactEntry.getName());
     }
@@ -363,8 +364,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             showError(project, "No function selected to refresh its properties.");
             return;
         }
-        String functionName = functionEntry.getFunctionName();
-        final OperationValueResult<FunctionEntry> result = getConnectorModel().getFunctionBy(functionName);
+        final OperationValueResult<FunctionEntry> result = getConnectorModel().getFunctionBy(functionEntry.getFunctionName());
         if (!result.success()) {
             showError(project, result.getErrorAsString());
             return;

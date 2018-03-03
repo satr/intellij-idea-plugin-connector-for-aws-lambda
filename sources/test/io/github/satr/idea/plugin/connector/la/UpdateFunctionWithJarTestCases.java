@@ -1,8 +1,7 @@
 package io.github.satr.idea.plugin.connector.la;
 // Copyright © 2018, github.com/satr, MIT License
 
-import io.github.satr.common.OperationValueResult;
-import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
+import io.github.satr.common.OperationResult;
 import org.junit.Test;
 
 import java.io.File;
@@ -24,21 +23,21 @@ public class UpdateFunctionWithJarTestCases extends ConnectorModelTestCasesBase 
     @Test
     public void failedUpdateWithInvalidFilePath() throws Exception {
         File appJarFile = new File(INVALID_FUNC_JAR_FILE_NAME);
-        OperationValueResult<FunctionEntry> result = connectorModel.updateWithJar(FUNC_NAME, appJarFile);
+        OperationResult result = connectorModel.updateWithJar(FUNC_NAME, appJarFile);
         assertFalse(result.success());
     }
 
     @Test
     public void updateWithValidFunctionJar() throws Exception {
         File lambdaFunctionJarFile = getResourceFile(FUNC_JAR_FILE_NAME);
-        OperationValueResult<FunctionEntry> result = connectorModel.updateWithJar(FUNC_NAME, lambdaFunctionJarFile);
+        OperationResult result = connectorModel.updateWithJar(FUNC_NAME, lambdaFunctionJarFile);
         assertTrue(result.success());
     }
 
     @Test
     public void failedUpdateWithInvalidFunctionName() throws Exception {
         File lambdaFunctionJarFile = getResourceFile(FUNC_JAR_FILE_NAME);
-        OperationValueResult<FunctionEntry> result = connectorModel.updateWithJar(INVALID_FUNC_NAME, lambdaFunctionJarFile);
+        OperationResult result = connectorModel.updateWithJar(INVALID_FUNC_NAME, lambdaFunctionJarFile);
         assertFalse(result.success());
     }
 
