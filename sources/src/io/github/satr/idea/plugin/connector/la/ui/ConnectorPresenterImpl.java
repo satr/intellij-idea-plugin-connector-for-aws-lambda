@@ -70,7 +70,19 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void updateFunction(Project project) {
         view.logDebug("Update function.");
-        FunctionEntry functionEntry = view.getSelectedFunctionEntry();
+        FunctionEntry functionEntry = view.getSelectedFunctionEntryWithUpdateProperties();
+        if(functionEntry.isChanged()){
+            OperationResult updateFunctionConfigurationResult = getConnectorModel().updateConfiguration(functionEntry);
+            if(updateFunctionConfigurationResult.failed()){
+                showError(project, "Lambda function configuration update failed: \"%s\"",
+                        updateFunctionConfigurationResult.getErrorAsString());
+                return;
+            }
+        }
+        updateFunctionCode(project, functionEntry);
+    }
+
+    private void updateFunctionCode(Project project, FunctionEntry functionEntry) {
         ArtifactEntry artifactEntry = view.getSelectedArtifactEntry();
         OperationResult validationResult = validateToUpdate(functionEntry, artifactEntry);
         if(validationResult.failed()){
@@ -79,7 +91,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         }
         String functionName = functionEntry.getFunctionName();
         String artifactFilePath = artifactEntry.getOutputFilePath();
-        final OperationValueResult<FunctionEntry> result = getConnectorModel().updateWithJar(functionName, artifactFilePath);
+        final OperationValueResult<FunctionEntry> result = getConnectorModel().updateWithJar(functionEntry, artifactFilePath);
         if (!result.success()) {
             showError(project, result.getErrorAsString());
             return;

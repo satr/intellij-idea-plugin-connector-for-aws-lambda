@@ -20,6 +20,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.messages.MessageBusConnection;
 import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
+import io.github.satr.common.StringUtil;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxItemToolTipRenderer;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxToolTipProvider;
@@ -524,6 +525,19 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
+    public FunctionEntry getSelectedFunctionEntryWithUpdateProperties() {
+        FunctionEntry functionEntry = getSelectedFunctionEntry();
+        functionEntry.setDescription(getFunctionDescription());
+        functionEntry.setArn(getFunctionArn());
+        functionEntry.setHandler(getFunctionHandler());
+        functionEntry.setRole(getFunctionRole());
+        functionEntry.setTimeout(getFunctionTimeout());
+        functionEntry.setMemorySize(getFunctionMemorySize());
+        functionEntry.setTracingModeEntity(getFunctionTracingConfigMode());
+        return functionEntry;
+    }
+
+    @Override
     public ArtifactEntry getSelectedArtifactEntry() {
         return (ArtifactEntry) jarArtifactList.getSelectedItem();
     }
@@ -704,5 +718,34 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         for(TracingModeEntity entity : tracingModeEntities) {
             functionTracingConfigModes.addItem(entity);
         }
+    }
+
+    private String getFunctionDescription() {
+        return StringUtil.getNotEmptyString(functionDescription.getText());
+    }
+
+    private String getFunctionArn() {
+        return StringUtil.getNotEmptyString(functionArn.getText());
+    }
+
+    private String getFunctionHandler() {
+        return StringUtil.getNotEmptyString(functionHandler.getText());
+    }
+
+    private int getFunctionTimeout() {
+        return StringUtil.parseNotZeroInteger(functionTimeout.getText(), 15);
+    }
+
+    private int getFunctionMemorySize() {
+        return StringUtil.parseNotZeroInteger(functionMemorySize.getText(), 512);
+    }
+
+    private TracingModeEntity getFunctionTracingConfigMode() {
+        return (TracingModeEntity) functionTracingConfigModes.getSelectedItem();
+    }
+
+    private RoleEntity getFunctionRole() {
+        Object selectedItem = functionRoles.getSelectedItem();
+        return selectedItem == null ? null : (RoleEntity) ((JComboBoxToolTipProvider) selectedItem).getEntity();
     }
 }

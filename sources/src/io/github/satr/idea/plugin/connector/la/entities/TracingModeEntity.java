@@ -1,5 +1,6 @@
 package io.github.satr.idea.plugin.connector.la.entities;
 
+import com.amazonaws.services.lambda.model.TracingConfig;
 import com.amazonaws.services.lambda.model.TracingMode;
 
 import java.util.*;
@@ -22,8 +23,11 @@ public class TracingModeEntity {
         defaultTracingModeEntity = tracingModeEntities.size() > 0 ? tracingModeEntities.get(0) : null;
     }
 
+    private final TracingConfig tracingConfig = new TracingConfig();
+
     public TracingModeEntity(TracingMode tracingMode) {
         this.tracingMode = tracingMode;
+        tracingConfig.setMode(tracingMode);
         name = tracingMode.name();
     }
 
@@ -46,5 +50,9 @@ public class TracingModeEntity {
 
     public static TracingModeEntity fromValue(String tracingModeName) {
         return tracingModeEntityMap.getOrDefault(tracingModeName, defaultTracingModeEntity);
+    }
+
+    public TracingConfig getTracingConfig() {
+        return tracingConfig.withMode(getTracingMode());
     }
 }

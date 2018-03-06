@@ -22,6 +22,7 @@ import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.*;
 import com.intellij.util.net.HttpConfigurable;
 import io.github.satr.common.OperationResult;
+import io.github.satr.common.OperationResultImpl;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
 import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
@@ -192,11 +193,11 @@ public class ConnectorModel {
         awsLambdaClient = null;
     }
 
-    public OperationValueResult<FunctionEntry> updateWithJar(final String functionName, final String filePath) {
-        return updateWithJar(functionName, new File(filePath));
+    public OperationValueResult<FunctionEntry> updateWithJar(final FunctionEntry functionEntry, final String filePath) {
+        return updateWithJar(functionEntry, new File(filePath));
     }
 
-    public OperationValueResult<FunctionEntry> updateWithJar(final String functionName, final File file) {
+    public OperationValueResult<FunctionEntry> updateWithJar(final FunctionEntry functionEntity, final File file) {
         final OperationValueResultImpl<FunctionEntry> operationResult = new OperationValueResultImpl<>();
         validateLambdaFunctionJarFile(file, operationResult);
         if(operationResult.failed())
@@ -206,7 +207,7 @@ public class ConnectorModel {
             final String readOnlyAccessFileMode = "r";
             try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, readOnlyAccessFileMode);
                  final FileChannel fileChannel = randomAccessFile.getChannel()) {
-                    return updateFunctionCode(functionName, fileChannel);
+                    return updateFunctionCode(functionEntity, fileChannel);
             }
         }catch (InvalidParameterValueException e) {
             operationResult.addError("Invalid request parameters: %s", e.getMessage());
@@ -219,13 +220,13 @@ public class ConnectorModel {
         return operationResult;
     }
 
-    private OperationValueResult<FunctionEntry> updateFunctionCode(final String functionName, final FileChannel fileChannel) throws IOException {
+    private OperationValueResult<FunctionEntry> updateFunctionCode(final FunctionEntry functionEntry, final FileChannel fileChannel) throws IOException {
         final OperationValueResultImpl<FunctionEntry> valueResult = new OperationValueResultImpl<>();
         try {
             final MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
             buffer.load();
             final UpdateFunctionCodeRequest request = new UpdateFunctionCodeRequest()
-                                                            .withFunctionName(functionName)
+                                                            .withFunctionName(functionEntry.getFunctionName())
                                                             .withZipFile(buffer);
             final UpdateFunctionCodeResult updateFunctionResult = awsLambdaClient.updateFunctionCode(request);
             final String roleName = updateFunctionResult.getRole();
@@ -378,5 +379,24 @@ public class ConnectorModel {
         FunctionEntry functionEntry = createFunctionEntry(functionConfiguration, valueResult);
         valueResult.setValue(functionEntry);
         return valueResult;
+    }
+
+    public OperationResult updateConfiguration(FunctionEntry functionEntry) {
+        OperationResultImpl operationResult = new OperationResultImpl();
+        UpdateFunctionConfigurationRequest request = new UpdateFunctionConfigurationRequest()
+                .withFunctionName(functionEntry.getFunctionName())
+                .withDescription(functionEntry.getDescription())
+                .withHandler(functionEntry.getHandler())
+                .withTimeout(functionEntry.getTimeout())
+                .withMemorySize(functionEntry.getMemorySize())
+                .withRole(functionEntry.getRoleEntity().getArn())
+                .withTracingConfig(functionEntry.getTracingModeEntity().getTracingConfig());
+        try {
+            awsLambdaClient.updateFunctionConfiguration(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            operationResult.addError("Failed update of function configuration: %s", e.getMessage());
+        }
+        return operationResult;
     }
 }

@@ -17,6 +17,9 @@ public interface ConnectorView {
     void setRegion(Regions region);
     void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile, String proxyDetails);
     FunctionEntry getSelectedFunctionEntry();
+
+    FunctionEntry getSelectedFunctionEntryWithUpdateProperties();
+
     ArtifactEntry getSelectedArtifactEntry();
     RegionEntry getSelectedRegionEntry();
     CredentialProfileEntry getSelectedCredentialProfileEntry();

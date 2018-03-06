@@ -21,6 +21,7 @@ public class FunctionEntry {
     private Integer timeout;
     private Integer memorySize;
     private TracingModeEntity tracingModeEntity;
+    private boolean changed;
 
     public FunctionEntry(UpdateFunctionCodeResult updateFunctionCodeResult, RoleEntity roleEntity) {
         this(roleEntity,
@@ -140,5 +141,9 @@ public class FunctionEntry {
     @Override
     public String toString() {
         return String.format("%s (%s)", getFunctionName(), getRuntime().toString());
+    }
+
+    public boolean isChanged() {
+        return true;//changed;//TODO set according property changes
     }
 }
