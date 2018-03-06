@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.satr.idea.plugin.connector.la</id>
   <name>Connector for AWS Lambda</name>
-  <version>1.5.RC1</version>
+  <version>1.5.RC2</version>
   <vendor email="satr.github.io@gmail.com" url="https://satr.github.io/intellij-idea-plugin-connector-for-aws-lambda/">github.com/satr</vendor>
 
   <description><![CDATA[
@@ -13,8 +13,8 @@
 
   <change-notes><![CDATA[
       <ul>
-      <li>1.5.RC1</li>
-      <li>Show selected function properties.</li>
+      <li>1.5.RC2</li>
+      <li>Show and update selected function configuration.</li>
       <li>1.4</li>
       <li>Added a sync of proxy settings with IDEA settings (manual update with a button).</li>
       <li>Changed buttons and icons.</li>

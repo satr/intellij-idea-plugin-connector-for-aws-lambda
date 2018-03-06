@@ -18,7 +18,7 @@ public interface ConnectorView {
     void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile, String proxyDetails);
     FunctionEntry getSelectedFunctionEntry();
 
-    FunctionEntry getSelectedFunctionEntryWithUpdateProperties();
+    FunctionEntry getSelectedFunctionEntryWithUpdateConfiguration();
 
     ArtifactEntry getSelectedArtifactEntry();
     RegionEntry getSelectedRegionEntry();
@@ -32,7 +32,7 @@ public interface ConnectorView {
     void setFunctionTestOutput(String outputText);
     void setTestFunctionInput(String inputText);
     void setTestFunctionInputRecentEntryList(List<TestFunctionInputEntry> filePathList);
-    void setFunctionProperties(FunctionEntry functionEntry);
+    void setFunctionConfiguration(FunctionEntry functionEntry);
     void setRoleList(List<RoleEntity> roles);
     void updateFunctionEntry(FunctionEntry functionEntry);
 }

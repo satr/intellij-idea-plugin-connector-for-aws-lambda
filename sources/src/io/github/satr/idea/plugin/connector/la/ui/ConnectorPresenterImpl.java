@@ -63,14 +63,14 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         } else {
             view.logInfo("Selected function: \"%s\"", functionEntry.getFunctionName());
         }
-        view.setFunctionProperties(functionEntry);
+        view.setFunctionConfiguration(functionEntry);
         refreshStatus();
     }
 
     @Override
     public void updateFunction(Project project) {
         view.logDebug("Update function.");
-        FunctionEntry functionEntry = view.getSelectedFunctionEntryWithUpdateProperties();
+        FunctionEntry functionEntry = view.getSelectedFunctionEntryWithUpdateConfiguration();
         if(functionEntry.isChanged()){
             OperationResult updateFunctionConfigurationResult = getConnectorModel().updateConfiguration(functionEntry);
             if(updateFunctionConfigurationResult.failed()){
@@ -290,7 +290,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         } else {
             view.logDebug("Function not set.");
         }
-        view.setFunctionProperties(functionEntry);
+        view.setFunctionConfiguration(functionEntry);
         refreshStatus();
     }
 
@@ -369,11 +369,11 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     @Override
-    public void refreshFunctionProperties(Project project) {
-        view.logDebug("Update function properties.");
+    public void refreshFunctionConfiguration(Project project) {
+        view.logDebug("Update function configuration.");
         FunctionEntry functionEntry = view.getSelectedFunctionEntry();
         if(functionEntry == null) {
-            showError(project, "No function selected to refresh its properties.");
+            showError(project, "No function selected to refresh its configuration.");
             return;
         }
         final OperationValueResult<FunctionEntry> result = getConnectorModel().getFunctionBy(functionEntry.getFunctionName());

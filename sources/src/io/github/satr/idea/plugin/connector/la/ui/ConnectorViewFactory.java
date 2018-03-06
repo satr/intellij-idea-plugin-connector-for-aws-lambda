@@ -90,7 +90,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JFormattedTextField functionDescription;
     private JLabel functionRuntime;
     private JComboBox functionTracingConfigModes;
-    private JButton refreshFunctionProperties;
+    private JButton refreshFunctionConfiguration;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -119,8 +119,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         refreshFuncListButton.addActionListener(e -> {
             runRefreshFunctionList(presenter);
         });
-        refreshFunctionProperties.addActionListener(e -> {
-            runRefreshFunctionProperties(presenter);
+        refreshFunctionConfiguration.addActionListener(e -> {
+            runRefreshFunctionConfiguration(presenter);
         });
         refreshJarArtifactsButton.addActionListener(e -> {
             runRefreshJarArtifactList(presenter);
@@ -182,7 +182,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         setupButton(refreshJarArtifactsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshRegionsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(refreshFunctionProperties, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(refreshFunctionConfiguration, IconLoader.getIcon("/icons/iconRefresh.png"));
 
         getMessageBusConnector().subscribe(UISettingsListener.TOPIC, this::uiSettingsChanged);
     }
@@ -349,8 +349,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         runOperation(() -> presenter.refreshFunctionList(), "Refresh list of AWS Lambda functions");
     }
 
-    private void runRefreshFunctionProperties(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshFunctionProperties(project), "Refresh AWS Lambda function properties");
+    private void runRefreshFunctionConfiguration(ConnectorPresenter presenter) {
+        runOperation(() -> presenter.refreshFunctionConfiguration(project), "Refresh AWS Lambda function configuration");
     }
 
     private void runRefreshJarArtifactList(ConnectorPresenter presenter) {
@@ -424,7 +424,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         functionTimeout.setEnabled(enabled);
         functionMemorySize.setEnabled(enabled);
         functionTracingConfigModes.setEnabled(enabled);
-        refreshFunctionProperties.setEnabled(enabled);
+        refreshFunctionConfiguration.setEnabled(enabled);
     }
 
     public Project getProject() {
@@ -525,7 +525,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public FunctionEntry getSelectedFunctionEntryWithUpdateProperties() {
+    public FunctionEntry getSelectedFunctionEntryWithUpdateConfiguration() {
         FunctionEntry functionEntry = getSelectedFunctionEntry();
         functionEntry.setDescription(getFunctionDescription());
         functionEntry.setArn(getFunctionArn());
@@ -612,9 +612,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public void setFunctionProperties(FunctionEntry functionEntry) {
+    public void setFunctionConfiguration(FunctionEntry functionEntry) {
         if (functionEntry == null) {
-            clearFunctionProperties();
+            clearFunctionConfiguration();
             return;
         }
         functionDescription.setText(functionEntry.getDescription());
@@ -644,7 +644,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         }
     }
 
-    private void clearFunctionProperties() {
+    private void clearFunctionConfiguration() {
         functionDescription.setText("");
         functionDescription.setToolTipText(null);
         functionHandler.setText("");
