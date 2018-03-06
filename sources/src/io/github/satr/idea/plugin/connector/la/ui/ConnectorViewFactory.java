@@ -263,10 +263,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                 || e.getStateChange() != ItemEvent.SELECTED) {
             return;
         }
-        RegionEntry entry = (RegionEntry)e.getItem();
-        if(entry == null)
+        RegionEntity entity = (RegionEntity)e.getItem();
+        if(entity == null)
             return;
-        runOperation(() -> presenter.setRegion(entry), "Select region: " + entry.toString());
+        runOperation(() -> presenter.setRegion(entity), "Select region: " + entity.toString());
     }
 
     private void runSetFunction(ConnectorPresenter presenter, ItemEvent e) {
@@ -274,12 +274,12 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                 || e.getStateChange() != ItemEvent.SELECTED) {
             return;
         }
-        FunctionEntry entry = (FunctionEntry)e.getItem();
-        runSetFunction(presenter, entry);
+        FunctionEntity entity = (FunctionEntity)e.getItem();
+        runSetFunction(presenter, entity);
     }
 
-    private void runSetFunction(ConnectorPresenter presenter, FunctionEntry entry) {
-        runOperation(() -> presenter.setFunction(entry), "Select function: " + entry.toString());
+    private void runSetFunction(ConnectorPresenter presenter, FunctionEntity entity) {
+        runOperation(() -> presenter.setFunction(entity), "Select function: " + entity.toString());
     }
 
     private void runSetTestFunctionInputFromRecent(ConnectorPresenter presenter, ItemEvent e) {
@@ -287,10 +287,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
                 || e.getStateChange() != ItemEvent.SELECTED) {
             return;
         }
-        TestFunctionInputEntry entry = (TestFunctionInputEntry)e.getItem();
-        if(entry == null)
+        TestFunctionInputEntity entity = (TestFunctionInputEntity)e.getItem();
+        if(entity == null)
             return;
-        runOperation(() -> presenter.setSetTestFunctionInputFromRecent(entry), "Select test function input from file: ", entry.getFileName());
+        runOperation(() -> presenter.setSetTestFunctionInputFromRecent(entity), "Select test function input from file: ", entity.getFileName());
     }
 
     private void runFunctionTest(ConnectorPresenter presenter) {
@@ -310,11 +310,11 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private void runSetCredentialProfile(ConnectorPresenter presenter, ItemEvent e) {
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
-        CredentialProfileEntry entry = (CredentialProfileEntry)e.getItem();
-        if(entry == null) {
+        CredentialProfileEntity entity = (CredentialProfileEntity)e.getItem();
+        if(entity == null) {
             return;
         }
-        runOperation(() -> presenter.setCredentialProfile(entry), "Select credential profile: " + entry.toString());
+        runOperation(() -> presenter.setCredentialProfile(entity), "Select credential profile: " + entity.toString());
     }
 
 
@@ -325,11 +325,11 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private void runSetJarArtifact(ConnectorPresenter presenter, ItemEvent e) {
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
-        ArtifactEntry entry = (ArtifactEntry) e.getItem();
-        if(entry == null) {
+        ArtifactEntity entity = (ArtifactEntity) e.getItem();
+        if(entity == null) {
             return;
         }
-        runOperation(() -> presenter.setJarArtifact(entry), "Select JAR-artifact: " + entry.toString());
+        runOperation(() -> presenter.setJarArtifact(entity), "Select JAR-artifact: " + entity.toString());
     }
 
     private void runUpdateFunction(ConnectorPresenter presenter) {
@@ -447,38 +447,38 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public void setFunctionList(List<FunctionEntry> functions, FunctionEntry selectedFunctionEntry) {
+    public void setFunctionList(List<FunctionEntity> functions, FunctionEntity selectedFunctionEntity) {
         functionList.removeAllItems();
-        for (FunctionEntry entry : functions) {
-            if (entry.getRuntime().equals(Runtime.Java8)) {
-                functionList.addItem(entry);
+        for (FunctionEntity entity : functions) {
+            if (entity.getRuntime().equals(Runtime.Java8)) {
+                functionList.addItem(entity);
             }
         }
-        presenter.setFunction(selectedFunctionEntry);
+        presenter.setFunction(selectedFunctionEntity);
     }
 
     @Override
-    public void setArtifactList(Collection<? extends ArtifactEntry> artifacts, ArtifactEntry selectedArtifactEntry) {
+    public void setArtifactList(Collection<? extends ArtifactEntity> artifacts, ArtifactEntity selectedArtifactEntity) {
         jarArtifactList.removeAllItems();
-        for(ArtifactEntry artifactEntry : artifacts) {
-            jarArtifactList.addItem(artifactEntry);
+        for(ArtifactEntity artifactEntity : artifacts) {
+            jarArtifactList.addItem(artifactEntity);
         }
-        if(selectedArtifactEntry != null){
-            jarArtifactList.setSelectedItem(selectedArtifactEntry);
+        if(selectedArtifactEntity != null){
+            jarArtifactList.setSelectedItem(selectedArtifactEntity);
         }
     }
 
     @Override
-    public void setCredentialProfilesList(List<CredentialProfileEntry> credentialProfiles, String selectedCredentialsProfile) {
+    public void setCredentialProfilesList(List<CredentialProfileEntity> credentialProfiles, String selectedCredentialsProfile) {
         credentialProfileList.removeAllItems();
-        CredentialProfileEntry selectedCredentialsProfileEntry = null;
-        for(CredentialProfileEntry entry : credentialProfiles){
-            credentialProfileList.addItem(entry);
-            if(!isEmpty(selectedCredentialsProfile) && entry.getName().equals(selectedCredentialsProfile))
-                selectedCredentialsProfileEntry = entry;
+        CredentialProfileEntity selectedCredentialsProfileEntity = null;
+        for(CredentialProfileEntity entity : credentialProfiles){
+            credentialProfileList.addItem(entity);
+            if(!isEmpty(selectedCredentialsProfile) && entity.getName().equals(selectedCredentialsProfile))
+                selectedCredentialsProfileEntity = entity;
         }
-        if(selectedCredentialsProfileEntry != null) {
-            credentialProfileList.setSelectedItem(selectedCredentialsProfileEntry);
+        if(selectedCredentialsProfileEntity != null) {
+            credentialProfileList.setSelectedItem(selectedCredentialsProfileEntity);
         }
     }
 
@@ -490,7 +490,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         try {
             setRegionOperationInProgress = true;
             for (int i = 0; i < regionList.getItemCount(); i++) {
-                if(((RegionEntry) regionList.getItemAt(i)).getName().equals(region.getName())){
+                if(((RegionEntity) regionList.getItemAt(i)).getName().equals(region.getName())){
                     regionList.setSelectedIndex(i);
                     return;
                 }
@@ -520,36 +520,36 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public FunctionEntry getSelectedFunctionEntry() {
-        return (FunctionEntry) functionList.getSelectedItem();
+    public FunctionEntity getSelectedFunctionEntity() {
+        return (FunctionEntity) functionList.getSelectedItem();
     }
 
     @Override
-    public FunctionEntry getSelectedFunctionEntryWithUpdateConfiguration() {
-        FunctionEntry functionEntry = getSelectedFunctionEntry();
-        functionEntry.setDescription(getFunctionDescription());
-        functionEntry.setArn(getFunctionArn());
-        functionEntry.setHandler(getFunctionHandler());
-        functionEntry.setRole(getFunctionRole());
-        functionEntry.setTimeout(getFunctionTimeout());
-        functionEntry.setMemorySize(getFunctionMemorySize());
-        functionEntry.setTracingModeEntity(getFunctionTracingConfigMode());
-        return functionEntry;
+    public FunctionEntity getSelectedFunctionEntityWithUpdateConfiguration() {
+        FunctionEntity functionEntity = getSelectedFunctionEntity();
+        functionEntity.setDescription(getFunctionDescription());
+        functionEntity.setArn(getFunctionArn());
+        functionEntity.setHandler(getFunctionHandler());
+        functionEntity.setRole(getFunctionRole());
+        functionEntity.setTimeout(getFunctionTimeout());
+        functionEntity.setMemorySize(getFunctionMemorySize());
+        functionEntity.setTracingModeEntity(getFunctionTracingConfigMode());
+        return functionEntity;
     }
 
     @Override
-    public ArtifactEntry getSelectedArtifactEntry() {
-        return (ArtifactEntry) jarArtifactList.getSelectedItem();
+    public ArtifactEntity getSelectedArtifactEntity() {
+        return (ArtifactEntity) jarArtifactList.getSelectedItem();
     }
 
     @Override
-    public RegionEntry getSelectedRegionEntry() {
-        return (RegionEntry) regionList.getSelectedItem();
+    public RegionEntity getSelectedRegionEntity() {
+        return (RegionEntity) regionList.getSelectedItem();
     }
 
     @Override
-    public CredentialProfileEntry getSelectedCredentialProfileEntry() {
-        return (CredentialProfileEntry) credentialProfileList.getSelectedItem();
+    public CredentialProfileEntity getSelectedCredentialProfileEntity() {
+        return (CredentialProfileEntity) credentialProfileList.getSelectedItem();
     }
 
     @Override
@@ -601,37 +601,37 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public void setTestFunctionInputRecentEntryList(List<TestFunctionInputEntry> entries) {
+    public void setTestFunctionInputRecentEntityList(List<TestFunctionInputEntity> entries) {
         testFunctionInputRecentFileList.removeAllItems();
-        for(TestFunctionInputEntry entry : entries){
-            testFunctionInputRecentFileList.addItem(entry);
+        for(TestFunctionInputEntity entity : entries){
+            testFunctionInputRecentFileList.addItem(entity);
         }
         if(entries.size() > 0) {
-            testFunctionInputRecentFileList.setSelectedIndex(entries.size() - 1);//select last added entry
+            testFunctionInputRecentFileList.setSelectedIndex(entries.size() - 1);//select last added entity
         }
     }
 
     @Override
-    public void setFunctionConfiguration(FunctionEntry functionEntry) {
-        if (functionEntry == null) {
+    public void setFunctionConfiguration(FunctionEntity functionEntity) {
+        if (functionEntity == null) {
             clearFunctionConfiguration();
             return;
         }
-        functionDescription.setText(functionEntry.getDescription());
-        functionDescription.setToolTipText(functionEntry.getDescription());
-        functionHandler.setText(functionEntry.getHandler());
-        functionHandler.setToolTipText(functionEntry.getHandler());
-        functionArn.setText(functionEntry.getArn());
-        functionArn.setToolTipText(functionEntry.getArn());
-        LocalDateTime lastModified = functionEntry.getLastModified();
+        functionDescription.setText(functionEntity.getDescription());
+        functionDescription.setToolTipText(functionEntity.getDescription());
+        functionHandler.setText(functionEntity.getHandler());
+        functionHandler.setToolTipText(functionEntity.getHandler());
+        functionArn.setText(functionEntity.getArn());
+        functionArn.setToolTipText(functionEntity.getArn());
+        LocalDateTime lastModified = functionEntity.getLastModified();
         String format = lastModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
         functionLastModified.setText(format);
-        selectRoleInList(functionEntry.getRoleEntity());
-        functionRoles.setToolTipText(functionEntry.getRoleEntity().toString());
-        functionRuntime.setText(functionEntry.getRuntime().name());
-        functionMemorySize.setText(functionEntry.getMemorySize().toString());
-        functionTimeout.setText(functionEntry.getTimeout().toString());
-        functionTracingConfigModes.setSelectedItem(functionEntry.getTracingModeEntity());
+        selectRoleInList(functionEntity.getRoleEntity());
+        functionRoles.setToolTipText(functionEntity.getRoleEntity().toString());
+        functionRuntime.setText(functionEntity.getRuntime().name());
+        functionMemorySize.setText(functionEntity.getMemorySize().toString());
+        functionTimeout.setText(functionEntity.getTimeout().toString());
+        functionTracingConfigModes.setSelectedItem(functionEntity.getTracingModeEntity());
     }
 
     private void selectRoleInList(RoleEntity roleEntity) {
@@ -671,44 +671,44 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public void updateFunctionEntry(FunctionEntry functionEntry) {
+    public void updateFunctionEntity(FunctionEntity functionEntity) {
         boolean itemSetToList = false;
         for (int i = 0; i < functionList.getItemCount(); i++) {
-            FunctionEntry functionEntryItem = (FunctionEntry) functionList.getItemAt(i);
-            if (!functionEntryItem.getFunctionName().equals(functionEntry.getFunctionName())) {
+            FunctionEntity functionEntityItem = (FunctionEntity) functionList.getItemAt(i);
+            if (!functionEntityItem.getFunctionName().equals(functionEntity.getFunctionName())) {
                 continue;
             }
             Object selectedItem = functionList.getSelectedItem();
-            functionList.removeItem(functionEntryItem);
-            functionList.insertItemAt(functionEntry, i);
-            if(functionEntryItem.equals(selectedItem)) {
-                functionList.setSelectedItem(functionEntry);
+            functionList.removeItem(functionEntityItem);
+            functionList.insertItemAt(functionEntity, i);
+            if(functionEntityItem.equals(selectedItem)) {
+                functionList.setSelectedItem(functionEntity);
             }
             itemSetToList = true;
             break;
         }
-        if(!itemSetToList && functionEntry.getRuntime().equals(Runtime.Java8)) {
-            functionList.addItem(functionEntry);
+        if(!itemSetToList && functionEntity.getRuntime().equals(Runtime.Java8)) {
+            functionList.addItem(functionEntity);
             itemSetToList = true;
         }
         if(!itemSetToList){
             return;
         }
-        functionList.setSelectedItem(functionEntry);
+        functionList.setSelectedItem(functionEntity);
     }
 
     @Override
-    public void setRegionList(List<RegionEntry> regions, Regions selectedRegion) {
+    public void setRegionList(List<RegionEntity> regions, Regions selectedRegion) {
         regionList.removeAllItems();
-        RegionEntry selectedRegionEntry = null;
-        for(RegionEntry entry : regions) {
-            regionList.addItem(entry);
-            if(selectedRegion != null && entry.getRegion().getName().equals(selectedRegion.getName())) {
-                selectedRegionEntry = entry;
+        RegionEntity selectedRegionEntity = null;
+        for(RegionEntity entity : regions) {
+            regionList.addItem(entity);
+            if(selectedRegion != null && entity.getRegion().getName().equals(selectedRegion.getName())) {
+                selectedRegionEntity = entity;
             }
         }
-        if(selectedRegionEntry != null) {
-            regionList.setSelectedItem(selectedRegionEntry);
+        if(selectedRegionEntity != null) {
+            regionList.setSelectedItem(selectedRegionEntity);
         }
     }
 

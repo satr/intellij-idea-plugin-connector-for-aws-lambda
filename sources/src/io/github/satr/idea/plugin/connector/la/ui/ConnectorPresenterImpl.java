@@ -25,7 +25,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     private final Regions DEFAULT_REGION = Regions.US_EAST_1;
     private ConnectorSettings connectorSettings = ConnectorSettings.getInstance();
     private ConnectorView view;
-    private List<TestFunctionInputEntry> testFunctionInputRecentEntryList = new ArrayList<>();
+    private List<TestFunctionInputEntity> testFunctionInputRecentEntityList = new ArrayList<>();
 
     @Override
     public void setView(ConnectorView view) {
@@ -36,73 +36,73 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     public void refreshFunctionList() {
         view.logDebug("Refresh function list.");
         ArrayList<String> functionNames = new ArrayList<>();
-        OperationValueResult<List<FunctionEntry>> functionListResult = getConnectorModel().getFunctions();
+        OperationValueResult<List<FunctionEntity>> functionListResult = getConnectorModel().getFunctions();
         view.log(functionListResult);
         refreshRolesList();
 
         String lastSelectedFunctionName = connectorSettings.getLastSelectedFunctionName();
-        FunctionEntry selectedFunctionEntry = null;
+        FunctionEntity selectedFunctionEntity = null;
         int functionCount = 0;
-        List<FunctionEntry> functionList = functionListResult.getValue();
-        for (FunctionEntry entry : functionList) {
-            if (!entry.getRuntime().equals(Runtime.Java8)) {
+        List<FunctionEntity> functionList = functionListResult.getValue();
+        for (FunctionEntity entity : functionList) {
+            if (!entity.getRuntime().equals(Runtime.Java8)) {
                 continue;
             }
-            functionNames.add(entry.getFunctionName());
-            if(entry.getFunctionName().equals(lastSelectedFunctionName)){
-                selectedFunctionEntry = entry;
+            functionNames.add(entity.getFunctionName());
+            if(entity.getFunctionName().equals(lastSelectedFunctionName)){
+                selectedFunctionEntity = entity;
             }
             functionCount++;
         }
         view.logDebug("Found %d Java-8 functions.", functionCount);
         connectorSettings.setFunctionNames(functionNames);
-        view.setFunctionList(functionList, selectedFunctionEntry);
-        FunctionEntry functionEntry = view.getSelectedFunctionEntry();
-        if(functionEntry == null) {
+        view.setFunctionList(functionList, selectedFunctionEntity);
+        FunctionEntity functionEntity = view.getSelectedFunctionEntity();
+        if(functionEntity == null) {
             view.logInfo("Function is not selected.");
         } else {
-            view.logInfo("Selected function: \"%s\"", functionEntry.getFunctionName());
+            view.logInfo("Selected function: \"%s\"", functionEntity.getFunctionName());
         }
-        view.setFunctionConfiguration(functionEntry);
+        view.setFunctionConfiguration(functionEntity);
         refreshStatus();
     }
 
     @Override
     public void updateFunction(Project project) {
         view.logDebug("Update function.");
-        FunctionEntry functionEntry = view.getSelectedFunctionEntryWithUpdateConfiguration();
-        if(functionEntry.isChanged()){
-            OperationResult updateFunctionConfigurationResult = getConnectorModel().updateConfiguration(functionEntry);
+        FunctionEntity functionEntity = view.getSelectedFunctionEntityWithUpdateConfiguration();
+        if(functionEntity.isChanged()){
+            OperationResult updateFunctionConfigurationResult = getConnectorModel().updateConfiguration(functionEntity);
             if(updateFunctionConfigurationResult.failed()){
                 showError(project, "Lambda function configuration update failed: \"%s\"",
                         updateFunctionConfigurationResult.getErrorAsString());
                 return;
             }
         }
-        updateFunctionCode(project, functionEntry);
+        updateFunctionCode(project, functionEntity);
     }
 
-    private void updateFunctionCode(Project project, FunctionEntry functionEntry) {
-        ArtifactEntry artifactEntry = view.getSelectedArtifactEntry();
-        OperationResult validationResult = validateToUpdate(functionEntry, artifactEntry);
+    private void updateFunctionCode(Project project, FunctionEntity functionEntity) {
+        ArtifactEntity artifactEntity = view.getSelectedArtifactEntity();
+        OperationResult validationResult = validateToUpdate(functionEntity, artifactEntity);
         if(validationResult.failed()){
             showError(project, validationResult.getErrorAsString());
             return;
         }
-        String functionName = functionEntry.getFunctionName();
-        String artifactFilePath = artifactEntry.getOutputFilePath();
-        final OperationValueResult<FunctionEntry> result = getConnectorModel().updateWithJar(functionEntry, artifactFilePath);
+        String functionName = functionEntity.getFunctionName();
+        String artifactFilePath = artifactEntity.getOutputFilePath();
+        final OperationValueResult<FunctionEntity> result = getConnectorModel().updateWithJar(functionEntity, artifactFilePath);
         if (!result.success()) {
             showError(project, result.getErrorAsString());
             return;
         }
         connectorSettings.setLastSelectedFunctionName(functionName);
-        connectorSettings.setLastSelectedJarArtifactName(artifactEntry.getName());
-        FunctionEntry updatedFunctionEntry = result.getValue();
-        view.updateFunctionEntry(updatedFunctionEntry);
-        setFunction(updatedFunctionEntry);
+        connectorSettings.setLastSelectedJarArtifactName(artifactEntity.getName());
+        FunctionEntity updatedFunctionEntity = result.getValue();
+        view.updateFunctionEntity(updatedFunctionEntity);
+        setFunction(updatedFunctionEntity);
         showInfo(project, "Lambda function \"%s\" has been updated with the JAR-artifact \"%s\".",
-                            updatedFunctionEntry.getFunctionName(), artifactEntry.getName());
+                            updatedFunctionEntity.getFunctionName(), artifactEntity.getName());
     }
 
     private void showError(Project project, String format, Object... args) {
@@ -115,18 +115,18 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         view.logInfo(format, args);
     }
 
-    private OperationResult validateToUpdate(FunctionEntry functionEntry, ArtifactEntry artifactEntry) {
+    private OperationResult validateToUpdate(FunctionEntity functionEntity, ArtifactEntity artifactEntity) {
         OperationResultImpl result = new OperationResultImpl();
-        if(functionEntry == null){
+        if(functionEntity == null){
             result.addError("Function is not selected.");
         }
-        if(artifactEntry == null){
+        if(artifactEntity == null){
             result.addError("JAR-artifact is not selected.");
         }
         if(result.failed()) {
             return result;
         }
-        if(!new File(artifactEntry.getOutputFilePath()).exists()){
+        if(!new File(artifactEntity.getOutputFilePath()).exists()){
             result.addError("JAR-artifact file does not exist.");
         }
         return result;
@@ -153,8 +153,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void refreshCredentialProfilesList(Project project) {
         view.logDebug("Refresh credential profile list.");
-        OperationValueResult<List<CredentialProfileEntry>> credentialProfilesResult = getConnectorModel().getCredentialProfiles();
-        List<CredentialProfileEntry> credentialProfiles = credentialProfilesResult.getValue();
+        OperationValueResult<List<CredentialProfileEntity>> credentialProfilesResult = getConnectorModel().getCredentialProfiles();
+        List<CredentialProfileEntity> credentialProfiles = credentialProfilesResult.getValue();
         view.setCredentialProfilesList(credentialProfiles, getLastSelectedCredentialProfile());
         view.log(credentialProfilesResult);
         refreshStatus();
@@ -162,15 +162,15 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void refreshStatus() {
-        CredentialProfileEntry credentialProfileEntry = view.getSelectedCredentialProfileEntry();
-        String credentialProfile = credentialProfileEntry != null ? credentialProfileEntry.toString() : null;
-        RegionEntry regionEntry = view.getSelectedRegionEntry();
-        String region = regionEntry != null ? regionEntry.getName() : null;
-        String regionDescription = regionEntry != null ? regionEntry.toString() : null;
-        FunctionEntry functionEntry = view.getSelectedFunctionEntry();
-        String function = functionEntry != null ? functionEntry.toString() : null;
-        ArtifactEntry artifactEntry = view.getSelectedArtifactEntry();
-        String artifact = artifactEntry != null ? artifactEntry.toString() : null;
+        CredentialProfileEntity credentialProfileEntity = view.getSelectedCredentialProfileEntity();
+        String credentialProfile = credentialProfileEntity != null ? credentialProfileEntity.toString() : null;
+        RegionEntity regionEntity = view.getSelectedRegionEntity();
+        String region = regionEntity != null ? regionEntity.getName() : null;
+        String regionDescription = regionEntity != null ? regionEntity.toString() : null;
+        FunctionEntity functionEntity = view.getSelectedFunctionEntity();
+        String function = functionEntity != null ? functionEntity.toString() : null;
+        ArtifactEntity artifactEntity = view.getSelectedArtifactEntity();
+        String artifact = artifactEntity != null ? artifactEntity.toString() : null;
         String proxyDetails = getConnectorModel().getProxyDetails();
         view.refreshStatus(function, artifact, region, regionDescription, credentialProfile, proxyDetails);
     }
@@ -193,15 +193,15 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         view.logDebug("Refresh JAR-artifact list.");
         ProjectModel projectModel = ServiceManager.getService(ProjectModel.class);
         String lastSelectedJarArtifactName = connectorSettings.getLastSelectedJarArtifactName();
-        ArtifactEntry selectedArtifactEntry = null;
-        Collection<? extends ArtifactEntry> jarArtifacts = projectModel.getJarArtifacts(project);
-        for(ArtifactEntry entry : jarArtifacts){
-            if(entry.getName().equals(lastSelectedJarArtifactName)){
-                selectedArtifactEntry = entry;
+        ArtifactEntity selectedArtifactEntity = null;
+        Collection<? extends ArtifactEntity> jarArtifacts = projectModel.getJarArtifacts(project);
+        for(ArtifactEntity entity : jarArtifacts){
+            if(entity.getName().equals(lastSelectedJarArtifactName)){
+                selectedArtifactEntity = entity;
                 break;
             }
         }
-        view.setArtifactList(jarArtifacts, selectedArtifactEntry);
+        view.setArtifactList(jarArtifacts, selectedArtifactEntity);
 
         if(jarArtifacts.size() == 0) {
             view.logInfo("No JAR-artifacts found.");
@@ -209,15 +209,15 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             return;
         }
 
-        ArtifactEntry artifactEntry = view.getSelectedArtifactEntry();
-        if(artifactEntry == null) {
+        ArtifactEntity artifactEntity = view.getSelectedArtifactEntity();
+        if(artifactEntity == null) {
             view.logInfo("JAR-artifact is not selected.");
             refreshStatus();
             return;
         }
 
-        view.logInfo("Selected JAR-artifact: \"%s\"", artifactEntry.getName());
-        String outputFilePath = artifactEntry.getOutputFilePath();
+        view.logInfo("Selected JAR-artifact: \"%s\"", artifactEntity.getName());
+        String outputFilePath = artifactEntity.getOutputFilePath();
         if(!new File(outputFilePath).exists()){
             view.logError("JAR-artifact file does not exist with the path:\n%s", outputFilePath);
         }
@@ -225,8 +225,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     @Override
-    public void setRegion(RegionEntry regionEntry) {
-        Regions region = tryGetRegionBy(regionEntry.getName());
+    public void setRegion(RegionEntity regionEntity) {
+        Regions region = tryGetRegionBy(regionEntity.getName());
         if(region == null) {
             return;
         }
@@ -256,8 +256,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     @Override
-    public void setCredentialProfile(CredentialProfileEntry credentialProfileEntry) {
-        BasicProfile basicProfile = credentialProfileEntry.getBasicProfile();
+    public void setCredentialProfile(CredentialProfileEntity credentialProfileEntity) {
+        BasicProfile basicProfile = credentialProfileEntity.getBasicProfile();
         Regions lastSelectedRegion = getLastSelectedRegion();
         Regions region = lastSelectedRegion;
         if(!isEmpty(basicProfile.getRegion())) {
@@ -266,54 +266,54 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         if(region == null){
             region = lastSelectedRegion;
         }
-        String credentialProfile = credentialProfileEntry.getName();
+        String credentialProfile = credentialProfileEntity.getName();
         connectorSettings.setLastSelectedCredentialProfile(credentialProfile);
         setRegionAndProfile(region, credentialProfile);
         if(!lastSelectedRegion.getName().equals(region.getName())){
             view.setRegion(region);
         }
-        CredentialProfileEntry profileEntry = view.getSelectedCredentialProfileEntry();
-        if(profileEntry == null) {
+        CredentialProfileEntity profileEntity = view.getSelectedCredentialProfileEntity();
+        if(profileEntity == null) {
             view.logInfo("Credential profile is not selected.");
         } else {
-            view.logInfo("Selected Credential profile: \"%s\"", profileEntry.getName());
+            view.logInfo("Selected Credential profile: \"%s\"", profileEntity.getName());
         }
         refreshStatus();
     }
 
     @Override
-    public void setFunction(FunctionEntry functionEntry) {
-        if(functionEntry != null) {
-            String functionName = functionEntry.getFunctionName();
+    public void setFunction(FunctionEntity functionEntity) {
+        if(functionEntity != null) {
+            String functionName = functionEntity.getFunctionName();
             connectorSettings.setLastSelectedFunctionName(functionName);
             view.logDebug("Set function %s.", functionName);
         } else {
             view.logDebug("Function not set.");
         }
-        view.setFunctionConfiguration(functionEntry);
+        view.setFunctionConfiguration(functionEntity);
         refreshStatus();
     }
 
     @Override
-    public void setJarArtifact(ArtifactEntry artifactEntry) {
+    public void setJarArtifact(ArtifactEntity artifactEntity) {
         view.logDebug("Set JAR-artifact.");
-        connectorSettings.setLastSelectedFunctionName(artifactEntry.getName());
+        connectorSettings.setLastSelectedFunctionName(artifactEntity.getName());
         refreshStatus();
     }
 
     @Override
     public void runFunctionTest(Project project, String inputText) {
-        FunctionEntry functionEntry = view.getSelectedFunctionEntry();
-        if(functionEntry == null) {
+        FunctionEntity functionEntity = view.getSelectedFunctionEntity();
+        if(functionEntity == null) {
             view.logError("Cannot run function - function is not selected.");
             return;
         }
         if(isEmpty(inputText.trim())){
-            view.logError("Cannot run function \"%s\" - input is empty.", functionEntry.getFunctionName());
+            view.logError("Cannot run function \"%s\" - input is empty.", functionEntity.getFunctionName());
             return;
         }
-        view.logDebug("Run function \"%s\".", functionEntry.getFunctionName());
-        OperationValueResult<String> result = getConnectorModel().invokeFunction(functionEntry.getFunctionName(), inputText);
+        view.logDebug("Run function \"%s\".", functionEntity.getFunctionName());
+        OperationValueResult<String> result = getConnectorModel().invokeFunction(functionEntity.getFunctionName(), inputText);
         if(result.hasInfo()){
             view.logInfo(result.getInfoAsString());
         }
@@ -331,14 +331,14 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             byte[] buffer = Files.readAllBytes(file.toPath());
             String inputText = new String(buffer);
             view.setTestFunctionInput(inputText);
-            for(TestFunctionInputEntry entry : testFunctionInputRecentEntryList){
-                if(entry.getFilePath().equals(filePath)){
-                    testFunctionInputRecentEntryList.remove(entry);
+            for(TestFunctionInputEntity entity : testFunctionInputRecentEntityList){
+                if(entity.getFilePath().equals(filePath)){
+                    testFunctionInputRecentEntityList.remove(entity);
                     break;
                 }
             }
-            testFunctionInputRecentEntryList.add(new TestFunctionInputEntry(filePath, file.getName(), inputText));
-            view.setTestFunctionInputRecentEntryList(testFunctionInputRecentEntryList);
+            testFunctionInputRecentEntityList.add(new TestFunctionInputEntity(filePath, file.getName(), inputText));
+            view.setTestFunctionInputRecentEntityList(testFunctionInputRecentEntityList);
         } catch (Exception e) {
             e.printStackTrace();
             view.logError(e);
@@ -357,8 +357,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     @Override
-    public void setSetTestFunctionInputFromRecent(TestFunctionInputEntry entry) {
-        view.setTestFunctionInput(entry.getInputText());
+    public void setSetTestFunctionInputFromRecent(TestFunctionInputEntity entity) {
+        view.setTestFunctionInput(entity.getInputText());
     }
 
     @Override
@@ -371,12 +371,12 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void refreshFunctionConfiguration(Project project) {
         view.logDebug("Update function configuration.");
-        FunctionEntry functionEntry = view.getSelectedFunctionEntry();
-        if(functionEntry == null) {
+        FunctionEntity functionEntity = view.getSelectedFunctionEntity();
+        if(functionEntity == null) {
             showError(project, "No function selected to refresh its configuration.");
             return;
         }
-        final OperationValueResult<FunctionEntry> result = getConnectorModel().getFunctionBy(functionEntry.getFunctionName());
+        final OperationValueResult<FunctionEntity> result = getConnectorModel().getFunctionBy(functionEntity.getFunctionName());
         if (!result.success()) {
             showError(project, result.getErrorAsString());
             return;

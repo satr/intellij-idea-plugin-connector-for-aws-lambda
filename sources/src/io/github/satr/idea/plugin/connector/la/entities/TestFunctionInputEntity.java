@@ -1,11 +1,11 @@
 package io.github.satr.idea.plugin.connector.la.entities;
 
-public class TestFunctionInputEntry {
+public class TestFunctionInputEntity {
     private String filePath;
     private final String fileName;
     private final String inputText;
 
-    public TestFunctionInputEntry(String filePath, String fileName, String inputText) {
+    public TestFunctionInputEntity(String filePath, String fileName, String inputText) {
         this.filePath = filePath;
         this.fileName = fileName;
         this.inputText = inputText;

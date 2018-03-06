@@ -2,12 +2,12 @@ package io.github.satr.idea.plugin.connector.la.entities;
 
 import com.amazonaws.regions.Region;
 
-public class RegionEntry {
+public class RegionEntity {
     private final String name;
     private final Region region;
     private final String description;
 
-    public RegionEntry(Region region, String description) {
+    public RegionEntity(Region region, String description) {
         this.name = region.getName();
         this.region = region;
         this.description = description;

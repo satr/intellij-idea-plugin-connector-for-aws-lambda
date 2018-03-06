@@ -9,20 +9,20 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ConnectorView {
-    void setFunctionList(List<FunctionEntry> functions, FunctionEntry selectedFunctionEntry);
-    void setArtifactList(Collection<? extends ArtifactEntry> artifacts, ArtifactEntry selectedArtifactEntry);
-    void setRegionList(List<RegionEntry> regions, Regions selectedRegion);
+    void setFunctionList(List<FunctionEntity> functions, FunctionEntity selectedFunctionEntity);
+    void setArtifactList(Collection<? extends ArtifactEntity> artifacts, ArtifactEntity selectedArtifactEntity);
+    void setRegionList(List<RegionEntity> regions, Regions selectedRegion);
     void setTracingModeList(Collection<TracingModeEntity> tracingModeEntities);
-    void setCredentialProfilesList(List<CredentialProfileEntry> credentialProfiles, String selectedCredentialsProfile);
+    void setCredentialProfilesList(List<CredentialProfileEntity> credentialProfiles, String selectedCredentialsProfile);
     void setRegion(Regions region);
     void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile, String proxyDetails);
-    FunctionEntry getSelectedFunctionEntry();
+    FunctionEntity getSelectedFunctionEntity();
 
-    FunctionEntry getSelectedFunctionEntryWithUpdateConfiguration();
+    FunctionEntity getSelectedFunctionEntityWithUpdateConfiguration();
 
-    ArtifactEntry getSelectedArtifactEntry();
-    RegionEntry getSelectedRegionEntry();
-    CredentialProfileEntry getSelectedCredentialProfileEntry();
+    ArtifactEntity getSelectedArtifactEntity();
+    RegionEntity getSelectedRegionEntity();
+    CredentialProfileEntity getSelectedCredentialProfileEntity();
     void log(OperationResult operationResult);
     void logDebug(String format, Object... args);
     void logWarning(String format, Object... args);
@@ -31,8 +31,8 @@ public interface ConnectorView {
     void logError(Throwable throwable);
     void setFunctionTestOutput(String outputText);
     void setTestFunctionInput(String inputText);
-    void setTestFunctionInputRecentEntryList(List<TestFunctionInputEntry> filePathList);
-    void setFunctionConfiguration(FunctionEntry functionEntry);
+    void setTestFunctionInputRecentEntityList(List<TestFunctionInputEntity> filePathList);
+    void setFunctionConfiguration(FunctionEntity functionEntity);
     void setRoleList(List<RoleEntity> roles);
-    void updateFunctionEntry(FunctionEntry functionEntry);
+    void updateFunctionEntity(FunctionEntity functionEntity);
 }

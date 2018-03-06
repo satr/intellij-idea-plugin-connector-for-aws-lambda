@@ -25,9 +25,9 @@ import io.github.satr.common.OperationResult;
 import io.github.satr.common.OperationResultImpl;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
-import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntry;
-import io.github.satr.idea.plugin.connector.la.entities.FunctionEntry;
-import io.github.satr.idea.plugin.connector.la.entities.RegionEntry;
+import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntity;
+import io.github.satr.idea.plugin.connector.la.entities.FunctionEntity;
+import io.github.satr.idea.plugin.connector.la.entities.RegionEntity;
 import io.github.satr.idea.plugin.connector.la.entities.RoleEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -79,7 +79,7 @@ public class ConnectorModel {
         return map;
     }
 
-    private ArrayList<RegionEntry> regionEntries;
+    private ArrayList<RegionEntity> regionEntries;
     private String credentialProfileName;
     private String proxyDetails = "Unknown";
 
@@ -134,14 +134,14 @@ public class ConnectorModel {
                                                         : DefaultAWSCredentialsProviderChain.getInstance();
     }
 
-    public OperationValueResult<List<FunctionEntry>> getFunctions(){
-        final List<FunctionEntry> entries = new ArrayList<>();
-        final OperationValueResult<List<FunctionEntry>> operationResult = new OperationValueResultImpl<List<FunctionEntry>>().withValue(entries);
+    public OperationValueResult<List<FunctionEntity>> getFunctions(){
+        final List<FunctionEntity> entries = new ArrayList<>();
+        final OperationValueResult<List<FunctionEntity>> operationResult = new OperationValueResultImpl<List<FunctionEntity>>().withValue(entries);
         try {
             final ListFunctionsResult functionRequestResult = awsLambdaClient.listFunctions();
             for(FunctionConfiguration functionConfiguration : functionRequestResult.getFunctions()) {
-                FunctionEntry functionEntry = createFunctionEntry(functionConfiguration, operationResult);
-                entries.add(functionEntry);
+                FunctionEntity functionEntity = createFunctionEntity(functionConfiguration, operationResult);
+                entries.add(functionEntity);
             }
             operationResult.setValue(entries);
         } catch (com.amazonaws.services.lambda.model.AWSLambdaException e) {
@@ -157,10 +157,10 @@ public class ConnectorModel {
     }
 
     @NotNull
-    private FunctionEntry createFunctionEntry(FunctionConfiguration functionConfiguration, OperationResult operationResult) {
+    private FunctionEntity createFunctionEntity(FunctionConfiguration functionConfiguration, OperationResult operationResult) {
         final String roleArn = functionConfiguration.getRole();
         final RoleEntity roleEntity = getRoleEntity(functionConfiguration.getFunctionName(), roleArn, operationResult);
-        return new FunctionEntry(functionConfiguration, roleEntity);
+        return new FunctionEntity(functionConfiguration, roleEntity);
     }
 
     @Nullable
@@ -193,12 +193,12 @@ public class ConnectorModel {
         awsLambdaClient = null;
     }
 
-    public OperationValueResult<FunctionEntry> updateWithJar(final FunctionEntry functionEntry, final String filePath) {
-        return updateWithJar(functionEntry, new File(filePath));
+    public OperationValueResult<FunctionEntity> updateWithJar(final FunctionEntity functionEntity, final String filePath) {
+        return updateWithJar(functionEntity, new File(filePath));
     }
 
-    public OperationValueResult<FunctionEntry> updateWithJar(final FunctionEntry functionEntity, final File file) {
-        final OperationValueResultImpl<FunctionEntry> operationResult = new OperationValueResultImpl<>();
+    public OperationValueResult<FunctionEntity> updateWithJar(final FunctionEntity functionEntity, final File file) {
+        final OperationValueResultImpl<FunctionEntity> operationResult = new OperationValueResultImpl<>();
         validateLambdaFunctionJarFile(file, operationResult);
         if(operationResult.failed())
             return operationResult;
@@ -220,13 +220,13 @@ public class ConnectorModel {
         return operationResult;
     }
 
-    private OperationValueResult<FunctionEntry> updateFunctionCode(final FunctionEntry functionEntry, final FileChannel fileChannel) throws IOException {
-        final OperationValueResultImpl<FunctionEntry> valueResult = new OperationValueResultImpl<>();
+    private OperationValueResult<FunctionEntity> updateFunctionCode(final FunctionEntity functionEntity, final FileChannel fileChannel) throws IOException {
+        final OperationValueResultImpl<FunctionEntity> valueResult = new OperationValueResultImpl<>();
         try {
             final MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
             buffer.load();
             final UpdateFunctionCodeRequest request = new UpdateFunctionCodeRequest()
-                                                            .withFunctionName(functionEntry.getFunctionName())
+                                                            .withFunctionName(functionEntity.getFunctionName())
                                                             .withZipFile(buffer);
             final UpdateFunctionCodeResult updateFunctionResult = awsLambdaClient.updateFunctionCode(request);
             final String roleName = updateFunctionResult.getRole();
@@ -234,7 +234,7 @@ public class ConnectorModel {
             if(roleEntity == null) {
                 valueResult.addError("Not found role by name \"%s\"", roleName);
             } else {
-                valueResult.setValue(new FunctionEntry(updateFunctionResult, roleEntity));
+                valueResult.setValue(new FunctionEntity(updateFunctionResult, roleEntity));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -276,8 +276,8 @@ public class ConnectorModel {
         }
 
         try {
-            final Object jarEntryEnumeration = new JarFile(file).entries();
-            if(jarEntryEnumeration == null || !((Enumeration<JarEntry>)jarEntryEnumeration).hasMoreElements())
+            final Object jarEntityEnumeration = new JarFile(file).entries();
+            if(jarEntityEnumeration == null || !((Enumeration<JarEntry>)jarEntityEnumeration).hasMoreElements())
                 operationResult.addError("The file is not a valid jar-file.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -285,7 +285,7 @@ public class ConnectorModel {
         }
     }
 
-    public List<RegionEntry> getRegions() {
+    public List<RegionEntity> getRegions() {
         if(regionEntries != null) {
             return regionEntries;
         }
@@ -294,14 +294,14 @@ public class ConnectorModel {
         for(Region region : RegionUtils.getRegions()) {
             String description = regionDescriptions.get(region.getName());
             if(description != null)
-                regionEntries.add(new RegionEntry(region, description));
+                regionEntries.add(new RegionEntity(region, description));
         }
         return regionEntries;
     }
 
-    public OperationValueResult<List<CredentialProfileEntry>> getCredentialProfiles() {
-        OperationValueResult<List<CredentialProfileEntry>> valueResult = new OperationValueResultImpl<>();
-        ArrayList<CredentialProfileEntry> credentialProfilesEntries = new ArrayList<>();
+    public OperationValueResult<List<CredentialProfileEntity>> getCredentialProfiles() {
+        OperationValueResult<List<CredentialProfileEntity>> valueResult = new OperationValueResultImpl<>();
+        ArrayList<CredentialProfileEntity> credentialProfilesEntries = new ArrayList<>();
         valueResult.setValue(credentialProfilesEntries);
         if(!validateCredentialProfilesExist()) {
             valueResult.addWarning("No credential profiles file found.\n To create one - please follow the instruction:\n https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html ");
@@ -310,7 +310,7 @@ public class ConnectorModel {
         ProfilesConfigFile profilesConfigFile = new ProfilesConfigFile();
         Map<String, BasicProfile> profiles = profilesConfigFile.getAllBasicProfiles();
         for (String credentialProfileName : profiles.keySet()) {
-            credentialProfilesEntries.add(new CredentialProfileEntry(credentialProfileName, profiles.get(credentialProfileName)));
+            credentialProfilesEntries.add(new CredentialProfileEntity(credentialProfileName, profiles.get(credentialProfileName)));
         }
         valueResult.addInfo("Found %d credential profiles.", credentialProfilesEntries.size());
         return valueResult;
@@ -371,26 +371,26 @@ public class ConnectorModel {
         return roleEntity;
     }
 
-    public OperationValueResult<FunctionEntry> getFunctionBy(String name) {
+    public OperationValueResult<FunctionEntity> getFunctionBy(String name) {
         GetFunctionRequest getFunctionRequest = new GetFunctionRequest().withFunctionName(name);
         GetFunctionResult function = awsLambdaClient.getFunction(getFunctionRequest);
-        OperationValueResultImpl<FunctionEntry> valueResult = new OperationValueResultImpl<>();
+        OperationValueResultImpl<FunctionEntity> valueResult = new OperationValueResultImpl<>();
         FunctionConfiguration functionConfiguration = function.getConfiguration();
-        FunctionEntry functionEntry = createFunctionEntry(functionConfiguration, valueResult);
-        valueResult.setValue(functionEntry);
+        FunctionEntity functionEntity = createFunctionEntity(functionConfiguration, valueResult);
+        valueResult.setValue(functionEntity);
         return valueResult;
     }
 
-    public OperationResult updateConfiguration(FunctionEntry functionEntry) {
+    public OperationResult updateConfiguration(FunctionEntity functionEntity) {
         OperationResultImpl operationResult = new OperationResultImpl();
         UpdateFunctionConfigurationRequest request = new UpdateFunctionConfigurationRequest()
-                .withFunctionName(functionEntry.getFunctionName())
-                .withDescription(functionEntry.getDescription())
-                .withHandler(functionEntry.getHandler())
-                .withTimeout(functionEntry.getTimeout())
-                .withMemorySize(functionEntry.getMemorySize())
-                .withRole(functionEntry.getRoleEntity().getArn())
-                .withTracingConfig(functionEntry.getTracingModeEntity().getTracingConfig());
+                .withFunctionName(functionEntity.getFunctionName())
+                .withDescription(functionEntity.getDescription())
+                .withHandler(functionEntity.getHandler())
+                .withTimeout(functionEntity.getTimeout())
+                .withMemorySize(functionEntity.getMemorySize())
+                .withRole(functionEntity.getRoleEntity().getArn())
+                .withTracingConfig(functionEntity.getTracingModeEntity().getTracingConfig());
         try {
             awsLambdaClient.updateFunctionConfiguration(request);
         } catch (Exception e) {

@@ -17,15 +17,15 @@ public interface ConnectorPresenter {
     void refreshJarArtifactList(Project project);
     void refreshStatus();
     void refreshAll(Project project);
-    void setRegion(RegionEntry regionEntry);
-    void setCredentialProfile(CredentialProfileEntry credentialProfileEntry);
-    void setFunction(FunctionEntry functionEntry);
-    void setJarArtifact(ArtifactEntry artifactEntry);
+    void setRegion(RegionEntity regionEntity);
+    void setCredentialProfile(CredentialProfileEntity credentialProfileEntity);
+    void setFunction(FunctionEntity functionEntity);
+    void setJarArtifact(ArtifactEntity artifactEntity);
     void runFunctionTest(Project project, String text);
     void openTestFunctionInputFile(File filename);
     String getLastSelectedTestFunctionInputFilePath();
     void setLastSelectedTestFunctionInputFilePath(String path);
-    void setSetTestFunctionInputFromRecent(TestFunctionInputEntry entry);
+    void setSetTestFunctionInputFromRecent(TestFunctionInputEntity entity);
     void setProxySettings();
     void refreshFunctionConfiguration(Project project);
 }
