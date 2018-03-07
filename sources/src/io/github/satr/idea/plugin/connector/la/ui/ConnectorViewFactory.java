@@ -5,7 +5,6 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.AWSLambdaException;
 import com.amazonaws.services.lambda.model.Runtime;
-import com.intellij.ide.ui.UISettings;
 import com.intellij.ide.ui.UISettingsListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
@@ -22,13 +21,13 @@ import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
 import io.github.satr.common.StringUtil;
 import io.github.satr.idea.plugin.connector.la.entities.*;
+import io.github.satr.idea.plugin.connector.la.models.ProjectModelImpl;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxItemToolTipRenderer;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxToolTipProvider;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxToolTipProviderImpl;
 import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,8 +46,8 @@ import java.util.List;
 import static io.github.satr.common.StringUtil.getNotEmptyString;
 import static org.apache.http.util.TextUtils.isEmpty;
 
-public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
-    static final Logger logger = LogManager.getLogger(ConnectorViewFactory.class);
+public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, io.github.satr.common.Logger {
+    static final org.apache.log4j.Logger uiLogger = LogManager.getLogger(ConnectorPresenter.class);
     private final ConnectorPresenter presenter;
     private final ProgressManager progressManager = ProgressManager.getInstance();
     private JComboBox functionList;
@@ -94,24 +93,25 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
-    private Project project;
     private boolean operationInProgress = false;
     private boolean setRegionOperationInProgress;
     private boolean runFunctionTestOperationInProgress;
     private final List<JButton> buttons = new ArrayList<>();
     private final DateFormatter dateFormatter = new DateFormatter();
+    private Project project;
 
     public ConnectorViewFactory() {
         this(ServiceManager.getService(ConnectorPresenter.class));
     }
 
     public ConnectorViewFactory(final ConnectorPresenter presenter) {
+        this.presenter = presenter;
+        this.presenter.addLogger(this);
+        this.presenter.setView(this);
+
         prepareButtons();
         prepareUiLogger();
         functionRoles.setRenderer(new JComboBoxItemToolTipRenderer(functionRoles));
-
-        this.presenter = presenter;
-        this.presenter.setView(this);
 
         refreshAllButton.addActionListener(e -> {
             runRefreshAll(presenter);
@@ -162,7 +162,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
             updateProxySetting(presenter);
         });
         presenter.refreshTracingModeList();
-        presenter.refreshJarArtifactList(project);
+        presenter.refreshJarArtifactList();
         runRefreshAll(presenter);
     }
 
@@ -184,11 +184,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshFunctionConfiguration, IconLoader.getIcon("/icons/iconRefresh.png"));
 
-        getMessageBusConnector().subscribe(UISettingsListener.TOPIC, this::uiSettingsChanged);
-    }
-
-    private void uiSettingsChanged(UISettings uiSettings) {
-        fixButtonsAfterPotentiallyChangedTheme();
+        getMessageBusConnector().subscribe(UISettingsListener.TOPIC,
+                (uiSettingsChanged) -> fixButtonsAfterPotentiallyChangedTheme());
     }
 
     private void fixButtonsAfterPotentiallyChangedTheme() {
@@ -240,7 +237,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void prepareUiLogger() {
-        logger.addAppender(new AsyncAppender(){
+        uiLogger.addAppender(new AsyncAppender(){
             @Override
             public void append(LoggingEvent event) {
                 super.append(event);
@@ -251,10 +248,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         logLevelList.addItem(Level.INFO);
         logLevelList.addItem(Level.WARN);
         logLevelList.addItem(Level.ERROR);
-        logger.setLevel(Level.INFO);
+        uiLogger.setLevel(Level.INFO);
         logLevelList.setSelectedItem(Level.INFO);
         logLevelList.addItemListener(e -> {
-            logger.setLevel((Level) e.getItem());
+            uiLogger.setLevel((Level) e.getItem());
         });
     }
 
@@ -300,7 +297,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         runOperation(() -> {
             runFunctionTestOperationInProgress = true;
             try {
-                presenter.runFunctionTest(project, functionTestInputText.getText());
+                presenter.runFunctionTest(functionTestInputText.getText());
             } finally {
                 runFunctionTestOperationInProgress = false;
             }
@@ -333,7 +330,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void runUpdateFunction(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.updateFunction(getProject()),
+        runOperation(() -> presenter.updateFunction(),
                     "Update selected AWS Lambda function with JAR-artifact");
     }
 
@@ -342,7 +339,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void runRefreshAll(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshAll(project), "Refresh all");
+        runOperation(() -> presenter.refreshAll(), "Refresh all");
     }
 
     private void runRefreshFunctionList(ConnectorPresenter presenter) {
@@ -350,19 +347,19 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     private void runRefreshFunctionConfiguration(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshFunctionConfiguration(project), "Refresh AWS Lambda function configuration");
+        runOperation(() -> presenter.refreshFunctionConfiguration(), "Refresh AWS Lambda function configuration");
     }
 
     private void runRefreshJarArtifactList(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshJarArtifactList(project), "Refresh list of JAR-artifacts in the project");
+        runOperation(() -> presenter.refreshJarArtifactList(), "Refresh list of JAR-artifacts in the project");
     }
 
     private void runRefreshRegionList(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshRegionList(project), "Refresh list of AWS regions");
+        runOperation(() -> presenter.refreshRegionList(), "Refresh list of AWS regions");
     }
 
     private void runRefreshCredentialProfilesList(ConnectorPresenter presenter) {
-        runOperation(() -> presenter.refreshCredentialProfilesList(project), "Refresh list of credential profiles");
+        runOperation(() -> presenter.refreshCredentialProfilesList(), "Refresh list of credential profiles");
     }
 
     private void runOperation(Runnable runnable, final String format, Object... args) {
@@ -427,10 +424,6 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
         refreshFunctionConfiguration.setEnabled(enabled);
     }
 
-    public Project getProject() {
-        return project;
-    }
-
     @Override
     protected void finalize() throws Throwable {
         if (presenter != null) {
@@ -442,8 +435,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         toolWindow.getContentManager().addContent(ContentFactory.SERVICE.getInstance().createContent(toolPanel, "", false));
+        presenter.setProjectModel(new ProjectModelImpl(project));
         this.project = project;
-//TODO        this.presenter.init(this.project);
     }
 
     @Override
@@ -553,7 +546,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
     }
 
     @Override
-    public void log(OperationResult operationResult) {
+    public void logOperationResult(OperationResult operationResult) {
         if(operationResult.hasInfo()) {
             logInfo(operationResult.getInfoAsString());
         }
@@ -567,22 +560,22 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
 
     @Override
     public void logDebug(String format, Object... args) {
-        logger.debug(String.format(format, args));
+        uiLogger.debug(String.format(format, args));
     }
 
     @Override
     public void logInfo(String format, Object... args) {
-        logger.info(String.format(format, args));
+        uiLogger.info(String.format(format, args));
     }
 
     @Override
     public void logWarning(String format, Object... args) {
-        logger.warn(String.format(format, args));
+        uiLogger.warn(String.format(format, args));
     }
 
     @Override
     public void logError(String format, Object... args) {
-        logger.error(String.format(format, args));
+        uiLogger.error(String.format(format, args));
     }
 
     @Override
@@ -695,6 +688,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView {
             return;
         }
         functionList.setSelectedItem(functionEntity);
+    }
+
+    @Override
+    public void showError(String format, Object... args) {
+        MessageHelper.showError(project, format, args);
+    }
+
+    @Override
+    public void showInfo(String format, Object... args) {
+        MessageHelper.showInfo(project, format, args);
     }
 
     @Override

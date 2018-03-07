@@ -13,13 +13,18 @@ import java.util.Collections;
 
 public class ProjectModelImpl implements ProjectModel {
     private final String JAR_ARTIFACT_TYPE = "jar";
+    private final Project project;
+
+    public ProjectModelImpl(Project project) {
+        this.project = project;
+    }
 
     @Override
-    public Collection<? extends ArtifactEntity> getJarArtifacts(Project project) {
+    public Collection<? extends ArtifactEntity> getJarArtifacts() {
         if(project == null) {
             return Collections.emptyList();
         }
-        final ArtifactManager artifactManager = ArtifactManager.getInstance(project);
+        final ArtifactManager artifactManager = ArtifactManager.getInstance(this.project);
         final Collection<? extends Artifact> jarArtifacts = artifactManager.getArtifactsByType(ArtifactType.findById(JAR_ARTIFACT_TYPE));
         final ArrayList<ArtifactEntity> artifactEntries = new ArrayList<>();
         for(Artifact artifact : jarArtifacts) {

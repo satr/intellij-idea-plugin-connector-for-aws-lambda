@@ -337,7 +337,8 @@ public class ConnectorModel {
         return proxyDetails;
     }
 
-    public List<RoleEntity> getRoles() {
+    public List<RoleEntity> getRolesRefreshed() {
+        populateRoleListAndMap();
         return roleEntities;
     }
 
