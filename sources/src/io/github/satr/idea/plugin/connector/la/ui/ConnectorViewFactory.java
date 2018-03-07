@@ -5,6 +5,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.AWSLambdaException;
 import com.amazonaws.services.lambda.model.Runtime;
+import com.intellij.compiler.server.BuildManagerListener;
 import com.intellij.ide.ui.UISettingsListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
@@ -15,6 +16,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.packaging.artifacts.Artifact;
+import com.intellij.packaging.artifacts.ArtifactListener;
+import com.intellij.packaging.impl.artifacts.ArtifactManagerImpl;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.messages.MessageBusConnection;
 import io.github.satr.common.MessageHelper;
@@ -42,6 +46,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import static io.github.satr.common.StringUtil.getNotEmptyString;
 import static org.apache.http.util.TextUtils.isEmpty;
@@ -123,10 +128,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             runRefreshFunctionConfiguration(presenter);
         });
         refreshJarArtifactsButton.addActionListener(e -> {
-            runRefreshJarArtifactList(presenter);
+            runRefreshJarArtifactList();
         });
         refreshRegionsButton.addActionListener(e -> {
-            runRefreshRegionList(presenter);
+            runRefreshRegionList();
         });
         refreshCredentialProfiles.addActionListener(e -> {
             runRefreshCredentialProfilesList(presenter);
@@ -184,9 +189,20 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshFunctionConfiguration, IconLoader.getIcon("/icons/iconRefresh.png"));
 
-        getMessageBusConnector().subscribe(UISettingsListener.TOPIC,
-                (uiSettingsChanged) -> fixButtonsAfterPotentiallyChangedTheme());
+        MessageBusConnection busConnection = getMessageBusConnector();
+        busConnection.subscribe(UISettingsListener.TOPIC, (uiSettingsChanged) -> fixButtonsAfterPotentiallyChangedTheme());
+        busConnection.subscribe(BuildManagerListener.TOPIC, new BuildManagerListener() {
+            @Override
+            public void buildFinished(Project prj, UUID uuid, boolean b) {
+                performAfterBuildActivity();
+            }
+        });
     }
+
+    private void performAfterBuildActivity() {
+        runRefreshJarArtifactList();
+    }
+
 
     private void fixButtonsAfterPotentiallyChangedTheme() {
         for(JButton button: buttons) {
@@ -350,11 +366,11 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.refreshFunctionConfiguration(), "Refresh AWS Lambda function configuration");
     }
 
-    private void runRefreshJarArtifactList(ConnectorPresenter presenter) {
+    private void runRefreshJarArtifactList() {
         runOperation(() -> presenter.refreshJarArtifactList(), "Refresh list of JAR-artifacts in the project");
     }
 
-    private void runRefreshRegionList(ConnectorPresenter presenter) {
+    private void runRefreshRegionList() {
         runOperation(() -> presenter.refreshRegionList(), "Refresh list of AWS regions");
     }
 
