@@ -4,6 +4,7 @@ package io.github.satr.idea.plugin.connector.la.ui;
 import com.amazonaws.regions.Regions;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,9 +17,7 @@ public interface ConnectorView {
     void setRegion(Regions region);
     void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile, String proxyDetails);
     FunctionEntity getSelectedFunctionEntity();
-
     FunctionEntity getSelectedFunctionEntityWithUpdateConfiguration();
-
     ArtifactEntity getSelectedArtifactEntity();
     RegionEntity getSelectedRegionEntity();
     CredentialProfileEntity getSelectedCredentialProfileEntity();
@@ -28,9 +27,10 @@ public interface ConnectorView {
     void setFunctionConfiguration(FunctionEntity functionEntity);
     void setRoleList(List<RoleEntity> roles);
     void updateFunctionEntity(FunctionEntity functionEntity);
-
+    void setAwsLogStreamList(List<AwsLogStreamEntity> awsLogEventEntities);
+    void setAwsLogStreamEventList(List<AwsLogStreamEventEntity> awsLogStreamEventEntities);
     void showError(String format, Object... args);
     void showInfo(String format, Object... args);
-
-    void setCloudWatchMetricList(List<CloudWatchMetricEntity> cloudWatchMetricEntities);
+    void clearAwsLogStreamEventList();
+    void clearAwsLogStreamList();
 }

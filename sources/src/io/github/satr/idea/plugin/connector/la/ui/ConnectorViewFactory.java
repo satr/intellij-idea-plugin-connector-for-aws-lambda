@@ -5,6 +5,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.AWSLambdaException;
 import com.amazonaws.services.lambda.model.Runtime;
+import com.amazonaws.services.logs.model.InvalidOperationException;
 import com.intellij.compiler.server.BuildManagerListener;
 import com.intellij.ide.ui.UISettingsListener;
 import com.intellij.openapi.application.ApplicationManager;
@@ -14,15 +15,11 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.messages.MessageBusConnection;
+import io.github.satr.common.DateTimeHelper;
 import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
 import io.github.satr.common.StringUtil;
@@ -36,29 +33,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.spi.LoggingEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.maven.execution.MavenRunner;
-import org.jetbrains.idea.maven.execution.MavenRunnerParameters;
-import org.jetbrains.idea.maven.execution.MavenRunnerSettings;
-import org.jetbrains.idea.maven.indices.MavenArtifactSearchResult;
-import org.jetbrains.idea.maven.indices.MavenArtifactSearcher;
-import org.jetbrains.idea.maven.model.MavenId;
-import org.jetbrains.idea.maven.model.MavenPlugin;
-import org.jetbrains.idea.maven.project.MavenProject;
-import org.jetbrains.idea.maven.project.MavenProjectChanges;
-import org.jetbrains.idea.maven.project.MavenProjectsManager;
-import org.jetbrains.idea.maven.project.MavenProjectsTree;
-import org.jetbrains.idea.maven.server.NativeMavenProjectHolder;
-import org.jetbrains.idea.maven.utils.MavenArtifactUtil;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DateFormatter;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.*;
 
 import static io.github.satr.common.StringUtil.getNotEmptyString;
@@ -95,7 +77,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JButton openFunctionInputFileButton;
     private JButton runFunctionTestButton;
     private JComboBox testFunctionInputRecentFileList;
-    private JPanel logPan;
+    private JPanel localLogPan;
     private JPanel logSettingsPan;
     private JButton updateProxySettingsButton;
     private JFormattedTextField functionArn;
@@ -108,10 +90,12 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JLabel functionRuntime;
     private JComboBox functionTracingConfigModes;
     private JButton refreshFunctionConfiguration;
-    private JTabbedPane tabLogs;
-    private JPanel cloudWatchPan;
-    private JList cloudWatchMetricList;
-    private JList cloudWatchEventItemList;
+    private JTabbedPane tabLocalLog;
+    private JPanel awsLogPan;
+    private JList awsLogStreamList;
+    private JList awsLogStreamEventList;
+    private JCheckBox autoRefreshAwsLog;
+    private JButton refreshAwsLogStreamList;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -121,6 +105,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private final List<JButton> buttons = new ArrayList<>();
     private final DateFormatter dateFormatter = new DateFormatter();
     private Project project;
+    private DefaultListModel<AwsLogStreamEntity> awsLogStreamListModel = new DefaultListModel<>();
+    private DefaultListModel<AwsLogStreamEventEntity> awsLogStreamEventListModel = new DefaultListModel<>();
 
     public ConnectorViewFactory() {
         this(ServiceManager.getService(ConnectorPresenter.class));
@@ -148,13 +134,13 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         functionRoles.setRenderer(new JComboBoxItemToolTipRenderer(functionRoles));
 
         refreshAllButton.addActionListener(e -> {
-            runRefreshAll(presenter);
+            runRefreshAll();
         });
         refreshFuncListButton.addActionListener(e -> {
-            runRefreshFunctionList(presenter);
+            runRefreshFunctionList();
         });
         refreshFunctionConfiguration.addActionListener(e -> {
-            runRefreshFunctionConfiguration(presenter);
+            runRefreshFunctionConfiguration();
         });
         refreshJarArtifactsButton.addActionListener(e -> {
             runRefreshJarArtifactList();
@@ -163,44 +149,61 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             runRefreshRegionList();
         });
         refreshCredentialProfiles.addActionListener(e -> {
-            runRefreshCredentialProfilesList(presenter);
+            runRefreshCredentialProfilesList();
         });
         updateFunctionButton.addActionListener(e -> {
-            runUpdateFunction(presenter);
+            runUpdateFunction();
         });
         clearLogButton.addActionListener(e -> {
             clearLog();
         });
         runFunctionTestButton.addActionListener(e -> {
-            runFunctionTest(presenter);
+            runFunctionTest();
         });
         openFunctionInputFileButton.addActionListener(e -> {
-            openFunctionTestInputFile(presenter);
+            openFunctionTestInputFile();
         });
         testFunctionInputRecentFileList.addItemListener(e -> {
-            runSetTestFunctionInputFromRecent(presenter, e);
+            runSetTestFunctionInputFromRecent(e);
         });
         functionList.addItemListener(e -> {
-            runSetFunction(presenter, e);
+            runSetFunction(e);
         });
         regionList.addItemListener(e -> {
-            runSetRegion(presenter, e);
+            runSetRegion(e);
         });
         credentialProfileList.addItemListener(e -> {
-            runSetCredentialProfile(presenter, e);
+            runSetCredentialProfile(e);
         });
         jarArtifactList.addItemListener(e -> {
-            runSetJarArtifact(presenter, e);
+            runSetJarArtifact(e);
         });
         updateProxySettingsButton.addActionListener(e -> {
-            updateProxySetting(presenter);
+            updateProxySetting();
         });
 
+        awsLogStreamList.addListSelectionListener(e -> {
+            refreshAwsLogStreamEvents(e);
+        });
 
+        autoRefreshAwsLog.addChangeListener(e -> {
+            runChangeAutoRefreshAwsLog(autoRefreshAwsLog.isSelected());
+        });
 
-        presenter.refreshTracingModeList();
-        presenter.refreshJarArtifactList();
-        runRefreshAll(presenter);
+        refreshAwsLogStreamList.addActionListener(e -> {
+            runRefreshAwsLogStreams();
+        });
+
+        this.presenter.refreshTracingModeList();
+        this.presenter.refreshJarArtifactList();
+        runRefreshAll();
+    }
+
+    public void runChangeAutoRefreshAwsLog(boolean selected) {
+        if(operationInProgress || setRegionOperationInProgress) {
+            return;
+        }
+        runOperation(() -> this.presenter.setAutoRefreshAwsLog(selected), "Change Auto Refresh AWS Log Stream mode");
     }
 
     @NotNull
@@ -220,6 +223,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         setupButton(refreshRegionsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshFunctionConfiguration, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(refreshAwsLogStreamList, IconLoader.getIcon("/icons/iconRefresh.png"));
     }
 
     private void performAfterBuildActivity() {
@@ -246,7 +250,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         button.setBorder(null);
     }
 
-    private void openFunctionTestInputFile(ConnectorPresenter presenter) {
+    private void openFunctionTestInputFile() {
         if(runFunctionTestOperationInProgress) {
             return;
         }
@@ -294,7 +298,25 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         });
     }
 
-    private void runSetRegion(ConnectorPresenter presenter, ItemEvent e) {
+    private void runRefreshAwsLogStreams() {
+        if(operationInProgress || setRegionOperationInProgress) {
+            return;
+        }
+        runOperation(() -> presenter.refreshAwsLogStreams(), "Refresh AWS Log Streams");
+    }
+    private void refreshAwsLogStreamEvents(ListSelectionEvent e) {
+        if(operationInProgress || setRegionOperationInProgress) {
+            return;
+        }
+        int selectedIndex = e.getFirstIndex();
+        if(awsLogStreamListModel.size() < selectedIndex + 1){
+            throw new InvalidOperationException(String.format("awsLogStreamListModel has less elements than selected index %d", selectedIndex));
+        }
+        AwsLogStreamEntity entity = awsLogStreamListModel.get(selectedIndex);
+        runOperation(() -> presenter.setAwsLogStreamEventList(entity), "Refresh AWS Log Stream events: " + entity);
+    }
+
+    private void runSetRegion(ItemEvent e) {
         if(operationInProgress || setRegionOperationInProgress
                 || e.getStateChange() != ItemEvent.SELECTED) {
             return;
@@ -305,20 +327,20 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.setRegion(entity), "Select region: " + entity.toString());
     }
 
-    private void runSetFunction(ConnectorPresenter presenter, ItemEvent e) {
+    private void runSetFunction(ItemEvent e) {
         if(operationInProgress || setRegionOperationInProgress
                 || e.getStateChange() != ItemEvent.SELECTED) {
             return;
         }
         FunctionEntity entity = (FunctionEntity)e.getItem();
-        runSetFunction(presenter, entity);
+        runSetFunction(entity);
     }
 
-    private void runSetFunction(ConnectorPresenter presenter, FunctionEntity entity) {
+    private void runSetFunction(FunctionEntity entity) {
         runOperation(() -> presenter.setFunction(entity), "Select function: " + entity.toString());
     }
 
-    private void runSetTestFunctionInputFromRecent(ConnectorPresenter presenter, ItemEvent e) {
+    private void runSetTestFunctionInputFromRecent(ItemEvent e) {
         if(operationInProgress
                 || e.getStateChange() != ItemEvent.SELECTED) {
             return;
@@ -329,7 +351,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.setSetTestFunctionInputFromRecent(entity), "Select test function input from file: ", entity.getFileName());
     }
 
-    private void runFunctionTest(ConnectorPresenter presenter) {
+    private void runFunctionTest() {
         if(operationInProgress || runFunctionTestOperationInProgress) {
             return;
         }
@@ -343,7 +365,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         }, "Run test of the function");
     }
 
-    private void runSetCredentialProfile(ConnectorPresenter presenter, ItemEvent e) {
+    private void runSetCredentialProfile(ItemEvent e) {
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
         CredentialProfileEntity entity = (CredentialProfileEntity)e.getItem();
@@ -354,11 +376,11 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
 
-    private void updateProxySetting(ConnectorPresenter presenter) {
+    private void updateProxySetting() {
         runOperation(() -> presenter.setProxySettings(), "Update proxy settings from IDEA settings.");
     }
 
-    private void runSetJarArtifact(ConnectorPresenter presenter, ItemEvent e) {
+    private void runSetJarArtifact(ItemEvent e) {
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
         ArtifactEntity entity = (ArtifactEntity) e.getItem();
@@ -368,7 +390,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.setJarArtifact(entity), "Select JAR-artifact: " + entity.toString());
     }
 
-    private void runUpdateFunction(ConnectorPresenter presenter) {
+    private void runUpdateFunction() {
         runOperation(() -> presenter.updateFunction(),
                     "Update selected AWS Lambda function with JAR-artifact");
     }
@@ -377,15 +399,15 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         logTextBox.setText("");
     }
 
-    private void runRefreshAll(ConnectorPresenter presenter) {
+    private void runRefreshAll() {
         runOperation(() -> presenter.refreshAll(), "Refresh all");
     }
 
-    private void runRefreshFunctionList(ConnectorPresenter presenter) {
+    private void runRefreshFunctionList() {
         runOperation(() -> presenter.refreshFunctionList(), "Refresh list of AWS Lambda functions");
     }
 
-    private void runRefreshFunctionConfiguration(ConnectorPresenter presenter) {
+    private void runRefreshFunctionConfiguration() {
         runOperation(() -> presenter.refreshFunctionConfiguration(), "Refresh AWS Lambda function configuration");
     }
 
@@ -397,7 +419,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.refreshRegionList(), "Refresh list of AWS regions");
     }
 
-    private void runRefreshCredentialProfilesList(ConnectorPresenter presenter) {
+    private void runRefreshCredentialProfilesList() {
         runOperation(() -> presenter.refreshCredentialProfilesList(), "Refresh list of credential profiles");
     }
 
@@ -656,7 +678,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         functionArn.setText(functionEntity.getArn());
         functionArn.setToolTipText(functionEntity.getArn());
         LocalDateTime lastModified = functionEntity.getLastModified();
-        String format = lastModified.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
+        String format = DateTimeHelper.toFormattedString(lastModified);
         functionLastModified.setText(format);
         selectRoleInList(functionEntity.getRoleEntity());
         functionRoles.setToolTipText(functionEntity.getRoleEntity().toString());
@@ -740,12 +762,32 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     @Override
-    public void setCloudWatchMetricList(List<CloudWatchMetricEntity> cloudWatchMetricEntities) {
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        for(CloudWatchMetricEntity entity : cloudWatchMetricEntities) {
-            listModel.addElement(entity.getMetricName());
+    public void clearAwsLogStreamEventList() {
+        setAwsLogStreamEventList(new ArrayList<>());
+    }
+
+    @Override
+    public void clearAwsLogStreamList() {
+        clearAwsLogStreamEventList();
+        setAwsLogStreamList(new ArrayList<>());
+    }
+
+    @Override
+    public void setAwsLogStreamList(List<AwsLogStreamEntity> awsLogEventEntities) {
+        awsLogStreamListModel = new DefaultListModel<>();
+        for(AwsLogStreamEntity entity : awsLogEventEntities) {
+            awsLogStreamListModel.addElement(entity);
         }
-        cloudWatchMetricList.setModel(listModel);
+        awsLogStreamList.setModel(awsLogStreamListModel);
+    }
+
+    @Override
+    public void setAwsLogStreamEventList(List<AwsLogStreamEventEntity> awsLogStreamEventEntities) {
+        awsLogStreamEventListModel = new DefaultListModel<>();
+        for(AwsLogStreamEventEntity entity : awsLogStreamEventEntities) {
+            awsLogStreamEventListModel.addElement(entity);
+        }
+        awsLogStreamEventList.setModel(awsLogStreamEventListModel);
     }
 
     @Override

@@ -31,4 +31,8 @@ public interface ConnectorPresenter {
     void refreshFunctionConfiguration();
     void addLogger(Logger logger);
     void setProjectModel(ProjectModel projectModel);
+    void setAwsLogStreamEventList(AwsLogStreamEntity entity);
+    void setAutoRefreshAwsLog(boolean autoRefresh);
+
+    void refreshAwsLogStreams();
 }

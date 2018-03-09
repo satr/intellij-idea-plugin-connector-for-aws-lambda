@@ -11,11 +11,6 @@ import com.amazonaws.profile.path.AwsProfileFileLocationProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
-import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
-import com.amazonaws.services.cloudwatch.model.ListMetricsResult;
-import com.amazonaws.services.cloudwatch.model.Metric;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.identitymanagement.model.AmazonIdentityManagementException;
@@ -25,6 +20,10 @@ import com.amazonaws.services.identitymanagement.model.Role;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.*;
+import com.amazonaws.services.lambda.model.ResourceNotFoundException;
+import com.amazonaws.services.logs.AWSLogs;
+import com.amazonaws.services.logs.AWSLogsClientBuilder;
+import com.amazonaws.services.logs.model.*;
 import com.intellij.util.net.HttpConfigurable;
 import io.github.satr.common.OperationResult;
 import io.github.satr.common.OperationResultImpl;
@@ -40,6 +39,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -50,7 +50,7 @@ public class ConnectorModel {
     private final Regions region;
     private final AmazonIdentityManagement identityManagementClient;
     private static final int MAX_FETCHED_ROLE_COUNT = 50;
-    private final AmazonCloudWatch amazonCloudWatchClient;
+    private final AWSLogs awsLogClient;
     private AWSLambda awsLambdaClient;
     private static final Map<String, String> regionDescriptions;
     private ArrayList<RoleEntity> roleEntities;
@@ -101,7 +101,7 @@ public class ConnectorModel {
                 .withCredentials(credentialsProvider)
                 .withClientConfiguration(clientConfiguration)
                 .build();
-        amazonCloudWatchClient = AmazonCloudWatchClientBuilder.standard()
+        awsLogClient = AWSLogsClientBuilder.standard()
                 .withRegion(region)
                 .withCredentials(credentialsProvider)
                 .withClientConfiguration(clientConfiguration)
@@ -123,42 +123,42 @@ public class ConnectorModel {
         String proxyHost = httpConfigurable.PROXY_HOST;
         int proxyPort = httpConfigurable.PROXY_PORT;
         clientConfiguration = clientConfiguration.withProxyHost(proxyHost)
-                                                 .withProxyPort(proxyPort);
-        if(!useProxyAuto) {
+                .withProxyPort(proxyPort);
+        if (!useProxyAuto) {
             proxyDetails = String.format("%s:%s", proxyHost, proxyPort);
         }
 
         if (httpConfigurable.PROXY_AUTHENTICATION) {
             String proxyLogin = httpConfigurable.getProxyLogin();
             clientConfiguration = clientConfiguration.withProxyPassword(httpConfigurable.getPlainProxyPassword())
-                                                    .withProxyUsername(proxyLogin);
+                    .withProxyUsername(proxyLogin);
         }
         return clientConfiguration;
     }
 
     private AWSCredentialsProvider getCredentialsProvider(String credentialProfileName) {
         return validateCredentialProfile(credentialProfileName)
-                                                        ? new ProfileCredentialsProvider(credentialProfileName)
-                                                        : DefaultAWSCredentialsProviderChain.getInstance();
+                ? new ProfileCredentialsProvider(credentialProfileName)
+                : DefaultAWSCredentialsProviderChain.getInstance();
     }
 
-    public OperationValueResult<List<FunctionEntity>> getFunctions(){
+    public OperationValueResult<List<FunctionEntity>> getFunctions() {
         final List<FunctionEntity> entries = new ArrayList<>();
         final OperationValueResult<List<FunctionEntity>> operationResult = new OperationValueResultImpl<List<FunctionEntity>>().withValue(entries);
         try {
             final ListFunctionsResult functionRequestResult = awsLambdaClient.listFunctions();
-            for(FunctionConfiguration functionConfiguration : functionRequestResult.getFunctions()) {
+            for (FunctionConfiguration functionConfiguration : functionRequestResult.getFunctions()) {
                 FunctionEntity functionEntity = createFunctionEntity(functionConfiguration, operationResult);
                 entries.add(functionEntity);
             }
             operationResult.setValue(entries);
         } catch (com.amazonaws.services.lambda.model.AWSLambdaException e) {
-            if("AccessDeniedException".equals(e.getErrorCode())) {
+            if ("AccessDeniedException".equals(e.getErrorCode())) {
                 operationResult.addError("User has not access to a list of functions.");
             } else {
                 operationResult.addError(e.getMessage());
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return operationResult;
@@ -179,7 +179,7 @@ public class ConnectorModel {
         }
         roleEntity = addRoleToListAndMap(new Role().withArn(roleArn).withRoleName("-"));
         operationResult.addInfo("Added a role \"%s\" from a function \"%s\".",
-                                roleArn, functionName);
+                roleArn, functionName);
         return roleEntity;
     }
 
@@ -208,16 +208,16 @@ public class ConnectorModel {
     public OperationValueResult<FunctionEntity> updateWithJar(final FunctionEntity functionEntity, final File file) {
         final OperationValueResultImpl<FunctionEntity> operationResult = new OperationValueResultImpl<>();
         validateLambdaFunctionJarFile(file, operationResult);
-        if(operationResult.failed())
+        if (operationResult.failed())
             return operationResult;
 
         try {
             final String readOnlyAccessFileMode = "r";
             try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, readOnlyAccessFileMode);
                  final FileChannel fileChannel = randomAccessFile.getChannel()) {
-                    return updateFunctionCode(functionEntity, fileChannel);
+                return updateFunctionCode(functionEntity, fileChannel);
             }
-        }catch (InvalidParameterValueException e) {
+        } catch (InvalidParameterValueException e) {
             operationResult.addError("Invalid request parameters: %s", e.getMessage());
         } catch (ResourceNotFoundException e) {
             operationResult.addError("Function not found.");
@@ -234,12 +234,12 @@ public class ConnectorModel {
             final MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
             buffer.load();
             final UpdateFunctionCodeRequest request = new UpdateFunctionCodeRequest()
-                                                            .withFunctionName(functionEntity.getFunctionName())
-                                                            .withZipFile(buffer);
+                    .withFunctionName(functionEntity.getFunctionName())
+                    .withZipFile(buffer);
             final UpdateFunctionCodeResult updateFunctionResult = awsLambdaClient.updateFunctionCode(request);
             final String roleName = updateFunctionResult.getRole();
             final RoleEntity roleEntity = getRoleEntity(updateFunctionResult.getFunctionName(), roleName, valueResult);
-            if(roleEntity == null) {
+            if (roleEntity == null) {
                 valueResult.addError("Not found role by name \"%s\"", roleName);
             } else {
                 valueResult.setValue(new FunctionEntity(updateFunctionResult, roleEntity));
@@ -260,11 +260,11 @@ public class ConnectorModel {
             final InvokeResult invokeResult = awsLambdaClient.invoke(invokeRequest);
             operationResult.addInfo("Invoked function \"%s\". Result status code: %d", functionName, invokeResult.getStatusCode());
             String functionError = invokeResult.getFunctionError();
-            if(!isEmpty(functionError)){
+            if (!isEmpty(functionError)) {
                 operationResult.addError(functionError);
             }
             String logResult = invokeResult.getLogResult();
-            if(!isEmpty(logResult)){
+            if (!isEmpty(logResult)) {
                 operationResult.addInfo(logResult);
             }
             ByteBuffer byteBuffer = invokeResult.getPayload();
@@ -278,14 +278,14 @@ public class ConnectorModel {
     }
 
     private void validateLambdaFunctionJarFile(File file, OperationResult operationResult) {
-        if(!file.exists()) {
+        if (!file.exists()) {
             operationResult.addError("JAR-file does not exist.");
             return;
         }
 
         try {
             final Object jarEntityEnumeration = new JarFile(file).entries();
-            if(jarEntityEnumeration == null || !((Enumeration<JarEntry>)jarEntityEnumeration).hasMoreElements())
+            if (jarEntityEnumeration == null || !((Enumeration<JarEntry>) jarEntityEnumeration).hasMoreElements())
                 operationResult.addError("The file is not a valid jar-file.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -294,14 +294,14 @@ public class ConnectorModel {
     }
 
     public List<RegionEntity> getRegions() {
-        if(regionEntries != null) {
+        if (regionEntries != null) {
             return regionEntries;
         }
 
         regionEntries = new ArrayList<>();
-        for(Region region : RegionUtils.getRegions()) {
+        for (Region region : RegionUtils.getRegions()) {
             String description = regionDescriptions.get(region.getName());
-            if(description != null)
+            if (description != null)
                 regionEntries.add(new RegionEntity(region, description));
         }
         return regionEntries;
@@ -311,7 +311,7 @@ public class ConnectorModel {
         OperationValueResult<List<CredentialProfileEntity>> valueResult = new OperationValueResultImpl<>();
         ArrayList<CredentialProfileEntity> credentialProfilesEntries = new ArrayList<>();
         valueResult.setValue(credentialProfilesEntries);
-        if(!validateCredentialProfilesExist()) {
+        if (!validateCredentialProfilesExist()) {
             valueResult.addWarning("No credential profiles file found.\n To create one - please follow the instruction:\n https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html ");
             return valueResult;
         }
@@ -329,6 +329,7 @@ public class ConnectorModel {
                 && validateCredentialProfilesExist()
                 && new ProfilesConfigFile().getAllBasicProfiles().containsKey(credentialProfileName);
     }
+
     private boolean validateCredentialProfilesExist() {
         return AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation() != null;
     }
@@ -357,14 +358,14 @@ public class ConnectorModel {
             ListRolesRequest listRolesRequest = new ListRolesRequest().withMaxItems(MAX_FETCHED_ROLE_COUNT);
             ListRolesResult listRolesResult = identityManagementClient.listRoles(listRolesRequest);
             List<Role> roles = listRolesResult.getRoles();
-            for (Role role: roles) {
+            for (Role role : roles) {
                 addRoleToListAndMap(role);
             }
         } catch (AmazonIdentityManagementException e) {
-            if("AccessDenied".equals(e.getErrorCode())) {
+            if ("AccessDenied".equals(e.getErrorCode())) {
                 //"User has not access to a list of roles.
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -409,14 +410,47 @@ public class ConnectorModel {
         return operationResult;
     }
 
-    public OperationValueResult<List<CloudWatchMetricEntity>> getCloudWatchEvents() {
-        List<CloudWatchMetricEntity> cloudWatchEventEntities = new ArrayList<>();
-        OperationValueResult<List<CloudWatchMetricEntity>> operationResult = new OperationValueResultImpl<>();
-        operationResult.setValue(cloudWatchEventEntities);
-        ListMetricsResult metricsResult = amazonCloudWatchClient.listMetrics(new ListMetricsRequest());
-        for(Metric metric : metricsResult.getMetrics()) {
-            cloudWatchEventEntities.add(new CloudWatchMetricEntity(metric));
+    public OperationValueResult<List<AwsLogStreamEntity>> getAwsLogStreamsFor(String functionName) {
+        List<AwsLogStreamEntity> awsLogStreamEntities = new ArrayList<>();
+        OperationValueResult<List<AwsLogStreamEntity>> operationResult = new OperationValueResultImpl<>();
+        operationResult.setValue(awsLogStreamEntities);
+        LogGroup logGroup = getLogGroupForAwsLambdaFunction(functionName);
+        if(logGroup == null) {
+            operationResult.addInfo("Not found log group for the function \"%s\"", functionName);
+            return operationResult;
         }
+        DescribeLogStreamsRequest describeLogStreamsRequest = new DescribeLogStreamsRequest().withLogGroupName(logGroup.getLogGroupName());
+        DescribeLogStreamsResult describeLogStreamsResult = awsLogClient.describeLogStreams(describeLogStreamsRequest);
+        List<LogStream> logStreams = describeLogStreamsResult.getLogStreams();
+        for(LogStream logStream : logStreams) {
+            awsLogStreamEntities.add(new AwsLogStreamEntity(logGroup.getLogGroupName(), logStream));
+        }
+        awsLogStreamEntities.sort(Comparator.comparing(AwsLogStreamEntity::getCreationTime));
+        return operationResult;
+    }
+
+    private LogGroup getLogGroupForAwsLambdaFunction(String functionName) {
+        DescribeLogGroupsRequest describeLogGroupsRequest = new DescribeLogGroupsRequest().withLogGroupNamePrefix("/aws/lambda");//add paging
+        DescribeLogGroupsResult describeLogGroupsResult = this.awsLogClient.describeLogGroups(describeLogGroupsRequest);
+        for (LogGroup logGroup : describeLogGroupsResult.getLogGroups()) {
+            if (logGroup.getLogGroupName().endsWith("/" + functionName)) {
+                return logGroup;
+            }
+        }
+        return null;
+    }
+
+    public OperationValueResult<List<AwsLogStreamEventEntity>> getAwsLogStreamEventsFor(AwsLogStreamEntity awsLogStreamEntity) {
+        OperationValueResultImpl<List<AwsLogStreamEventEntity>> operationResult = new OperationValueResultImpl<>();
+        ArrayList<AwsLogStreamEventEntity> awsLogStreamEventEntities = new ArrayList<>();
+        operationResult.setValue(awsLogStreamEventEntities);
+        GetLogEventsResult logEventsResult = awsLogClient.getLogEvents(new GetLogEventsRequest()
+                .withLogGroupName(awsLogStreamEntity.getLogGroupName())
+                .withLogStreamName(awsLogStreamEntity.getLogStreamName()));
+        for(OutputLogEvent event : logEventsResult.getEvents()) {
+            awsLogStreamEventEntities.add(new AwsLogStreamEventEntity(event));
+        }
+        awsLogStreamEventEntities.sort(Comparator.comparing(AwsLogStreamEventEntity::getTimeStamp));
         return operationResult;
     }
 }

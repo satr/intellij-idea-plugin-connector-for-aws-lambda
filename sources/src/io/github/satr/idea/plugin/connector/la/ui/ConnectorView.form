@@ -583,17 +583,17 @@
                   </grid>
                 </children>
               </tabbedpane>
-              <tabbedpane id="a2428" binding="tabLogs">
+              <tabbedpane id="a2428" binding="tabLocalLog">
                 <constraints>
                   <splitpane position="right"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <grid id="45ae8" binding="logPan" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="45ae8" binding="localLogPan" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <tabbedpane title="Log"/>
+                      <tabbedpane title="Local Log"/>
                     </constraints>
                     <properties/>
                     <border type="none"/>
@@ -631,17 +631,17 @@
                       </scrollpane>
                     </children>
                   </grid>
-                  <grid id="75fb5" binding="cloudWatchPan" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="75fb5" binding="awsLogPan" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <tabbedpane title="CloudWatch"/>
+                      <tabbedpane title="AWS Log"/>
                     </constraints>
                     <properties/>
                     <border type="none"/>
                     <children>
                       <splitpane id="f60c1">
                         <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
                             <preferred-size width="200" height="200"/>
                           </grid>
                         </constraints>
@@ -650,38 +650,96 @@
                         </properties>
                         <border type="none"/>
                         <children>
-                          <scrollpane id="c101c">
+                          <grid id="6c978" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                            <margin top="0" left="0" bottom="0" right="0"/>
                             <constraints>
                               <splitpane position="left"/>
                             </constraints>
                             <properties/>
                             <border type="none"/>
                             <children>
-                              <component id="152a8" class="javax.swing.JList" binding="cloudWatchMetricList">
-                                <constraints/>
-                                <properties>
-                                  <selectionMode value="0"/>
-                                </properties>
-                              </component>
+                              <scrollpane id="c101c">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none"/>
+                                <children>
+                                  <component id="bf532" class="javax.swing.JList" binding="awsLogStreamList">
+                                    <constraints/>
+                                    <properties>
+                                      <selectionMode value="0"/>
+                                    </properties>
+                                  </component>
+                                </children>
+                              </scrollpane>
                             </children>
-                          </scrollpane>
-                          <scrollpane id="ca86f">
+                          </grid>
+                          <grid id="47600" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                            <margin top="0" left="0" bottom="0" right="0"/>
                             <constraints>
                               <splitpane position="right"/>
                             </constraints>
                             <properties/>
                             <border type="none"/>
                             <children>
-                              <component id="76d21" class="javax.swing.JList" binding="cloudWatchEventItemList">
-                                <constraints/>
+                              <scrollpane id="ca86f">
+                                <constraints>
+                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none"/>
+                                <children>
+                                  <component id="76d21" class="javax.swing.JList" binding="awsLogStreamEventList">
+                                    <constraints/>
+                                    <properties>
+                                      <selectionMode value="0"/>
+                                    </properties>
+                                  </component>
+                                </children>
+                              </scrollpane>
+                              <component id="8e429" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
                                 <properties>
-                                  <selectionMode value="0"/>
+                                  <text value="Log Stream Events"/>
                                 </properties>
                               </component>
                             </children>
-                          </scrollpane>
+                          </grid>
                         </children>
                       </splitpane>
+                      <component id="66b79" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                            <minimum-size width="100" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <text value="Log Streams"/>
+                        </properties>
+                      </component>
+                      <component id="8853f" class="javax.swing.JButton" binding="refreshAwsLogStreamList">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <horizontalAlignment value="0"/>
+                          <icon value="icons/iconRefresh.png"/>
+                          <text value=""/>
+                          <toolTipText value="Refresh AWS Log Stream list"/>
+                        </properties>
+                      </component>
+                      <component id="d4561" class="javax.swing.JCheckBox" binding="autoRefreshAwsLog">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Auto Refresh"/>
+                          <toolTipText value="Auto Refresh Aws Log is off by default - to reduce data-transfer amount"/>
+                        </properties>
+                      </component>
                     </children>
                   </grid>
                 </children>

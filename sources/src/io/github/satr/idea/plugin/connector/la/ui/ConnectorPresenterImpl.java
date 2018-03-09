@@ -28,6 +28,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     private ConnectorView view;
     private List<TestFunctionInputEntity> testFunctionInputRecentEntityList = new ArrayList<>();
     private ProjectModel projectModel;
+    private boolean autoRefreshAwsLog = false;
 
     @Override
     public void setView(ConnectorView view) {
@@ -184,20 +185,63 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         refreshRegionList();
         refreshCredentialProfilesList();
         refreshFunctionList();
-        refreshFunctionConfiguration();
-        refreshCloudWatchEventList();
+        FunctionEntity functionEntity = view.getSelectedFunctionEntity();
+        refreshFunctionConfiguration(functionEntity);
+        if(autoRefreshAwsLog) {
+            refreshAwsLogStreamList(functionEntity);
+        } else {
+            view.clearAwsLogStreamList();
+        }
         refreshStatus();
     }
 
-    private void refreshCloudWatchEventList() {
-        getLogger().logDebug("Refresh CloudWatch event list.");
-        OperationValueResult<List<CloudWatchMetricEntity>> cloudWatchMetricEntitiesResult = getConnectorModel().getCloudWatchEvents();
-        if(cloudWatchMetricEntitiesResult.failed()) {
-            getLogger().logOperationResult(cloudWatchMetricEntitiesResult);
+    @Override
+    public void setAwsLogStreamEventList(AwsLogStreamEntity entity) {
+        if(entity == null) {
+            getLogger().logDebug("Clear AWS Log Stream Event list for not selected function.");
+            view.clearAwsLogStreamEventList();
             return;
         }
-        view.setCloudWatchMetricList(cloudWatchMetricEntitiesResult.getValue());
-        getLogger().logDebug("Refreshed CloudWatch event list.");
+        getLogger().logDebug("Refresh AWS Log Stream Even list.");
+        OperationValueResult<List<AwsLogStreamEventEntity>> getAwsLogEventsResult = getConnectorModel()
+                .getAwsLogStreamEventsFor(entity);
+        if(getAwsLogEventsResult.failed()) {
+            getLogger().logOperationResult(getAwsLogEventsResult);
+            return;
+        }
+        view.setAwsLogStreamEventList(getAwsLogEventsResult.getValue());
+        getLogger().logDebug("Refreshed AWS Log Stream Event list.");
+    }
+
+    @Override
+    public void setAutoRefreshAwsLog(boolean autoRefresh) {
+        autoRefreshAwsLog = autoRefresh;
+        if(autoRefreshAwsLog) {
+            refreshAwsLogStreams();
+        }
+    }
+
+    @Override
+    public void refreshAwsLogStreams() {
+        refreshAwsLogStreamList(view.getSelectedFunctionEntity());
+    }
+
+    private void refreshAwsLogStreamList(FunctionEntity functionEntity) {
+        if(functionEntity == null) {
+            getLogger().logDebug("Clear AWS Log Stream list for not selected function.");
+            view.clearAwsLogStreamList();
+            return;
+        }
+        getLogger().logDebug("Refresh AWS Log Stream list.");
+        view.clearAwsLogStreamEventList();
+        OperationValueResult<List<AwsLogStreamEntity>> getAwsLogEventsResult = getConnectorModel()
+                                                                .getAwsLogStreamsFor(functionEntity.getFunctionName());
+        if(getAwsLogEventsResult.failed()) {
+            getLogger().logOperationResult(getAwsLogEventsResult);
+            return;
+        }
+        view.setAwsLogStreamList(getAwsLogEventsResult.getValue());
+        getLogger().logDebug("Refreshed AWS Log Stream list.");
     }
 
     @Override
@@ -305,6 +349,11 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             getLogger().logDebug("Function not set.");
         }
         view.setFunctionConfiguration(functionEntity);
+        if(autoRefreshAwsLog) {
+            refreshAwsLogStreamList(functionEntity);
+        } else {
+            view.clearAwsLogStreamList();
+        }
         refreshStatus();
     }
 
@@ -319,11 +368,11 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     public void runFunctionTest(String inputText) {
         FunctionEntity functionEntity = view.getSelectedFunctionEntity();
         if(functionEntity == null) {
-            getLogger().logError("Cannot run function - function is not selected.");
+            getLogger().logError("Cannot runChangeAutoRefreshAwsLog function - function is not selected.");
             return;
         }
         if(isEmpty(inputText.trim())){
-            getLogger().logError("Cannot run function \"%s\" - input is empty.", functionEntity.getFunctionName());
+            getLogger().logError("Cannot runChangeAutoRefreshAwsLog function \"%s\" - input is empty.", functionEntity.getFunctionName());
             return;
         }
         getLogger().logDebug("Run function \"%s\".", functionEntity.getFunctionName());
@@ -384,8 +433,12 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void refreshFunctionConfiguration() {
-        getLogger().logDebug("Update function configuration.");
         FunctionEntity functionEntity = view.getSelectedFunctionEntity();
+        refreshFunctionConfiguration(functionEntity);
+    }
+
+    public void refreshFunctionConfiguration(FunctionEntity functionEntity) {
+        getLogger().logDebug("Update function configuration.");
         if(functionEntity == null) {
             showError("No function selected to refresh its configuration.");
             return;
