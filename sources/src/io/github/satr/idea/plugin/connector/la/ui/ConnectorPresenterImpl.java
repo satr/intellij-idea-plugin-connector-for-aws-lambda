@@ -185,7 +185,19 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         refreshCredentialProfilesList();
         refreshFunctionList();
         refreshFunctionConfiguration();
+        refreshCloudWatchEventList();
         refreshStatus();
+    }
+
+    private void refreshCloudWatchEventList() {
+        getLogger().logDebug("Refresh CloudWatch event list.");
+        OperationValueResult<List<CloudWatchMetricEntity>> cloudWatchMetricEntitiesResult = getConnectorModel().getCloudWatchEvents();
+        if(cloudWatchMetricEntitiesResult.failed()) {
+            getLogger().logOperationResult(cloudWatchMetricEntitiesResult);
+            return;
+        }
+        view.setCloudWatchMetricList(cloudWatchMetricEntitiesResult.getValue());
+        getLogger().logDebug("Refreshed CloudWatch event list.");
     }
 
     @Override

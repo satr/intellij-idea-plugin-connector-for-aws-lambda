@@ -11,6 +11,11 @@ import com.amazonaws.profile.path.AwsProfileFileLocationProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
+import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
+import com.amazonaws.services.cloudwatch.model.ListMetricsResult;
+import com.amazonaws.services.cloudwatch.model.Metric;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.identitymanagement.model.AmazonIdentityManagementException;
@@ -25,10 +30,7 @@ import io.github.satr.common.OperationResult;
 import io.github.satr.common.OperationResultImpl;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
-import io.github.satr.idea.plugin.connector.la.entities.CredentialProfileEntity;
-import io.github.satr.idea.plugin.connector.la.entities.FunctionEntity;
-import io.github.satr.idea.plugin.connector.la.entities.RegionEntity;
-import io.github.satr.idea.plugin.connector.la.entities.RoleEntity;
+import io.github.satr.idea.plugin.connector.la.entities.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,6 +50,7 @@ public class ConnectorModel {
     private final Regions region;
     private final AmazonIdentityManagement identityManagementClient;
     private static final int MAX_FETCHED_ROLE_COUNT = 50;
+    private final AmazonCloudWatch amazonCloudWatchClient;
     private AWSLambda awsLambdaClient;
     private static final Map<String, String> regionDescriptions;
     private ArrayList<RoleEntity> roleEntities;
@@ -94,6 +97,11 @@ public class ConnectorModel {
                 .withCredentials(credentialsProvider)
                 .build();
         identityManagementClient = AmazonIdentityManagementClientBuilder.standard()
+                .withRegion(region)
+                .withCredentials(credentialsProvider)
+                .withClientConfiguration(clientConfiguration)
+                .build();
+        amazonCloudWatchClient = AmazonCloudWatchClientBuilder.standard()
                 .withRegion(region)
                 .withCredentials(credentialsProvider)
                 .withClientConfiguration(clientConfiguration)
@@ -397,6 +405,17 @@ public class ConnectorModel {
         } catch (Exception e) {
             e.printStackTrace();
             operationResult.addError("Failed update of function configuration: %s", e.getMessage());
+        }
+        return operationResult;
+    }
+
+    public OperationValueResult<List<CloudWatchMetricEntity>> getCloudWatchEvents() {
+        List<CloudWatchMetricEntity> cloudWatchEventEntities = new ArrayList<>();
+        OperationValueResult<List<CloudWatchMetricEntity>> operationResult = new OperationValueResultImpl<>();
+        operationResult.setValue(cloudWatchEventEntities);
+        ListMetricsResult metricsResult = amazonCloudWatchClient.listMetrics(new ListMetricsRequest());
+        for(Metric metric : metricsResult.getMetrics()) {
+            cloudWatchEventEntities.add(new CloudWatchMetricEntity(metric));
         }
         return operationResult;
     }

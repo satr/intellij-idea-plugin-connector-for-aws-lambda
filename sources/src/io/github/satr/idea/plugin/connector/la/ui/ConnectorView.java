@@ -31,4 +31,6 @@ public interface ConnectorView {
 
     void showError(String format, Object... args);
     void showInfo(String format, Object... args);
+
+    void setCloudWatchMetricList(List<CloudWatchMetricEntity> cloudWatchMetricEntities);
 }

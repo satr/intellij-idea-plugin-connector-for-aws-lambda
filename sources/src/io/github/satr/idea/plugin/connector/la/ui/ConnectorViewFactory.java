@@ -16,9 +16,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.packaging.artifacts.Artifact;
-import com.intellij.packaging.artifacts.ArtifactListener;
-import com.intellij.packaging.impl.artifacts.ArtifactManagerImpl;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.messages.MessageBusConnection;
 import io.github.satr.common.MessageHelper;
@@ -95,6 +92,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JLabel functionRuntime;
     private JComboBox functionTracingConfigModes;
     private JButton refreshFunctionConfiguration;
+    private JTabbedPane tabLogs;
+    private JPanel cloudWatchPan;
+    private JList cloudWatchMetricList;
+    private JList cloudWatchEventItemList;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -116,6 +117,18 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
 
         prepareButtons();
         prepareUiLogger();
+
+
+        MessageBusConnection messageBusConnector = getMessageBusConnector();
+        messageBusConnector.subscribe(UISettingsListener.TOPIC, (uiSettingsChanged) -> fixButtonsAfterPotentiallyChangedTheme());
+        messageBusConnector.subscribe(BuildManagerListener.TOPIC, new BuildManagerListener() {
+            @Override
+            public void buildFinished(Project prj, UUID uuid, boolean b) {
+                performAfterBuildActivity();
+            }
+        });
+
+
         functionRoles.setRenderer(new JComboBoxItemToolTipRenderer(functionRoles));
 
         refreshAllButton.addActionListener(e -> {
@@ -166,6 +179,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         updateProxySettingsButton.addActionListener(e -> {
             updateProxySetting(presenter);
         });
+
+
+
         presenter.refreshTracingModeList();
         presenter.refreshJarArtifactList();
         runRefreshAll(presenter);
@@ -188,15 +204,6 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         setupButton(refreshRegionsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshFunctionConfiguration, IconLoader.getIcon("/icons/iconRefresh.png"));
-
-        MessageBusConnection busConnection = getMessageBusConnector();
-        busConnection.subscribe(UISettingsListener.TOPIC, (uiSettingsChanged) -> fixButtonsAfterPotentiallyChangedTheme());
-        busConnection.subscribe(BuildManagerListener.TOPIC, new BuildManagerListener() {
-            @Override
-            public void buildFinished(Project prj, UUID uuid, boolean b) {
-                performAfterBuildActivity();
-            }
-        });
     }
 
     private void performAfterBuildActivity() {
@@ -714,6 +721,15 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     @Override
     public void showInfo(String format, Object... args) {
         MessageHelper.showInfo(project, format, args);
+    }
+
+    @Override
+    public void setCloudWatchMetricList(List<CloudWatchMetricEntity> cloudWatchMetricEntities) {
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for(CloudWatchMetricEntity entity : cloudWatchMetricEntities) {
+            listModel.addElement(entity.getMetricName());
+        }
+        cloudWatchMetricList.setModel(listModel);
     }
 
     @Override

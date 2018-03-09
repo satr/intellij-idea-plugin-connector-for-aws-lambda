@@ -583,47 +583,91 @@
                   </grid>
                 </children>
               </tabbedpane>
-              <grid id="45ae8" binding="logPan" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
+              <tabbedpane id="a2428" binding="tabLogs">
                 <constraints>
                   <splitpane position="right"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <grid id="d3177" binding="logSettingsPan" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="45ae8" binding="logPan" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <tabbedpane title="Log"/>
                     </constraints>
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="376b9" class="javax.swing.JComboBox" binding="logLevelList">
+                      <grid id="d3177" binding="logSettingsPan" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties/>
-                      </component>
+                        <border type="none"/>
+                        <children>
+                          <component id="376b9" class="javax.swing.JComboBox" binding="logLevelList">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties/>
+                          </component>
+                        </children>
+                      </grid>
+                      <scrollpane id="8163f" binding="logScrollPan">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="215a3" class="javax.swing.JTextArea" binding="logTextBox">
+                            <constraints/>
+                            <properties>
+                              <lineWrap value="false"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </scrollpane>
                     </children>
                   </grid>
-                  <scrollpane id="8163f" binding="logScrollPan">
+                  <grid id="75fb5" binding="cloudWatchPan" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <tabbedpane title="CloudWatch"/>
                     </constraints>
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="215a3" class="javax.swing.JTextArea" binding="logTextBox">
-                        <constraints/>
+                      <splitpane id="f60c1">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                            <preferred-size width="200" height="200"/>
+                          </grid>
+                        </constraints>
                         <properties>
-                          <lineWrap value="false"/>
+                          <orientation value="0"/>
                         </properties>
-                      </component>
+                        <border type="none"/>
+                        <children>
+                          <component id="9aa" class="javax.swing.JList" binding="cloudWatchMetricList">
+                            <constraints>
+                              <splitpane position="left"/>
+                            </constraints>
+                            <properties/>
+                          </component>
+                          <component id="76d21" class="javax.swing.JList" binding="cloudWatchEventItemList">
+                            <constraints>
+                              <splitpane position="right"/>
+                            </constraints>
+                            <properties/>
+                          </component>
+                        </children>
+                      </splitpane>
                     </children>
-                  </scrollpane>
+                  </grid>
                 </children>
-              </grid>
+              </tabbedpane>
             </children>
           </splitpane>
         </children>
