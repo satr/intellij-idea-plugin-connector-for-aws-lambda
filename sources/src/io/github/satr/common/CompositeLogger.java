@@ -3,7 +3,7 @@ package io.github.satr.common;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompositLogger implements Logger {
+public class CompositeLogger implements Logger {
     private final List<Logger> loggers = new ArrayList<>();
     private final List<org.apache.log4j.Logger> log4jLoggers = new ArrayList<>();
 

@@ -33,6 +33,7 @@ public interface ConnectorPresenter {
     void setProjectModel(ProjectModel projectModel);
     void setAwsLogStreamEventList(AwsLogStreamEntity entity);
     void setAutoRefreshAwsLog(boolean autoRefresh);
-
     void refreshAwsLogStreams();
+    boolean roleListLoaded();
+    boolean initializeFunctionRoleList();
 }

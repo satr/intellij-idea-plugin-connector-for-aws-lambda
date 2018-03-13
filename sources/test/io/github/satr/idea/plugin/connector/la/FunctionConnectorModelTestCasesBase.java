@@ -3,27 +3,27 @@ package io.github.satr.idea.plugin.connector.la;
 
 import com.amazonaws.regions.Regions;
 import io.github.satr.common.Constant;
-import io.github.satr.idea.plugin.connector.la.models.ConnectorModel;
+import io.github.satr.idea.plugin.connector.la.models.FunctionConnectorModel;
 import org.junit.After;
 import org.junit.Before;
 
 import java.io.File;
 
-public class ConnectorModelTestCasesBase {
-    protected ConnectorModel connectorModel;
+public class FunctionConnectorModelTestCasesBase {
+    protected FunctionConnectorModel functionConnectorModel;
 
     @Before
     public void setUp() throws Exception {
-        connectorModel = new ConnectorModel(Regions.US_EAST_1, Constant.CredentialProfile.DEFAULT);
+        functionConnectorModel = new FunctionConnectorModel(Regions.US_EAST_1, Constant.CredentialProfile.DEFAULT);
     }
 
     @After
     public void tearDown() throws Exception {
-        connectorModel.shutdown();
+        functionConnectorModel.shutdown();
     }
 
     protected File getResourceFile(String fileRelativePath) {
-        ClassLoader classLoader = ConnectorModelTestCasesBase.class.getClassLoader();
+        ClassLoader classLoader = FunctionConnectorModelTestCasesBase.class.getClassLoader();
         return new File(classLoader.getResource(fileRelativePath).getFile());
     }
 }

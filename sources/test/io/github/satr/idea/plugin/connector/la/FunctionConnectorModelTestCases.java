@@ -10,11 +10,11 @@ import static org.junit.Assert.*;
 
 // Copyright © 2018, github.com/satr, MIT License
 
-public class ConnectorModelTestCases extends ConnectorModelTestCasesBase {
+public class FunctionConnectorModelTestCases extends FunctionConnectorModelTestCasesBase {
 
     @Test
     public void getFunctions() throws Exception {
-        OperationValueResult<List<FunctionEntity>> functionEntries = connectorModel.getFunctions();
+        OperationValueResult<List<FunctionEntity>> functionEntries = functionConnectorModel.getFunctions();
         assertNotNull(functionEntries);
     }
 }

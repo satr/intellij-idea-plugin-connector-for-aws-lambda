@@ -1,9 +1,9 @@
 package io.github.satr.idea.plugin.connector.la.ui.components;
 
-public class JComboBoxToolTipProviderImpl implements JComboBoxToolTipProvider {
+public class JComboBoxToolTipProviderImpl<T> implements JComboBoxToolTipProvider {
     final Object value;
     final String toolTip;
-    private Object entity;
+    private T entity;
 
     public JComboBoxToolTipProviderImpl(Object value, String toolTip) {
         this.value = value;
@@ -20,13 +20,13 @@ public class JComboBoxToolTipProviderImpl implements JComboBoxToolTipProvider {
         return value.toString();
     }
 
-    public JComboBoxToolTipProviderImpl withEntity(Object entity) {
+    public JComboBoxToolTipProviderImpl withEntity(T entity) {
         this.entity = entity;
         return this;
     }
 
     @Override
-    public Object getEntity() {
+    public T getEntity() {
         return entity;
     }
 }

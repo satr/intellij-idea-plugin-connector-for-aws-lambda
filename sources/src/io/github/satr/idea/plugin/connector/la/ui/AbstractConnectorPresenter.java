@@ -1,49 +1,83 @@
 package io.github.satr.idea.plugin.connector.la.ui;
 
 import com.amazonaws.regions.Regions;
-import io.github.satr.common.CompositLogger;
+import io.github.satr.common.CompositeLogger;
 import io.github.satr.common.Logger;
-import io.github.satr.idea.plugin.connector.la.models.ConnectorModel;
+import io.github.satr.idea.plugin.connector.la.models.ConnectorSettings;
+import io.github.satr.idea.plugin.connector.la.models.FunctionConnectorModel;
+import io.github.satr.idea.plugin.connector.la.models.ProjectModel;
+import io.github.satr.idea.plugin.connector.la.models.RoleConnectorModel;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractConnectorPresenter {
-    private ConnectorModel connectorModel;
-    private final CompositLogger logger = new CompositLogger();
+    private ConnectorSettings connectorSettings = ConnectorSettings.getInstance();
+    protected ProjectModel projectModel;
+    private FunctionConnectorModel functionConnectorModel;
+    private RoleConnectorModel roleConnectorModel;
+    private final CompositeLogger logger = new CompositeLogger();
+
+    protected ConnectorSettings getConnectorSettings() {
+        return connectorSettings;
+    }
 
     public Logger getLogger() {
         return logger;
     }
 
     protected void shutdownConnectorModel() {
-        if(connectorModel != null) {
-            connectorModel.shutdown();
+        if(functionConnectorModel != null) {
+            functionConnectorModel.shutdown();
+        }
+        if(roleConnectorModel != null) {
+            roleConnectorModel.shutdown();
         }
     }
 
     @NotNull
-    private ConnectorModel createConnectorModel(Regions region, String profileName) {
-        return new ConnectorModel(region, profileName);
+    private FunctionConnectorModel createFunctionConnectorModel(Regions region, String profileName) {
+        return new FunctionConnectorModel(region, profileName);
     }
 
-    protected ConnectorModel getConnectorModel() {
-        if (connectorModel != null) {
-            return connectorModel;
+    @NotNull
+    private RoleConnectorModel createRoleConnectorModel(Regions region, String profileName) {
+        return new RoleConnectorModel(region, profileName);
+    }
+
+    protected FunctionConnectorModel getFunctionConnectorModel() {
+        if (functionConnectorModel != null) {
+            return functionConnectorModel;
         }
-        return connectorModel = createConnectorModel(getLastSelectedRegion(), getLastSelectedCredentialProfile());
+        return functionConnectorModel = createFunctionConnectorModel(getLastSelectedRegion(), getLastSelectedCredentialProfileName());
     }
 
-    protected void reCreateConnectorModel(Regions region, String credentialProfile) {
+    protected RoleConnectorModel getRoleConnectorModel() {
+        if (roleConnectorModel != null) {
+            return roleConnectorModel;
+        }
+        return roleConnectorModel = createRoleConnectorModel(getLastSelectedRegion(), getLastSelectedCredentialProfileName());
+    }
+
+    protected void reCreateModels(Regions region, String credentialProfile) {
         shutdownConnectorModel();
-        connectorModel = createConnectorModel(region, credentialProfile);
+        functionConnectorModel = createFunctionConnectorModel(region, credentialProfile);
+        roleConnectorModel = createRoleConnectorModel(region, credentialProfile);
     }
 
     public void addLogger(Logger logger) {
         this.logger.addLogger(logger);
     }
 
+    public void setProjectModel(ProjectModel projectModel) {
+        this.projectModel = projectModel;
+    }
+
     @NotNull
     protected abstract Regions getLastSelectedRegion();
 
     @NotNull
-    protected abstract String getLastSelectedCredentialProfile();
+    protected abstract String getLastSelectedCredentialProfileName();
+
+    public boolean roleListLoaded() {
+        return roleConnectorModel.isLoaded();
+    }
 }

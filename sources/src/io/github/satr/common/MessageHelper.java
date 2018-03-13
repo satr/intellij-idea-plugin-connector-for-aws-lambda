@@ -10,6 +10,8 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
 
+import static org.apache.http.util.TextUtils.isEmpty;
+
 public final class MessageHelper {
     private static final Logger log = Logger.getInstance(MessageHelper.class);
     private static final WindowManager windowManager = WindowManager.getInstance();
@@ -39,7 +41,7 @@ public final class MessageHelper {
 
     private static void showMessage(final Project project, final MessageType messageType, final String format, final Object[] args) {
         StatusBar statusBar = windowManager.getStatusBar(project);
-        if(statusBar == null || statusBar.getComponent() == null){
+        if(statusBar == null || statusBar.getComponent() == null || isEmpty(format)){
             return;
         }
         String message = String.format(format, args);

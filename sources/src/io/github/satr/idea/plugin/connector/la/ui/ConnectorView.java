@@ -4,7 +4,6 @@ package io.github.satr.idea.plugin.connector.la.ui;
 import com.amazonaws.regions.Regions;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public interface ConnectorView {
     void setTestFunctionInput(String inputText);
     void setTestFunctionInputRecentEntityList(List<TestFunctionInputEntity> filePathList);
     void setFunctionConfiguration(FunctionEntity functionEntity);
-    void setRoleList(List<RoleEntity> roles);
+    void setRoleList(List<RoleEntity> roles, RoleEntity selectedRoleEntity);
     void updateFunctionEntity(FunctionEntity functionEntity);
     void setAwsLogStreamList(List<AwsLogStreamEntity> awsLogEventEntities);
     void setAwsLogStreamEventList(List<AwsLogStreamEventEntity> awsLogStreamEventEntities);
@@ -33,4 +32,5 @@ public interface ConnectorView {
     void showInfo(String format, Object... args);
     void clearAwsLogStreamEventList();
     void clearAwsLogStreamList();
+    void clearRoleList();
 }

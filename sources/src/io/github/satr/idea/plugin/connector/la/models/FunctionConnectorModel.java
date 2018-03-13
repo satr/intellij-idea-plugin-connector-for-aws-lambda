@@ -3,20 +3,11 @@ package io.github.satr.idea.plugin.connector.la.models;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfilesConfigFile;
 import com.amazonaws.auth.profile.internal.BasicProfile;
-import com.amazonaws.profile.path.AwsProfileFileLocationProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
-import com.amazonaws.services.identitymanagement.model.AmazonIdentityManagementException;
-import com.amazonaws.services.identitymanagement.model.ListRolesRequest;
-import com.amazonaws.services.identitymanagement.model.ListRolesResult;
-import com.amazonaws.services.identitymanagement.model.Role;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.*;
@@ -24,14 +15,12 @@ import com.amazonaws.services.lambda.model.ResourceNotFoundException;
 import com.amazonaws.services.logs.AWSLogs;
 import com.amazonaws.services.logs.AWSLogsClientBuilder;
 import com.amazonaws.services.logs.model.*;
-import com.intellij.util.net.HttpConfigurable;
 import io.github.satr.common.OperationResult;
 import io.github.satr.common.OperationResultImpl;
 import io.github.satr.common.OperationValueResult;
 import io.github.satr.common.OperationValueResultImpl;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,27 +28,20 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import static org.apache.http.util.TextUtils.isEmpty;
 
-public class ConnectorModel {
-    private final Regions region;
-    private final AmazonIdentityManagement identityManagementClient;
-    private static final int MAX_FETCHED_ROLE_COUNT = 50;
+public class FunctionConnectorModel extends AbstractConnectorModel {
     private final AWSLogs awsLogClient;
     private AWSLambda awsLambdaClient;
     private static final Map<String, String> regionDescriptions;
-    private ArrayList<RoleEntity> roleEntities;
-    private Map<String, RoleEntity> roleEntityMap;
 
     static {
         regionDescriptions = createRegionDescriptionsMap();
     }
-
 
     private static Map<String, String> createRegionDescriptionsMap() {
         HashMap<String, String> map = new LinkedHashMap<>();
@@ -83,12 +65,9 @@ public class ConnectorModel {
     }
 
     private ArrayList<RegionEntity> regionEntries;
-    private String credentialProfileName;
-    private String proxyDetails = "Unknown";
 
-    public ConnectorModel(Regions region, String credentialProfileName) {
-        this.region = region;
-        this.credentialProfileName = credentialProfileName;
+    public FunctionConnectorModel(Regions region, String credentialProfileName) {
+        super(region, credentialProfileName);
         AWSCredentialsProvider credentialsProvider = getCredentialsProvider(credentialProfileName);
         ClientConfiguration clientConfiguration = getClientConfiguration();
         awsLambdaClient = AWSLambdaClientBuilder.standard()
@@ -96,51 +75,13 @@ public class ConnectorModel {
                 .withClientConfiguration(clientConfiguration)
                 .withCredentials(credentialsProvider)
                 .build();
-        identityManagementClient = AmazonIdentityManagementClientBuilder.standard()
-                .withRegion(region)
-                .withCredentials(credentialsProvider)
-                .withClientConfiguration(clientConfiguration)
-                .build();
         awsLogClient = AWSLogsClientBuilder.standard()
                 .withRegion(region)
                 .withCredentials(credentialsProvider)
                 .withClientConfiguration(clientConfiguration)
                 .build();
-        populateRoleListAndMap();
     }
 
-
-    private ClientConfiguration getClientConfiguration() {
-        HttpConfigurable httpConfigurable = HttpConfigurable.getInstance();
-        ClientConfiguration clientConfiguration = new ClientConfiguration();
-        boolean useProxyAuto = httpConfigurable.USE_PROXY_PAC;
-        if (useProxyAuto) {
-            proxyDetails = "Auto";
-        } else if (!httpConfigurable.USE_HTTP_PROXY) {
-            proxyDetails = "Not used";
-            return clientConfiguration;
-        }
-        String proxyHost = httpConfigurable.PROXY_HOST;
-        int proxyPort = httpConfigurable.PROXY_PORT;
-        clientConfiguration = clientConfiguration.withProxyHost(proxyHost)
-                .withProxyPort(proxyPort);
-        if (!useProxyAuto) {
-            proxyDetails = String.format("%s:%s", proxyHost, proxyPort);
-        }
-
-        if (httpConfigurable.PROXY_AUTHENTICATION) {
-            String proxyLogin = httpConfigurable.getProxyLogin();
-            clientConfiguration = clientConfiguration.withProxyPassword(httpConfigurable.getPlainProxyPassword())
-                    .withProxyUsername(proxyLogin);
-        }
-        return clientConfiguration;
-    }
-
-    private AWSCredentialsProvider getCredentialsProvider(String credentialProfileName) {
-        return validateCredentialProfile(credentialProfileName)
-                ? new ProfileCredentialsProvider(credentialProfileName)
-                : DefaultAWSCredentialsProviderChain.getInstance();
-    }
 
     public OperationValueResult<List<FunctionEntity>> getFunctions() {
         final List<FunctionEntity> entries = new ArrayList<>();
@@ -148,8 +89,7 @@ public class ConnectorModel {
         try {
             final ListFunctionsResult functionRequestResult = awsLambdaClient.listFunctions();
             for (FunctionConfiguration functionConfiguration : functionRequestResult.getFunctions()) {
-                FunctionEntity functionEntity = createFunctionEntity(functionConfiguration, operationResult);
-                entries.add(functionEntity);
+                entries.add(createFunctionEntity(functionConfiguration));
             }
             operationResult.setValue(entries);
         } catch (com.amazonaws.services.lambda.model.AWSLambdaException e) {
@@ -165,40 +105,8 @@ public class ConnectorModel {
     }
 
     @NotNull
-    private FunctionEntity createFunctionEntity(FunctionConfiguration functionConfiguration, OperationResult operationResult) {
-        final String roleArn = functionConfiguration.getRole();
-        final RoleEntity roleEntity = getRoleEntity(functionConfiguration.getFunctionName(), roleArn, operationResult);
-        return new FunctionEntity(functionConfiguration, roleEntity);
-    }
-
-    @Nullable
-    private RoleEntity getRoleEntity(String functionName, String roleArn, OperationResult operationResult) {
-        RoleEntity roleEntity = getRoleEntity(roleArn);
-        if (roleEntity != null) {
-            return roleEntity;
-        }
-        roleEntity = addRoleToListAndMap(new Role().withArn(roleArn).withRoleName("-"));
-        operationResult.addInfo("Added a role \"%s\" from a function \"%s\".",
-                roleArn, functionName);
-        return roleEntity;
-    }
-
-    private RoleEntity getRoleEntity(String roleName) {
-        return roleEntityMap.get(roleName);
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        shutdown();
-        super.finalize();
-    }
-
-    public void shutdown() {
-        if (awsLambdaClient == null)
-            return;
-
-        awsLambdaClient.shutdown();
-        awsLambdaClient = null;
+    private FunctionEntity createFunctionEntity(FunctionConfiguration functionConfiguration) {
+        return new FunctionEntity(functionConfiguration);
     }
 
     public OperationValueResult<FunctionEntity> updateWithJar(final FunctionEntity functionEntity, final String filePath) {
@@ -237,13 +145,7 @@ public class ConnectorModel {
                     .withFunctionName(functionEntity.getFunctionName())
                     .withZipFile(buffer);
             final UpdateFunctionCodeResult updateFunctionResult = awsLambdaClient.updateFunctionCode(request);
-            final String roleName = updateFunctionResult.getRole();
-            final RoleEntity roleEntity = getRoleEntity(updateFunctionResult.getFunctionName(), roleName, valueResult);
-            if (roleEntity == null) {
-                valueResult.addError("Not found role by name \"%s\"", roleName);
-            } else {
-                valueResult.setValue(new FunctionEntity(updateFunctionResult, roleEntity));
-            }
+           valueResult.setValue(new FunctionEntity(updateFunctionResult));
         } catch (IOException e) {
             e.printStackTrace();
             valueResult.addError("Update function error: %s", e.getMessage());
@@ -324,70 +226,15 @@ public class ConnectorModel {
         return valueResult;
     }
 
-    private boolean validateCredentialProfile(String credentialProfileName) {
-        return !isEmpty(credentialProfileName)
-                && validateCredentialProfilesExist()
-                && new ProfilesConfigFile().getAllBasicProfiles().containsKey(credentialProfileName);
-    }
-
-    private boolean validateCredentialProfilesExist() {
-        return AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation() != null;
-    }
-
-    public Regions getRegion() {
-        return region;
-    }
-
-    public String getCredentialProfileName() {
-        return credentialProfileName;
-    }
-
     public String getProxyDetails() {
         return proxyDetails;
-    }
-
-    public List<RoleEntity> getRolesRefreshed() {
-        populateRoleListAndMap();
-        return roleEntities;
-    }
-
-    private void populateRoleListAndMap() {
-        roleEntities = new ArrayList<>();
-        roleEntityMap = new LinkedHashMap<>();
-        try {
-            ListRolesRequest listRolesRequest = new ListRolesRequest().withMaxItems(MAX_FETCHED_ROLE_COUNT);
-            ListRolesResult listRolesResult = identityManagementClient.listRoles(listRolesRequest);
-            List<Role> roles = listRolesResult.getRoles();
-            for (Role role : roles) {
-                addRoleToListAndMap(role);
-            }
-        } catch (AmazonIdentityManagementException e) {
-            if ("AccessDenied".equals(e.getErrorCode())) {
-                //"User has not access to a list of roles.
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private RoleEntity addRoleToListAndMap(Role role) {
-        RoleEntity roleEntity = roleEntityMap.get(role.getArn());
-        if (roleEntity != null) {
-            return roleEntity;
-        }
-        roleEntity = new RoleEntity(role);
-        roleEntityMap.put(role.getArn(), roleEntity);
-        roleEntities.add(roleEntity);
-        return roleEntity;
     }
 
     public OperationValueResult<FunctionEntity> getFunctionBy(String name) {
         GetFunctionRequest getFunctionRequest = new GetFunctionRequest().withFunctionName(name);
         GetFunctionResult function = awsLambdaClient.getFunction(getFunctionRequest);
         OperationValueResultImpl<FunctionEntity> valueResult = new OperationValueResultImpl<>();
-        FunctionConfiguration functionConfiguration = function.getConfiguration();
-        FunctionEntity functionEntity = createFunctionEntity(functionConfiguration, valueResult);
-        valueResult.setValue(functionEntity);
+        valueResult.setValue(createFunctionEntity(function.getConfiguration()));
         return valueResult;
     }
 
@@ -399,7 +246,7 @@ public class ConnectorModel {
                 .withHandler(functionEntity.getHandler())
                 .withTimeout(functionEntity.getTimeout())
                 .withMemorySize(functionEntity.getMemorySize())
-                .withRole(functionEntity.getRoleEntity().getArn())
+                .withRole(functionEntity.getRoleArn())
                 .withTracingConfig(functionEntity.getTracingModeEntity().getTracingConfig());
         try {
             awsLambdaClient.updateFunctionConfiguration(request);
@@ -453,4 +300,15 @@ public class ConnectorModel {
         awsLogStreamEventEntities.sort(Comparator.comparing(AwsLogStreamEventEntity::getTimeStamp));
         return operationResult;
     }
+
+    @Override
+    public void shutdown() {
+        if (awsLambdaClient != null) {
+            awsLambdaClient.shutdown();
+        }
+        if (awsLogClient != null) {
+            awsLogClient.shutdown();
+        }
+    }
+
 }

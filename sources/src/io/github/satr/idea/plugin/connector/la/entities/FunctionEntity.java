@@ -17,14 +17,14 @@ public class FunctionEntity {
     private String description;
     private String arn;
     private LocalDateTime lastModified;
-    private RoleEntity roleEntity;
     private Integer timeout;
     private Integer memorySize;
     private TracingModeEntity tracingModeEntity;
     private boolean changed;
+    private String roleArn;
 
-    public FunctionEntity(UpdateFunctionCodeResult updateFunctionCodeResult, RoleEntity roleEntity) {
-        this(roleEntity,
+    public FunctionEntity(UpdateFunctionCodeResult updateFunctionCodeResult) {
+        this(updateFunctionCodeResult.getRole(),
             updateFunctionCodeResult.getFunctionName(),
             updateFunctionCodeResult.getRuntime(),
             updateFunctionCodeResult.getHandler(),
@@ -37,8 +37,8 @@ public class FunctionEntity {
         );
     }
 
-    public FunctionEntity(FunctionConfiguration functionConfiguration, RoleEntity roleEntity) {
-        this(roleEntity,
+    public FunctionEntity(FunctionConfiguration functionConfiguration) {
+        this(functionConfiguration.getRole(),
             functionConfiguration.getFunctionName(),
             functionConfiguration.getRuntime(),
             functionConfiguration.getHandler(),
@@ -51,7 +51,7 @@ public class FunctionEntity {
             );
     }
 
-    private FunctionEntity(RoleEntity roleEntity, String functionName, String runtime, String handler,
+    private FunctionEntity(String roleArn, String functionName, String runtime, String handler,
                            String description, String functionArn, String lastModified, Integer timeout,
                            Integer memorySize, TracingConfigResponse tracingConfig) {
         this.functionName = functionName;
@@ -60,7 +60,7 @@ public class FunctionEntity {
         this.description = description;
         arn = functionArn;
         this.lastModified = LocalDateTime.parse(lastModified, dateTimeFormatter);
-        this.roleEntity = roleEntity;
+        this.roleArn = roleArn;
         this.timeout = timeout;
         this.memorySize = memorySize;
         tracingModeEntity = TracingModeEntity.fromValue(tracingConfig.getMode());
@@ -106,14 +106,6 @@ public class FunctionEntity {
         this.lastModified = lastModified;
     }
 
-    public RoleEntity getRoleEntity() {
-        return roleEntity;
-    }
-
-    public void setRole(RoleEntity role) {
-        this.roleEntity = role;
-    }
-
     public Integer getTimeout() {
         return timeout;
     }
@@ -145,5 +137,13 @@ public class FunctionEntity {
 
     public boolean isChanged() {
         return true;//changed;//TODO set according property changes
+    }
+
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
     }
 }

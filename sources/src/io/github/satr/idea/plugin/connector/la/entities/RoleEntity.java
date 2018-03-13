@@ -4,16 +4,21 @@ import com.amazonaws.services.identitymanagement.model.Role;
 
 import java.util.Objects;
 
+import static org.apache.http.util.TextUtils.isEmpty;
+
 public class RoleEntity {
     private final Role role;
     private final String arn;
     private String name;
 
     public RoleEntity(Role role) {
-
         this.role = role;
         name = role.getRoleName();
         arn = role.getArn();
+    }
+
+    public RoleEntity(String roleArn) {
+        this(create(roleArn));
     }
 
     public String getName() {
@@ -30,7 +35,8 @@ public class RoleEntity {
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", name, arn);
+
+        return isEmpty(name) || name.equals(arn) ? arn : String.format("%s (%s)", name, arn);
     }
 
     @Override
@@ -48,5 +54,9 @@ public class RoleEntity {
     @Override
     public int hashCode() {
         return Objects.hash(arn, name);
+    }
+
+    public static Role create(String roleArn) {
+        return new Role().withArn(roleArn).withRoleName(roleArn);
     }
 }

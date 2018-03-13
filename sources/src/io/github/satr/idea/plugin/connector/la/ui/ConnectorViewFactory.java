@@ -3,6 +3,7 @@ package io.github.satr.idea.plugin.connector.la.ui;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.identitymanagement.model.Role;
 import com.amazonaws.services.lambda.model.AWSLambdaException;
 import com.amazonaws.services.lambda.model.Runtime;
 import com.amazonaws.services.logs.model.InvalidOperationException;
@@ -35,9 +36,8 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.DateFormatter;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.time.LocalDateTime;
@@ -103,8 +103,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private boolean setRegionOperationInProgress;
     private boolean runFunctionTestOperationInProgress;
     private final List<JButton> buttons = new ArrayList<>();
-    private final DateFormatter dateFormatter = new DateFormatter();
     private Project project;
+    private final DefaultComboBoxModel<JComboBoxToolTipProvider<RoleEntity>> roleEntityListModel =  new DefaultComboBoxModel<>();
     private DefaultListModel<AwsLogStreamEntity> awsLogStreamListModel = new DefaultListModel<>();
     private DefaultListModel<AwsLogStreamEventEntity> awsLogStreamEventListModel = new DefaultListModel<>();
 
@@ -119,19 +119,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
 
         prepareButtons();
         prepareUiLogger();
-
-
-        MessageBusConnection messageBusConnector = getMessageBusConnector();
-        messageBusConnector.subscribe(UISettingsListener.TOPIC, (uiSettingsChanged) -> fixButtonsAfterPotentiallyChangedTheme());
-        messageBusConnector.subscribe(BuildManagerListener.TOPIC, new BuildManagerListener() {
-            @Override
-            public void buildFinished(Project prj, UUID uuid, boolean b) {
-                performAfterBuildActivity();
-            }
-        });
-
-
-        functionRoles.setRenderer(new JComboBoxItemToolTipRenderer(functionRoles));
+        prepareRolesList();
+        subscribeToIdeaBusNotifications();
 
         refreshAllButton.addActionListener(e -> {
             runRefreshAll();
@@ -197,6 +186,40 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         this.presenter.refreshTracingModeList();
         this.presenter.refreshJarArtifactList();
         runRefreshAll();
+    }
+
+    public void subscribeToIdeaBusNotifications() {
+        MessageBusConnection messageBusConnector = getMessageBusConnector();
+        messageBusConnector.subscribe(UISettingsListener.TOPIC, (uiSettingsChanged) -> fixButtonsAfterPotentiallyChangedTheme());
+        messageBusConnector.subscribe(BuildManagerListener.TOPIC, new BuildManagerListener() {
+            @Override
+            public void buildFinished(Project prj, UUID uuid, boolean b) {
+                performAfterBuildActivity();
+            }
+        });
+    }
+
+    public void prepareRolesList() {
+        functionRoles.setModel(roleEntityListModel);
+        functionRoles.setRenderer(new JComboBoxItemToolTipRenderer(functionRoles));
+        functionRoles.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                if(!presenter.roleListLoaded()) {
+                    runInitializeFunctionRoleList();
+                }
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+
+            }
+        });
     }
 
     public void runChangeAutoRefreshAwsLog(boolean selected) {
@@ -415,6 +438,18 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.refreshJarArtifactList(), "Refresh list of JAR-artifacts in the project");
     }
 
+    private void runInitializeFunctionRoleList() {
+        runOperation(() -> {
+            if(presenter.initializeFunctionRoleList()) {
+                JPopupMenu popupMenu = functionRoles.getComponentPopupMenu();
+                if(popupMenu != null) {
+                    popupMenu.invalidate();
+                }
+                functionRoles.hidePopup();
+            }
+        }, "Initialize function role list");
+    }
+
     private void runRefreshRegionList() {
         runOperation(() -> presenter.refreshRegionList(), "Refresh list of AWS regions");
     }
@@ -584,7 +619,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         functionEntity.setDescription(getFunctionDescription());
         functionEntity.setArn(getFunctionArn());
         functionEntity.setHandler(getFunctionHandler());
-        functionEntity.setRole(getFunctionRole());
+        functionEntity.setRoleArn(getFunctionRole().getArn());
         functionEntity.setTimeout(getFunctionTimeout());
         functionEntity.setMemorySize(getFunctionMemorySize());
         functionEntity.setTracingModeEntity(getFunctionTracingConfigMode());
@@ -680,21 +715,23 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         LocalDateTime lastModified = functionEntity.getLastModified();
         String format = DateTimeHelper.toFormattedString(lastModified);
         functionLastModified.setText(format);
-        selectRoleInList(functionEntity.getRoleEntity());
-        functionRoles.setToolTipText(functionEntity.getRoleEntity().toString());
+        selectRoleInList(functionEntity.getRoleArn());
+        functionRoles.setToolTipText(functionEntity.getRoleArn());
         functionRuntime.setText(functionEntity.getRuntime().name());
         functionMemorySize.setText(functionEntity.getMemorySize().toString());
         functionTimeout.setText(functionEntity.getTimeout().toString());
         functionTracingConfigModes.setSelectedItem(functionEntity.getTracingModeEntity());
     }
 
-    private void selectRoleInList(RoleEntity roleEntity) {
-        for (int i = 0; i < functionRoles.getItemCount(); i++) {
-            Object itemEntity = ((JComboBoxToolTipProvider) functionRoles.getItemAt(i)).getEntity();
-            if(roleEntity.equals(itemEntity)) {
-                functionRoles.setSelectedIndex(i);
-                break;
+    private void selectRoleInList(String roleArn) {
+        for (int i = 0; i < roleEntityListModel.getSize(); i++) {
+            JComboBoxToolTipProvider<RoleEntity> item = roleEntityListModel.getElementAt(i);
+            if (!roleArn.equals(item.getEntity().getArn())) {
+                continue;
             }
+            roleEntityListModel.setSelectedItem(item);
+            functionRoles.setToolTipText(item.getEntity().toString());
+            return;
         }
     }
 
@@ -717,11 +754,29 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     @Override
-    public void setRoleList(List<RoleEntity> roles) {
-        functionRoles.removeAllItems();
-        for(RoleEntity entity : roles) {
-            functionRoles.addItem(new JComboBoxToolTipProviderImpl(entity.getName(), entity.toString()).withEntity(entity));
+    public void clearRoleList() {
+        roleEntityListModel.removeAllElements();
+    }
+
+    @Override
+    public void setRoleList(List<RoleEntity> roles, RoleEntity selectedRoleEntity) {
+        roleEntityListModel.removeAllElements();
+        JComboBoxToolTipProvider<RoleEntity> itemToSelect = null;
+        for(RoleEntity roleEntity : roles) {
+            JComboBoxToolTipProvider<RoleEntity> item = createJComboBoxToolTipProviderFor(roleEntity);
+            if(item.getEntity().equals(selectedRoleEntity)){
+                itemToSelect = item;
+            }
+            roleEntityListModel.addElement(item);
         }
+        if(itemToSelect != null) {
+            roleEntityListModel.setSelectedItem(itemToSelect);
+        }
+    }
+
+    @NotNull
+    public JComboBoxToolTipProvider<RoleEntity> createJComboBoxToolTipProviderFor(RoleEntity roleEntity) {
+        return new JComboBoxToolTipProviderImpl<>(roleEntity.getName(), roleEntity.toString()).withEntity(roleEntity);
     }
 
     @Override
