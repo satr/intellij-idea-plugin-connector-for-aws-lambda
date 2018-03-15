@@ -3,10 +3,10 @@ package io.github.satr.idea.plugin.connector.la.ui;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.identitymanagement.model.Role;
 import com.amazonaws.services.lambda.model.AWSLambdaException;
 import com.amazonaws.services.lambda.model.Runtime;
 import com.amazonaws.services.logs.model.InvalidOperationException;
+import com.intellij.codeInspection.ui.RegExFormatter;
 import com.intellij.compiler.server.BuildManagerListener;
 import com.intellij.ide.ui.UISettingsListener;
 import com.intellij.openapi.application.ApplicationManager;
@@ -29,6 +29,7 @@ import io.github.satr.idea.plugin.connector.la.models.ProjectModelImpl;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxItemToolTipRenderer;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxToolTipProvider;
 import io.github.satr.idea.plugin.connector.la.ui.components.JComboBoxToolTipProviderImpl;
+import io.github.satr.idea.plugin.connector.la.ui.components.RegexFormatter;
 import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -38,10 +39,20 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
+import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 
 import static io.github.satr.common.StringUtil.getNotEmptyString;
 import static org.apache.http.util.TextUtils.isEmpty;
@@ -96,6 +107,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JList awsLogStreamEventList;
     private JCheckBox autoRefreshAwsLog;
     private JButton refreshAwsLogStreamList;
+    private JLabel functionSizeLimits;
+    private JLabel functionParameterConstraints;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -118,6 +131,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         this.presenter.setView(this);
 
         prepareButtons();
+        prepareEditableFields();
+        prepareHyperLinks();
         prepareUiLogger();
         prepareRolesList();
         subscribeToIdeaBusNotifications();
@@ -186,6 +201,42 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         this.presenter.refreshTracingModeList();
         this.presenter.refreshJarArtifactList();
         runRefreshAll();
+    }
+
+    public void prepareHyperLinks() {
+        initHyperlinkLabel(functionSizeLimits,
+                "https://docs.aws.amazon.com/lambda/latest/dg/limits.html",
+                " Size limits ", "Size limits for a code file and space, allocated for a function");
+        initHyperlinkLabel(functionParameterConstraints,
+                "https://docs.aws.amazon.com/lambda/latest/dg/API_UpdateFunctionConfiguration.html",
+                " Constraints ", "Constraints of parameters");
+    }
+
+    private void prepareEditableFields() {
+        //The name of the function. Note that the length constraint applies only to the ARN. If you specify only the function name, it is limited to 64 characters in length.
+//fix cleared previous value, when invalid new value was entered
+//        functionHandler.setFormatterFactory(getRegexFormatterFactory("[^\\s]{1,128}"));
+//        functionDescription.setFormatterFactory(getRegexFormatterFactory("\\w{0,256}"));
+        functionHandler.setToolTipText("1 to 128 characters, spaces are not allowed");
+        functionDescription.setToolTipText("Optional. 0 to 256 characters");
+        functionTimeout.setFormatterFactory(getIntegerFormatterFactoryFor(1, 30000));
+        functionTimeout.setToolTipText("Timeout: 1 to 30000 s (default: 3 s)\nDefault Max: 300 s - it might depend on account's constraints");
+        functionMemorySize.setFormatterFactory(getIntegerFormatterFactoryFor(128, 3008));
+        functionMemorySize.setToolTipText("Memory Size: 128 to 3008 MB (default: 64 MB)");
+    }
+
+    @NotNull
+    private DefaultFormatterFactory getIntegerFormatterFactoryFor(int minValue, int maxValue) {
+        NumberFormatter integerFormat = new NumberFormatter(NumberFormat.getIntegerInstance());
+        integerFormat.setMinimum(new Integer(minValue));
+        integerFormat.setMaximum(new Integer(maxValue));
+        return new DefaultFormatterFactory(integerFormat, integerFormat, integerFormat);
+    }
+
+    private JFormattedTextField.AbstractFormatterFactory getRegexFormatterFactory(String pattern) {
+        RegExFormatter formatter = new RegExFormatter();
+        formatter.setAllowsInvalid(false);
+        return new DefaultFormatterFactory(new RegexFormatter(pattern));
     }
 
     public void subscribeToIdeaBusNotifications() {
@@ -302,6 +353,26 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         }
     }
 
+    private void initHyperlinkLabel(JLabel label, final String url, String text) {
+        initHyperlinkLabel(label, url, text, null);
+    }
+
+    private void initHyperlinkLabel(JLabel label, final String url, String text, String toolTip) {
+        label.setText("<html><a href=\"\">"+text+"</a></html>");
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        label.setToolTipText(isEmpty(toolTip) ? url : toolTip);
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new URI(url));
+                    } catch (URISyntaxException | IOException ex) {
+                    }
+                }
+            }
+        });
+    }
     private void prepareUiLogger() {
         uiLogger.addAppender(new AsyncAppender(){
             @Override
@@ -707,9 +778,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             return;
         }
         functionDescription.setText(functionEntity.getDescription());
-        functionDescription.setToolTipText(functionEntity.getDescription());
         functionHandler.setText(functionEntity.getHandler());
-        functionHandler.setToolTipText(functionEntity.getHandler());
         functionArn.setText(functionEntity.getArn());
         functionArn.setToolTipText(functionEntity.getArn());
         LocalDateTime lastModified = functionEntity.getLastModified();
@@ -718,8 +787,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         selectRoleInList(functionEntity.getRoleArn());
         functionRoles.setToolTipText(functionEntity.getRoleArn());
         functionRuntime.setText(functionEntity.getRuntime().name());
-        functionMemorySize.setText(functionEntity.getMemorySize().toString());
-        functionTimeout.setText(functionEntity.getTimeout().toString());
+        functionMemorySize.setValue(new Integer(functionEntity.getMemorySize()));
+        functionTimeout.setValue(new Integer(functionEntity.getTimeout().toString()));
         functionTracingConfigModes.setSelectedItem(functionEntity.getTracingModeEntity());
     }
 
@@ -737,9 +806,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
 
     private void clearFunctionConfiguration() {
         functionDescription.setText("");
-        functionDescription.setToolTipText(null);
         functionHandler.setText("");
-        functionHandler.setToolTipText(null);
         functionArn.setText("");
         functionArn.setToolTipText(null);
         functionLastModified.setText("");
@@ -896,4 +963,5 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         Object selectedItem = functionRoles.getSelectedItem();
         return selectedItem == null ? null : (RoleEntity) ((JComboBoxToolTipProvider) selectedItem).getEntity();
     }
+
 }

@@ -4,10 +4,7 @@ package io.github.satr.idea.plugin.connector.la.ui;
 import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.Runtime;
-import io.github.satr.common.Constant;
-import io.github.satr.common.OperationResult;
-import io.github.satr.common.OperationResultImpl;
-import io.github.satr.common.OperationValueResult;
+import io.github.satr.common.*;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 import io.github.satr.idea.plugin.connector.la.models.FunctionConnectorModel;
 import io.github.satr.idea.plugin.connector.la.models.RoleConnectorModel;
@@ -18,6 +15,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.zip.ZipFile;
 
 import static org.apache.http.util.TextUtils.isEmpty;
 
@@ -120,7 +118,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     private OperationResult validateToUpdate(FunctionEntity functionEntity, ArtifactEntity artifactEntity) {
-        OperationResultImpl result = new OperationResultImpl();
+        final OperationResultImpl result = new OperationResultImpl();
         if(functionEntity == null){
             result.addError("Function is not selected.");
         }
@@ -130,8 +128,26 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         if(result.failed()) {
             return result;
         }
-        if(!new File(artifactEntity.getOutputFilePath()).exists()){
+        final File codeFile = new File(artifactEntity.getOutputFilePath());
+        if(!codeFile.exists()){
             result.addError("JAR-artifact file does not exist.");
+            return result;
+        }
+        final long codeFileSize = codeFile.length();
+        final int _50MB = 52428800;
+        if(codeFileSize > _50MB){
+            result.addError("Code file sized exceeds 50MB limit - its size is %d bytes.", codeFileSize);
+            return result;
+        }
+        final int zipContentSize = FileHelper.getZipContentSize(codeFile);
+        if(zipContentSize <= 0){
+            result.addError("Code file is invalid of empty.");
+            return result;
+        }
+        final int _250MB = 262144000;
+        if(zipContentSize > _250MB){
+            result.addError("Code file content size (with dependencies) exceeds 250MB limit - its size is %d bytes.", zipContentSize);
+            return result;
         }
         return result;
     }
@@ -413,6 +429,11 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         try {
             String filePath = file.getCanonicalPath();
             getLogger().logDebug("Read function test input from file: %s", filePath);
+            long codeFileSize = file.length();
+            if(codeFileSize > 1048576){
+                getLogger().logError("Code file sized exceeds 1MB limit - its size is %d bytes", codeFileSize);
+                return;
+            }
             byte[] buffer = Files.readAllBytes(file.toPath());
             String inputText = new String(buffer);
             view.setTestFunctionInput(inputText);
