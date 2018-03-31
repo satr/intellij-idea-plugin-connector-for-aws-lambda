@@ -14,6 +14,7 @@
   <change-notes><![CDATA[
       <ul>
       <li>1.6.RC2</li>
+      <li>Function configuration details form can be collapsed or expanded.</li>
       <li>Clear content for input and output.</li>
       <li>Reformat JSON content for input and output.</li>
       <li>Deleting of AWS log streams for a selected function.</li>

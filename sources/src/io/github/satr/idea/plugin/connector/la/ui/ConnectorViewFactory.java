@@ -72,7 +72,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JButton refreshRegionsButton;
     private JComboBox credentialProfileList;
     private JButton refreshCredentialProfiles;
-    private JTabbedPane tabContent;
+    private JTabbedPane tabMainContent;
     private JTextArea localLogText;
     private JPanel tabPanSettings;
     private JTextPane txtStatus;
@@ -108,8 +108,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JList awsLogStreamEventList;
     private JCheckBox autoRefreshAwsLog;
     private JButton refreshAwsLogStreamList;
-    private JLabel functionSizeLimits;
-    private JLabel functionParameterConstraints;
+    private JLabel functionSizeLimitsLink;
+    private JLabel functionParameterConstraintsLink;
     private JScrollPane functionTestOutputTextScroll;
     private JCheckBox functionTestOutputWrapCheckBox;
     private JButton clearFunctionTestOutputButton;
@@ -120,6 +120,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JCheckBox localLogWrapCheckBox;
     private JButton reformatJsonFunctionTestInputButton;
     private JButton reformatJsonFunctionTestOutputButton;
+    private JButton functionConfigurationCollapseExpandButton;
+    private JPanel functionConfigurationDetailsPanel;
+    private JSplitPane mainSplitPanel;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -248,6 +251,20 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         reformatJsonFunctionTestOutputButton.addActionListener(e -> {
             runReformatJsonFunctionTestOutput();
         });
+        collapseFunctionConfigurationDetails(true);
+        functionConfigurationCollapseExpandButton.addActionListener(e -> {
+            collapseFunctionConfigurationDetails(functionConfigurationDetailsPanel.isVisible());
+        });
+    }
+
+    private void collapseFunctionConfigurationDetails(boolean collapse) {
+        functionConfigurationDetailsPanel.setVisible(!collapse);
+        functionSizeLimitsLink.setVisible(!collapse);
+        functionParameterConstraintsLink.setVisible(!collapse);
+        refreshFunctionConfiguration.setVisible(!collapse);
+        setupButton(functionConfigurationCollapseExpandButton, collapse ? IconLoader.getIcon("/icons/iconExpand.png")
+                                                                : IconLoader.getIcon("/icons/iconCollapse.png"));
+        mainSplitPanel.getUI().resetToPreferredSizes(mainSplitPanel);
     }
 
 
@@ -270,10 +287,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     public void prepareHyperLinks() {
-        initHyperlinkLabel(functionSizeLimits,
+        initHyperlinkLabel(functionSizeLimitsLink,
                 "https://docs.aws.amazon.com/lambda/latest/dg/limits.html",
                 " Size limits ", "Size limits for a code file and space, allocated for a function");
-        initHyperlinkLabel(functionParameterConstraints,
+        initHyperlinkLabel(functionParameterConstraintsLink,
                 "https://docs.aws.amazon.com/lambda/latest/dg/API_UpdateFunctionConfiguration.html",
                 " Constraints ", "Constraints of parameters");
     }
@@ -369,6 +386,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         setupButton(refreshAwsLogStreamList, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(reformatJsonFunctionTestInputButton, IconLoader.getIcon("/icons/iconReformatJson.png"));
         setupButton(reformatJsonFunctionTestOutputButton, IconLoader.getIcon("/icons/iconReformatJson.png"));
+        setupButton(functionConfigurationCollapseExpandButton, IconLoader.getIcon("/icons/iconExpand.png"));
     }
 
     private void performAfterBuildActivity() {
@@ -385,7 +403,9 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private void setupButton(JButton button, Icon icon) {
         button.setIcon(icon);
         removeButtonBorder(button);
-        buttons.add(button);
+        if(!buttons.contains(button)) {
+            buttons.add(button);
+        }
     }
 
     private static void removeButtonBorder(JButton button) {
