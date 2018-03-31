@@ -464,8 +464,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         if(operationInProgress || setRegionOperationInProgress) {
             return;
         }
-        int selectedIndex = e.getFirstIndex();
-        if(awsLogStreamListModel.size() < selectedIndex + 1){
+        int selectedIndex = ((JList)e.getSource()).getSelectedIndex();
+        if(awsLogStreamListModel.size() < selectedIndex + 1) {
             throw new InvalidOperationException(String.format("awsLogStreamListModel has less elements than selected index %d", selectedIndex));
         }
         AwsLogStreamEntity entity = awsLogStreamListModel.get(selectedIndex);
