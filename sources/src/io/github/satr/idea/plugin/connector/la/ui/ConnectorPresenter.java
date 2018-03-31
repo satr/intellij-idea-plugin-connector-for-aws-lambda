@@ -22,7 +22,7 @@ public interface ConnectorPresenter {
     void setCredentialProfile(CredentialProfileEntity credentialProfileEntity);
     void setFunction(FunctionEntity functionEntity);
     void setJarArtifact(ArtifactEntity artifactEntity);
-    void runFunctionTest(String text);
+    void runFunctionTest(String inputText, boolean autoFormatOutput);
     void openTestFunctionInputFile(File filename);
     String getLastSelectedTestFunctionInputFilePath();
     void setLastSelectedTestFunctionInputFilePath(String path);

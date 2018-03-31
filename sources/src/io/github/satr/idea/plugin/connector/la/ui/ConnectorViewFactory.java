@@ -123,6 +123,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JButton functionConfigurationCollapseExpandButton;
     private JPanel functionConfigurationDetailsPanel;
     private JSplitPane mainSplitPanel;
+    private JCheckBox autoFormatJsonFunctionTestOutputCheckBox;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -254,6 +255,12 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         collapseFunctionConfigurationDetails(true);
         functionConfigurationCollapseExpandButton.addActionListener(e -> {
             collapseFunctionConfigurationDetails(functionConfigurationDetailsPanel.isVisible());
+        });
+        autoFormatJsonFunctionTestOutputCheckBox.addChangeListener(e -> {
+            boolean autoFormat = ((JCheckBox) e.getSource()).isSelected();
+            if(autoFormat) {
+                runReformatJsonFunctionTestOutput();
+            }
         });
     }
 
@@ -576,11 +583,15 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> {
             runFunctionTestOperationInProgress = true;
             try {
-                presenter.runFunctionTest(functionTestInputText.getText());
+                presenter.runFunctionTest(functionTestInputText.getText(), isAutoFormatFunctionTestOutput());
             } finally {
                 runFunctionTestOperationInProgress = false;
             }
         }, "Run test of the function");
+    }
+
+    private boolean isAutoFormatFunctionTestOutput() {
+        return autoFormatJsonFunctionTestOutputCheckBox.isSelected();
     }
 
     private void runSetCredentialProfile(ItemEvent e) {

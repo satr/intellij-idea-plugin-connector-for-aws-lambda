@@ -443,7 +443,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     @Override
-    public void runFunctionTest(String inputText) {
+    public void runFunctionTest(String inputText, boolean autoFormatOutput) {
         FunctionEntity functionEntity = view.getSelectedFunctionEntity();
         if(functionEntity == null) {
             getLogger().logError("Cannot runChangeAutoRefreshAwsLog function - function is not selected.");
@@ -461,7 +461,19 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         if(result.failed()) {
             getLogger().logError("Run function test failed:\n%s", result.getErrorAsString());
         }
-        view.setFunctionTestOutput(result.getValue());
+        String testOutput = result.getValue();
+        if(!autoFormatOutput) {
+            view.setFunctionTestOutput(testOutput);
+            return;
+        }
+        OperationValueResult<String> autoFormatResult = jsonHelper.Reformat(testOutput);
+        if(autoFormatResult.success()) {
+            getLogger().logDebug("JSON output has been auto-formatted.");
+            view.setFunctionTestOutput(autoFormatResult.getValue());
+            return;
+        }
+        getLogger().logError("Auto-formatting of JSON output failed:\n%s", autoFormatResult.getErrorAsString());
+
     }
 
     @Override

@@ -16,7 +16,7 @@
       <li>1.6.RC2</li>
       <li>Function configuration details form can be collapsed or expanded.</li>
       <li>Clear content for input and output.</li>
-      <li>Reformat JSON content for input and output.</li>
+      <li>Reformat JSON content for input and output. Output can be auto-formatted on function invocation.</li>
       <li>Deleting of AWS log streams for a selected function.</li>
       <li>1.6.RC1</li>
       <li>Set constraints to function properties and code file size. Added links to these values on AWS documentation site.</li>
