@@ -10,10 +10,19 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-lambda:1.11.276" level="project" />
-    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-iam:1.11.285" level="project" />
-    <orderEntry type="library" scope="TEST" name="org.mockito:mockito-all:1.10.19" level="project" />
-    <orderEntry type="library" name="log4j:log4j:1.2.17" level="project" />
-    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-logs:1.11.28" level="project" />
+    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-lambda:Latest" level="project" />
+    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-iam:Latest" level="project" />
+    <orderEntry type="library" scope="TEST" name="org.mockito:mockito-all:Latest" level="project" />
+    <orderEntry type="library" name="log4j:log4j:Latest" level="project" />
+    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-logs:Latest" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/maven/lib/maven.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

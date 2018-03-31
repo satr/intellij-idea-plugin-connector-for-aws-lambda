@@ -53,7 +53,7 @@
 
   <idea-version since-build="IU-171.4694"/>
   <depends>com.intellij.modules.java</depends>
-  <depends>org.jetbrains.idea.maven</depends>
+  <depends>org.jetbrains.idea.maven</depends><!--Add manually a jar-dependency for the module to a plugin "maven.jar" from the IDEA install folder "Contents/plugins/maven/lib"-->
   <extensions defaultExtensionNs="com.intellij">
       <applicationService serviceInterface="io.github.satr.idea.plugin.connector.la.models.ConnectorSettings"
                           serviceImplementation="io.github.satr.idea.plugin.connector.la.models.ConnectorSettings" />
