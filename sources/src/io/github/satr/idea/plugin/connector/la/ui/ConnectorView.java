@@ -33,4 +33,5 @@ public interface ConnectorView {
     void clearAwsLogStreamEventList();
     void clearAwsLogStreamList();
     void clearRoleList();
+    void setAwsLogStreamEvent(String timestamp, String message);
 }

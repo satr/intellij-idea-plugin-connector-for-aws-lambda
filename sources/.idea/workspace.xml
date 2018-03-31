@@ -7,6 +7,7 @@
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -38,59 +39,65 @@
       <file leaf-file-name="ConnectorViewFactory.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="376">
-              <caret line="585" column="34" selection-start-line="585" selection-start-column="34" selection-end-line="585" selection-end-column="34" />
+            <state relative-caret-position="398">
+              <caret line="223" selection-start-line="223" selection-end-line="223" />
               <folding>
-                <element signature="e#18323#18324#0" expanded="true" />
-                <element signature="e#18366#18367#0" expanded="true" />
-                <element signature="e#25921#25922#0" expanded="true" />
-                <element signature="e#25949#25950#0" expanded="true" />
-                <element signature="e#26947#26948#0" expanded="true" />
-                <element signature="e#26987#26988#0" expanded="true" />
-                <element signature="e#27032#27033#0" expanded="true" />
-                <element signature="e#27081#27082#0" expanded="true" />
-                <element signature="e#27127#27128#0" expanded="true" />
-                <element signature="e#27177#27178#0" expanded="true" />
-                <element signature="e#27352#27353#0" expanded="true" />
-                <element signature="e#27425#27426#0" expanded="true" />
-                <element signature="e#35033#35034#0" expanded="true" />
-                <element signature="e#35103#35104#0" expanded="true" />
-                <element signature="e#35805#35806#0" expanded="true" />
-                <element signature="e#35878#35879#0" expanded="true" />
-                <element signature="e#35945#35946#0" expanded="true" />
-                <element signature="e#36011#36012#0" expanded="true" />
-                <element signature="e#36684#36685#0" expanded="true" />
-                <element signature="e#36743#36744#0" expanded="true" />
-                <element signature="e#36815#36816#0" expanded="true" />
-                <element signature="e#36873#36874#0" expanded="true" />
-                <element signature="e#36948#36949#0" expanded="true" />
-                <element signature="e#37006#37007#0" expanded="true" />
-                <element signature="e#37079#37080#0" expanded="true" />
-                <element signature="e#37138#37139#0" expanded="true" />
-                <element signature="e#37201#37202#0" expanded="true" />
-                <element signature="e#37249#37250#0" expanded="true" />
-                <element signature="e#37323#37324#0" expanded="true" />
-                <element signature="e#37381#37382#0" expanded="true" />
-                <element signature="e#37453#37454#0" expanded="true" />
-                <element signature="e#37509#37510#0" expanded="true" />
-                <element signature="e#40144#40145#0" expanded="true" />
-                <element signature="e#40199#40200#0" expanded="true" />
-                <element signature="e#42258#42259#0" expanded="true" />
-                <element signature="e#42320#42321#0" expanded="true" />
-                <element signature="e#42393#42394#0" expanded="true" />
-                <element signature="e#42454#42455#0" expanded="true" />
-                <element signature="e#42516#42517#0" expanded="true" />
-                <element signature="e#42575#42576#0" expanded="true" />
-                <element signature="e#44373#44374#0" expanded="true" />
-                <element signature="e#44455#44456#0" expanded="true" />
-                <element signature="e#44494#44495#0" expanded="true" />
-                <element signature="e#44568#44569#0" expanded="true" />
-                <element signature="e#44611#44612#0" expanded="true" />
-                <element signature="e#44689#44690#0" expanded="true" />
-                <element signature="e#44729#44730#0" expanded="true" />
-                <element signature="e#44813#44814#0" expanded="true" />
-                <element signature="e#44856#44857#0" expanded="true" />
-                <element signature="e#44944#44945#0" expanded="true" />
+                <element signature="e#12313#12314#0" expanded="true" />
+                <element signature="e#12393#12394#0" expanded="true" />
+                <element signature="e#15484#15678#0" expanded="true" />
+                <element signature="e#15677#15678#0" expanded="true" />
+                <element signature="e#18679#18680#0" expanded="true" />
+                <element signature="e#18722#18723#0" expanded="true" />
+                <element signature="e#21035#21407#0" expanded="true" />
+                <element signature="e#21406#21407#0" expanded="true" />
+                <element signature="e#21482#21740#0" expanded="true" />
+                <element signature="e#21739#21740#0" expanded="true" />
+                <element signature="e#26127#26128#0" expanded="true" />
+                <element signature="e#26203#26204#0" expanded="true" />
+                <element signature="e#27320#27321#0" expanded="true" />
+                <element signature="e#27360#27361#0" expanded="true" />
+                <element signature="e#27405#27406#0" expanded="true" />
+                <element signature="e#27454#27455#0" expanded="true" />
+                <element signature="e#27500#27501#0" expanded="true" />
+                <element signature="e#27550#27551#0" expanded="true" />
+                <element signature="e#27725#27726#0" expanded="true" />
+                <element signature="e#27798#27799#0" expanded="true" />
+                <element signature="e#35406#35407#0" expanded="true" />
+                <element signature="e#35476#35477#0" expanded="true" />
+                <element signature="e#36178#36179#0" expanded="true" />
+                <element signature="e#36251#36252#0" expanded="true" />
+                <element signature="e#36318#36319#0" expanded="true" />
+                <element signature="e#36384#36385#0" expanded="true" />
+                <element signature="e#37057#37058#0" expanded="true" />
+                <element signature="e#37116#37117#0" expanded="true" />
+                <element signature="e#37188#37189#0" expanded="true" />
+                <element signature="e#37246#37247#0" expanded="true" />
+                <element signature="e#37321#37322#0" expanded="true" />
+                <element signature="e#37379#37380#0" expanded="true" />
+                <element signature="e#37452#37453#0" expanded="true" />
+                <element signature="e#37511#37512#0" expanded="true" />
+                <element signature="e#37574#37575#0" expanded="true" />
+                <element signature="e#37622#37623#0" expanded="true" />
+                <element signature="e#37696#37697#0" expanded="true" />
+                <element signature="e#37754#37755#0" expanded="true" />
+                <element signature="e#37826#37827#0" expanded="true" />
+                <element signature="e#37882#37883#0" expanded="true" />
+                <element signature="e#40517#40518#0" expanded="true" />
+                <element signature="e#40572#40573#0" expanded="true" />
+                <element signature="e#42835#42836#0" expanded="true" />
+                <element signature="e#42897#42898#0" expanded="true" />
+                <element signature="e#42970#42971#0" expanded="true" />
+                <element signature="e#43031#43032#0" expanded="true" />
+                <element signature="e#44988#44989#0" expanded="true" />
+                <element signature="e#45070#45071#0" expanded="true" />
+                <element signature="e#45109#45110#0" expanded="true" />
+                <element signature="e#45183#45184#0" expanded="true" />
+                <element signature="e#45226#45227#0" expanded="true" />
+                <element signature="e#45304#45305#0" expanded="true" />
+                <element signature="e#45344#45345#0" expanded="true" />
+                <element signature="e#45428#45429#0" expanded="true" />
+                <element signature="e#45471#45472#0" expanded="true" />
+                <element signature="e#45559#45560#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -108,8 +115,8 @@
       <file leaf-file-name="plugin.xml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="303">
-              <caret line="18" column="85" selection-start-line="18" selection-start-column="85" selection-end-line="18" selection-end-column="85" />
+            <state relative-caret-position="337">
+              <caret line="20" selection-start-line="20" selection-end-line="20" />
             </state>
           </provider>
         </entry>
@@ -144,8 +151,8 @@
       <file leaf-file-name="ConnectorPresenter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
+            <state relative-caret-position="569">
+              <caret line="41" column="22" lean-forward="true" selection-start-line="41" selection-start-column="22" selection-end-line="41" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -153,8 +160,8 @@
       <file leaf-file-name="ConnectorPresenterImpl.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="430">
-              <caret line="474" column="48" selection-start-line="474" selection-start-column="48" selection-end-line="474" selection-end-column="48" />
+            <state relative-caret-position="193">
+              <caret line="307" column="13" selection-start-line="307" selection-start-column="13" selection-end-line="307" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -163,7 +170,7 @@
         <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="527">
-              <caret line="35" selection-start-line="35" selection-end-line="35" />
+              <caret line="35" column="19" lean-forward="true" selection-start-line="35" selection-start-column="19" selection-end-line="35" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -247,11 +254,11 @@
         <option value="$PROJECT_DIR$/resources/Notes" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/common/JsonHelper.java" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" />
         <option value="$PROJECT_DIR$/resources/META-INF/plugin.xml" />
       </list>
     </option>
@@ -333,15 +340,6 @@
               <item name="la" type="462c0819:PsiDirectoryNode" />
               <item name="ui" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="intellij-idea-plugin-connector-for-aws-lambda" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sources" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="satr" type="462c0819:PsiDirectoryNode" />
-              <item name="la" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="ConnectorViewFactory" type="e9f4de52:FormNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -356,7 +354,7 @@
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
     <property name="UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH" value="257" />
-    <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH" value="254" />
+    <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH" value="256" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="extract.method.default.visibility" value="public" />
@@ -493,7 +491,7 @@
       <workItem from="1522483637293" duration="12880000" />
       <workItem from="1522503574131" duration="35000" />
       <workItem from="1522503659735" duration="2000" />
-      <workItem from="1522521690078" duration="4070000" />
+      <workItem from="1522521690078" duration="6208000" />
     </task>
     <task id="LOCAL-00001" summary="Artifact list is automatically refreshed after a project or artifact build.">
       <created>1520437214334</created>
@@ -579,11 +577,18 @@
       <option name="project" value="LOCAL" />
       <updated>1522524452507</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Output can be auto-formatted on function invocation">
+      <created>1522525809428</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1522525809428</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="87950000" />
+    <option name="totallyTimeSpent" value="90088000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -608,11 +613,11 @@
       <window_info anchor="right" id="Maven Projects" order="6" weight="0.32975295" />
       <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Run" order="3" weight="0.3291714" />
-      <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.46277452" weight="0.2860386" />
+      <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.46277452" visible="true" weight="0.27582294" />
       <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.48925886" weight="0.32925472" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1810391" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18264596" />
       <window_info anchor="bottom" id="Connector for AWS Lambda" order="12" sideWeight="0.5372255" side_tool="true" weight="0.50283766" />
       <window_info anchor="right" id="Database" order="7" />
       <window_info anchor="bottom" id="Find" order="2" sideWeight="0.45649838" weight="0.28263336" />
@@ -620,7 +625,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="right" id="Theme Preview" order="8" />
-      <window_info anchor="bottom" id="Debug" order="4" sideWeight="0.5324049" visible="true" weight="0.40862656" />
+      <window_info anchor="bottom" id="Debug" order="4" sideWeight="0.5324049" weight="0.19636777" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
@@ -684,7 +689,8 @@
     <MESSAGE value="Fixed button layout." />
     <MESSAGE value="Added dialog to show selected AWS log event item on double-click." />
     <MESSAGE value="Function configuration details form can be collapsed or expanded." />
-    <option name="LAST_COMMIT_MESSAGE" value="Function configuration details form can be collapsed or expanded." />
+    <MESSAGE value="Output can be auto-formatted on function invocation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Output can be auto-formatted on function invocation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -954,13 +960,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="35" selection-start-line="35" selection-end-line="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/io/github/satr/common/MessageHelper.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="561">
@@ -1000,86 +999,99 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java">
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="585" column="34" selection-start-line="585" selection-start-column="34" selection-end-line="585" selection-end-column="34" />
-          <folding>
-            <element signature="e#18323#18324#0" expanded="true" />
-            <element signature="e#18366#18367#0" expanded="true" />
-            <element signature="e#25921#25922#0" expanded="true" />
-            <element signature="e#25949#25950#0" expanded="true" />
-            <element signature="e#26947#26948#0" expanded="true" />
-            <element signature="e#26987#26988#0" expanded="true" />
-            <element signature="e#27032#27033#0" expanded="true" />
-            <element signature="e#27081#27082#0" expanded="true" />
-            <element signature="e#27127#27128#0" expanded="true" />
-            <element signature="e#27177#27178#0" expanded="true" />
-            <element signature="e#27352#27353#0" expanded="true" />
-            <element signature="e#27425#27426#0" expanded="true" />
-            <element signature="e#35033#35034#0" expanded="true" />
-            <element signature="e#35103#35104#0" expanded="true" />
-            <element signature="e#35805#35806#0" expanded="true" />
-            <element signature="e#35878#35879#0" expanded="true" />
-            <element signature="e#35945#35946#0" expanded="true" />
-            <element signature="e#36011#36012#0" expanded="true" />
-            <element signature="e#36684#36685#0" expanded="true" />
-            <element signature="e#36743#36744#0" expanded="true" />
-            <element signature="e#36815#36816#0" expanded="true" />
-            <element signature="e#36873#36874#0" expanded="true" />
-            <element signature="e#36948#36949#0" expanded="true" />
-            <element signature="e#37006#37007#0" expanded="true" />
-            <element signature="e#37079#37080#0" expanded="true" />
-            <element signature="e#37138#37139#0" expanded="true" />
-            <element signature="e#37201#37202#0" expanded="true" />
-            <element signature="e#37249#37250#0" expanded="true" />
-            <element signature="e#37323#37324#0" expanded="true" />
-            <element signature="e#37381#37382#0" expanded="true" />
-            <element signature="e#37453#37454#0" expanded="true" />
-            <element signature="e#37509#37510#0" expanded="true" />
-            <element signature="e#40144#40145#0" expanded="true" />
-            <element signature="e#40199#40200#0" expanded="true" />
-            <element signature="e#42258#42259#0" expanded="true" />
-            <element signature="e#42320#42321#0" expanded="true" />
-            <element signature="e#42393#42394#0" expanded="true" />
-            <element signature="e#42454#42455#0" expanded="true" />
-            <element signature="e#42516#42517#0" expanded="true" />
-            <element signature="e#42575#42576#0" expanded="true" />
-            <element signature="e#44373#44374#0" expanded="true" />
-            <element signature="e#44455#44456#0" expanded="true" />
-            <element signature="e#44494#44495#0" expanded="true" />
-            <element signature="e#44568#44569#0" expanded="true" />
-            <element signature="e#44611#44612#0" expanded="true" />
-            <element signature="e#44689#44690#0" expanded="true" />
-            <element signature="e#44729#44730#0" expanded="true" />
-            <element signature="e#44813#44814#0" expanded="true" />
-            <element signature="e#44856#44857#0" expanded="true" />
-            <element signature="e#44944#44945#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="569">
+          <caret line="41" column="22" lean-forward="true" selection-start-line="41" selection-start-column="22" selection-end-line="41" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java">
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
+        <state relative-caret-position="527">
+          <caret line="35" column="19" lean-forward="true" selection-start-line="35" selection-start-column="19" selection-end-line="35" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="474" column="48" selection-start-line="474" selection-start-column="48" selection-end-line="474" selection-end-column="48" />
+        <state relative-caret-position="193">
+          <caret line="307" column="13" selection-start-line="307" selection-start-column="13" selection-end-line="307" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form">
       <provider selected="true" editor-type-id="ui-designer" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="398">
+          <caret line="223" selection-start-line="223" selection-end-line="223" />
+          <folding>
+            <element signature="e#12313#12314#0" expanded="true" />
+            <element signature="e#12393#12394#0" expanded="true" />
+            <element signature="e#15484#15678#0" expanded="true" />
+            <element signature="e#15677#15678#0" expanded="true" />
+            <element signature="e#18679#18680#0" expanded="true" />
+            <element signature="e#18722#18723#0" expanded="true" />
+            <element signature="e#21035#21407#0" expanded="true" />
+            <element signature="e#21406#21407#0" expanded="true" />
+            <element signature="e#21482#21740#0" expanded="true" />
+            <element signature="e#21739#21740#0" expanded="true" />
+            <element signature="e#26127#26128#0" expanded="true" />
+            <element signature="e#26203#26204#0" expanded="true" />
+            <element signature="e#27320#27321#0" expanded="true" />
+            <element signature="e#27360#27361#0" expanded="true" />
+            <element signature="e#27405#27406#0" expanded="true" />
+            <element signature="e#27454#27455#0" expanded="true" />
+            <element signature="e#27500#27501#0" expanded="true" />
+            <element signature="e#27550#27551#0" expanded="true" />
+            <element signature="e#27725#27726#0" expanded="true" />
+            <element signature="e#27798#27799#0" expanded="true" />
+            <element signature="e#35406#35407#0" expanded="true" />
+            <element signature="e#35476#35477#0" expanded="true" />
+            <element signature="e#36178#36179#0" expanded="true" />
+            <element signature="e#36251#36252#0" expanded="true" />
+            <element signature="e#36318#36319#0" expanded="true" />
+            <element signature="e#36384#36385#0" expanded="true" />
+            <element signature="e#37057#37058#0" expanded="true" />
+            <element signature="e#37116#37117#0" expanded="true" />
+            <element signature="e#37188#37189#0" expanded="true" />
+            <element signature="e#37246#37247#0" expanded="true" />
+            <element signature="e#37321#37322#0" expanded="true" />
+            <element signature="e#37379#37380#0" expanded="true" />
+            <element signature="e#37452#37453#0" expanded="true" />
+            <element signature="e#37511#37512#0" expanded="true" />
+            <element signature="e#37574#37575#0" expanded="true" />
+            <element signature="e#37622#37623#0" expanded="true" />
+            <element signature="e#37696#37697#0" expanded="true" />
+            <element signature="e#37754#37755#0" expanded="true" />
+            <element signature="e#37826#37827#0" expanded="true" />
+            <element signature="e#37882#37883#0" expanded="true" />
+            <element signature="e#40517#40518#0" expanded="true" />
+            <element signature="e#40572#40573#0" expanded="true" />
+            <element signature="e#42835#42836#0" expanded="true" />
+            <element signature="e#42897#42898#0" expanded="true" />
+            <element signature="e#42970#42971#0" expanded="true" />
+            <element signature="e#43031#43032#0" expanded="true" />
+            <element signature="e#44988#44989#0" expanded="true" />
+            <element signature="e#45070#45071#0" expanded="true" />
+            <element signature="e#45109#45110#0" expanded="true" />
+            <element signature="e#45183#45184#0" expanded="true" />
+            <element signature="e#45226#45227#0" expanded="true" />
+            <element signature="e#45304#45305#0" expanded="true" />
+            <element signature="e#45344#45345#0" expanded="true" />
+            <element signature="e#45428#45429#0" expanded="true" />
+            <element signature="e#45471#45472#0" expanded="true" />
+            <element signature="e#45559#45560#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="303">
-          <caret line="18" column="85" selection-start-line="18" selection-start-column="85" selection-end-line="18" selection-end-column="85" />
+        <state relative-caret-position="337">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
         </state>
       </provider>
     </entry>

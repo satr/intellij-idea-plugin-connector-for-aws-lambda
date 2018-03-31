@@ -39,4 +39,5 @@ public interface ConnectorPresenter {
     void deleteAwsLogStreams();
     void reformatJsonFunctionTestInput(String jsonText);
     void reformatJsonFunctionTestOutput(String jsonText);
+    void setAwsLogStreamEvent(AwsLogStreamEventEntity entity);
 }

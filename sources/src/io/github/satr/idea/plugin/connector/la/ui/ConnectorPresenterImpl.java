@@ -293,6 +293,11 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         getLogger().logError("Reformat JSON output failed:\n%s", result.getErrorAsString());
     }
 
+    @Override
+    public void setAwsLogStreamEvent(AwsLogStreamEventEntity entity) {
+        view.setAwsLogStreamEvent(DateTimeHelper.toFormattedString(entity.getTimeStamp()), entity.getMessage());
+    }
+
     private void refreshAwsLogStreamList(FunctionEntity functionEntity) {
         if(functionEntity == null) {
             getLogger().logDebug("Clear AWS Log Stream list for not selected function.");

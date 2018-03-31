@@ -15,7 +15,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -38,7 +37,8 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
@@ -52,8 +52,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import static io.github.satr.common.StringUtil.getNotEmptyString;
 import static org.apache.http.util.TextUtils.isEmpty;
@@ -124,6 +126,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JPanel functionConfigurationDetailsPanel;
     private JSplitPane mainSplitPanel;
     private JCheckBox autoFormatJsonFunctionTestOutputCheckBox;
+    private JTextArea awsLogStreamEventMessageText;
+    private JLabel awsLogStreamEventTimestamp;
+    private JCheckBox awsLogStreamEventMessageWrapCheckBox;
+    private JScrollPane awsLogStreamEventMessageScroll;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -214,12 +220,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             refreshAwsLogStreamEvents(((JList) e.getSource()));
         });
 
-        awsLogStreamEventList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() > 1) {
-                    showAwsLogStreamEvent(((JList) e.getSource()));
-                }
-            }
+        awsLogStreamEventList.addListSelectionListener(e -> {
+            showAwsLogStreamEvent(((JList) e.getSource()));
         });
 
         autoRefreshAwsLog.addChangeListener(e -> {
@@ -245,6 +247,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         localLogWrapCheckBox.addChangeListener(e -> {
             boolean wrap = ((JCheckBox) e.getSource()).isSelected();
             setWrapForLocalLog(wrap);
+        });
+        awsLogStreamEventMessageWrapCheckBox.addChangeListener(e -> {
+            boolean wrap = ((JCheckBox) e.getSource()).isSelected();
+            setWrapForAwsLogStreamEventMessage(wrap);
         });
         reformatJsonFunctionTestInputButton.addActionListener(e -> {
             runReformatJsonFunctionTestInput();
@@ -276,21 +282,25 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
 
 
     public void setWrapForFunctionTestInput(boolean wrap) {
-        functionTestInputTextScroll.setHorizontalScrollBarPolicy(wrap ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        functionTestInputText.setLineWrap(wrap);
-        functionTestInputText.setWrapStyleWord(wrap);
+        setWrapForScrollableTextArea(wrap, functionTestInputText, functionTestInputTextScroll);
     }
 
     public void setWrapForFunctionTestOutput(boolean wrap) {
-        functionTestOutputTextScroll.setHorizontalScrollBarPolicy(wrap ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        functionTestOutputText.setLineWrap(wrap);
-        functionTestOutputText.setWrapStyleWord(wrap);
+        setWrapForScrollableTextArea(wrap, functionTestOutputText, functionTestOutputTextScroll);
     }
 
     public void setWrapForLocalLog(boolean wrap) {
-        localLogScroll.setHorizontalScrollBarPolicy(wrap ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        localLogText.setLineWrap(wrap);
-        localLogText.setWrapStyleWord(wrap);
+        setWrapForScrollableTextArea(wrap, localLogText, localLogScroll);
+    }
+
+    public void setWrapForAwsLogStreamEventMessage(boolean wrap) {
+        setWrapForScrollableTextArea(wrap, awsLogStreamEventMessageText, awsLogStreamEventMessageScroll);
+    }
+
+    public void setWrapForScrollableTextArea(boolean wrap, JTextArea textArea, JScrollPane scrollPane) {
+        scrollPane.setHorizontalScrollBarPolicy(wrap ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        textArea.setLineWrap(wrap);
+        textArea.setWrapStyleWord(wrap);
     }
 
     public void prepareHyperLinks() {
@@ -518,9 +528,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             throw new InvalidOperationException(String.format("awsLogStreamEventListModel has less elements than selected index %d", selectedIndex));
         }
         AwsLogStreamEventEntity entity = awsLogStreamEventListModel.get(selectedIndex);
-        Messages.showMessageDialog(project, entity.getMessage(),
-                String.format("AWS log stream event: %s", DateTimeHelper.toFormattedString(entity.getTimeStamp())),
-                IconLoader.getIcon("/icons/iconConnector.png"));
+        runOperation(() -> presenter.setAwsLogStreamEvent(entity), "Set AWS Log Stream event.");
     }
 
     private void runSetRegion(ItemEvent e) {
@@ -973,6 +981,12 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     @Override
+    public void setAwsLogStreamEvent(String timestamp, String message) {
+        awsLogStreamEventTimestamp.setText(timestamp);
+        awsLogStreamEventMessageText.setText(message);
+    }
+
+    @Override
     public void setRoleList(List<RoleEntity> roles, RoleEntity selectedRoleEntity) {
         roleEntityListModel.removeAllElements();
         JComboBoxToolTipProvider<RoleEntity> itemToSelect = null;
@@ -1033,6 +1047,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     @Override
     public void clearAwsLogStreamEventList() {
         setAwsLogStreamEventList(new ArrayList<>());
+        setAwsLogStreamEvent("", "");
     }
 
     @Override
