@@ -15,6 +15,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -206,7 +207,15 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         });
 
         awsLogStreamList.addListSelectionListener(e -> {
-            refreshAwsLogStreamEvents(e);
+            refreshAwsLogStreamEvents(((JList) e.getSource()));
+        });
+
+        awsLogStreamEventList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() > 1) {
+                    showAwsLogStreamEvent(((JList) e.getSource()));
+                }
+            }
         });
 
         autoRefreshAwsLog.addChangeListener(e -> {
@@ -460,16 +469,31 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         }
         runOperation(() -> presenter.refreshAwsLogStreams(), "Refresh AWS Log Streams");
     }
-    private void refreshAwsLogStreamEvents(ListSelectionEvent e) {
+
+    private void refreshAwsLogStreamEvents(JList source) {
         if(operationInProgress || setRegionOperationInProgress) {
             return;
         }
-        int selectedIndex = ((JList)e.getSource()).getSelectedIndex();
+        int selectedIndex = source.getSelectedIndex();
         if(awsLogStreamListModel.size() < selectedIndex + 1) {
             throw new InvalidOperationException(String.format("awsLogStreamListModel has less elements than selected index %d", selectedIndex));
         }
         AwsLogStreamEntity entity = awsLogStreamListModel.get(selectedIndex);
         runOperation(() -> presenter.setAwsLogStreamEventList(entity), "Refresh AWS Log Stream events: " + entity);
+    }
+
+    private void showAwsLogStreamEvent(JList source) {
+        if(operationInProgress) {
+            return;
+        }
+        int selectedIndex = source.getSelectedIndex();
+        if(awsLogStreamEventListModel.size() < selectedIndex + 1) {
+            throw new InvalidOperationException(String.format("awsLogStreamEventListModel has less elements than selected index %d", selectedIndex));
+        }
+        AwsLogStreamEventEntity entity = awsLogStreamEventListModel.get(selectedIndex);
+        Messages.showMessageDialog(project, entity.getMessage(),
+                String.format("AWS log stream event: %s", DateTimeHelper.toFormattedString(entity.getTimeStamp())),
+                IconLoader.getIcon("/icons/iconConnector.png"));
     }
 
     private void runSetRegion(ItemEvent e) {
