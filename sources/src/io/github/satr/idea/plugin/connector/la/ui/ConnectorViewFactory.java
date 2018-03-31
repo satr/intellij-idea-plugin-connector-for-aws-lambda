@@ -72,7 +72,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JComboBox credentialProfileList;
     private JButton refreshCredentialProfiles;
     private JTabbedPane tabContent;
-    private JTextArea logTextBox;
+    private JTextArea localLogText;
     private JPanel tabPanSettings;
     private JTextPane txtStatus;
     private JButton refreshAllButton;
@@ -80,8 +80,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JPanel pnlSettings;
     private JPanel pnlTabs;
     private JComboBox logLevelList;
-    private JButton clearLogButton;
-    private JScrollPane logScrollPan;
+    private JButton clearLocalLogButton;
+    private JScrollPane localLogScroll;
     private JPanel runFunctionTestTab;
     private JTextArea functionTestOutputText;
     private JTextArea functionTestInputText;
@@ -109,6 +109,16 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JButton refreshAwsLogStreamList;
     private JLabel functionSizeLimits;
     private JLabel functionParameterConstraints;
+    private JScrollPane functionTestOutputTextScroll;
+    private JCheckBox functionTestOutputWrapCheckBox;
+    private JButton clearFunctionTestOutputButton;
+    private JButton clearFunctionTestInputButton;
+    private JCheckBox functionTestInputWrapCheckBox;
+    private JButton deleteAwsLogStreamsButton;
+    private JScrollPane functionTestInputTextScroll;
+    private JCheckBox localLogWrapCheckBox;
+    private JButton reformatJsonFunctionTestInputButton;
+    private JButton reformatJsonFunctionTestOutputButton;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -158,8 +168,17 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         updateFunctionButton.addActionListener(e -> {
             runUpdateFunction();
         });
-        clearLogButton.addActionListener(e -> {
-            clearLog();
+        clearLocalLogButton.addActionListener(e -> {
+            clearLocalLog();
+        });
+        clearFunctionTestInputButton.addActionListener(e -> {
+            clearFunctionTestInput();
+        });
+        clearFunctionTestOutputButton.addActionListener(e -> {
+            clearFunctionTestOutput();
+        });
+        deleteAwsLogStreamsButton.addActionListener(e -> {
+            runDeleteAwsLogStreams();
         });
         runFunctionTestButton.addActionListener(e -> {
             runFunctionTest();
@@ -201,6 +220,44 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         this.presenter.refreshTracingModeList();
         this.presenter.refreshJarArtifactList();
         runRefreshAll();
+
+        functionTestInputWrapCheckBox.addChangeListener(e -> {
+            boolean wrap = ((JCheckBox) e.getSource()).isSelected();
+            setWrapForFunctionTestInput(wrap);
+        });
+        functionTestOutputWrapCheckBox.addChangeListener(e -> {
+            boolean wrap = ((JCheckBox) e.getSource()).isSelected();
+            setWrapForFunctionTestOutput(wrap);
+        });
+        localLogWrapCheckBox.addChangeListener(e -> {
+            boolean wrap = ((JCheckBox) e.getSource()).isSelected();
+            setWrapForLocalLog(wrap);
+        });
+        reformatJsonFunctionTestInputButton.addActionListener(e -> {
+            runReformatJsonFunctionTestInput();
+        });
+        reformatJsonFunctionTestOutputButton.addActionListener(e -> {
+            runReformatJsonFunctionTestOutput();
+        });
+    }
+
+
+    public void setWrapForFunctionTestInput(boolean wrap) {
+        functionTestInputTextScroll.setHorizontalScrollBarPolicy(wrap ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        functionTestInputText.setLineWrap(wrap);
+        functionTestInputText.setWrapStyleWord(wrap);
+    }
+
+    public void setWrapForFunctionTestOutput(boolean wrap) {
+        functionTestOutputTextScroll.setHorizontalScrollBarPolicy(wrap ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        functionTestOutputText.setLineWrap(wrap);
+        functionTestOutputText.setWrapStyleWord(wrap);
+    }
+
+    public void setWrapForLocalLog(boolean wrap) {
+        localLogScroll.setHorizontalScrollBarPolicy(wrap ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        localLogText.setLineWrap(wrap);
+        localLogText.setWrapStyleWord(wrap);
     }
 
     public void prepareHyperLinks() {
@@ -291,13 +348,18 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         setupButton(runFunctionTestButton, IconLoader.getIcon("/icons/iconRunFunctionTest.png"));
         setupButton(openFunctionInputFileButton, IconLoader.getIcon("/icons/iconOpenFunctionInputFile.png"));
         setupButton(updateProxySettingsButton, IconLoader.getIcon("/icons/iconUpdateProxySettings.png"));
-        setupButton(clearLogButton, IconLoader.getIcon("/icons/iconClearLog.png"));
+        setupButton(clearLocalLogButton, IconLoader.getIcon("/icons/iconClearLog.png"));
+        setupButton(clearFunctionTestInputButton, IconLoader.getIcon("/icons/iconClearLog.png"));
+        setupButton(clearFunctionTestOutputButton, IconLoader.getIcon("/icons/iconClearLog.png"));
+        setupButton(deleteAwsLogStreamsButton, IconLoader.getIcon("/icons/iconClearLog.png"));
         setupButton(refreshFuncListButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshJarArtifactsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshRegionsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshFunctionConfiguration, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshAwsLogStreamList, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(reformatJsonFunctionTestInputButton, IconLoader.getIcon("/icons/iconReformatJson.png"));
+        setupButton(reformatJsonFunctionTestOutputButton, IconLoader.getIcon("/icons/iconReformatJson.png"));
     }
 
     private void performAfterBuildActivity() {
@@ -378,7 +440,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             @Override
             public void append(LoggingEvent event) {
                 super.append(event);
-                logTextBox.append(String.format("\n%s: %s", event.getLevel(), event.getMessage()));
+                localLogText.append(String.format("\n%s: %s", event.getLevel(), event.getMessage()));
             }
         });
         logLevelList.addItem(Level.DEBUG);
@@ -445,6 +507,24 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.setSetTestFunctionInputFromRecent(entity), "Select test function input from file: ", entity.getFileName());
     }
 
+    private void runReformatJsonFunctionTestInput() {
+        if(operationInProgress || runFunctionTestOperationInProgress) {
+            return;
+        }
+        runOperation(() -> {
+            presenter.reformatJsonFunctionTestInput(functionTestInputText.getText());
+        }, "Reformat JSON function test input");
+    }
+
+    private void runReformatJsonFunctionTestOutput() {
+        if(operationInProgress || runFunctionTestOperationInProgress) {
+            return;
+        }
+        runOperation(() -> {
+            presenter.reformatJsonFunctionTestOutput(functionTestOutputText.getText());
+        }, "Reformat JSON function test output");
+    }
+
     private void runFunctionTest() {
         if(operationInProgress || runFunctionTestOperationInProgress) {
             return;
@@ -489,8 +569,20 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
                     "Update selected AWS Lambda function with JAR-artifact");
     }
 
-    private void clearLog() {
-        logTextBox.setText("");
+    private void clearLocalLog() {
+        localLogText.setText("");
+    }
+
+    private void clearFunctionTestInput() {
+        functionTestInputText.setText("");
+    }
+
+    private void clearFunctionTestOutput() {
+        functionTestOutputText.setText("");
+    }
+
+    private void runDeleteAwsLogStreams() {
+        runOperation(() -> presenter.deleteAwsLogStreams(), "Delete AWS log streams.");
     }
 
     private void runRefreshAll() {
@@ -756,7 +848,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     @Override
-    public void setTestFunctionInput(String inputText) {
+    public void setFunctionTestInput(String inputText) {
         functionTestInputText.setText(inputText);
     }
 

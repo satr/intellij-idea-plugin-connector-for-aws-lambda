@@ -21,7 +21,7 @@ public interface ConnectorView {
     RegionEntity getSelectedRegionEntity();
     CredentialProfileEntity getSelectedCredentialProfileEntity();
     void setFunctionTestOutput(String outputText);
-    void setTestFunctionInput(String inputText);
+    void setFunctionTestInput(String inputText);
     void setTestFunctionInputRecentEntityList(List<TestFunctionInputEntity> filePathList);
     void setFunctionConfiguration(FunctionEntity functionEntity);
     void setRoleList(List<RoleEntity> roles, RoleEntity selectedRoleEntity);

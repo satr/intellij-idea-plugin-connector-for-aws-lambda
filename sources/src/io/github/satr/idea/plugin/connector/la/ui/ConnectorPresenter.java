@@ -36,4 +36,7 @@ public interface ConnectorPresenter {
     void refreshAwsLogStreams();
     boolean roleListLoaded();
     boolean initializeFunctionRoleList();
+    void deleteAwsLogStreams();
+    void reformatJsonFunctionTestInput(String jsonText);
+    void reformatJsonFunctionTestOutput(String jsonText);
 }

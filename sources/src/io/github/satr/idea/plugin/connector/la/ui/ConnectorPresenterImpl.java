@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.zip.ZipFile;
 
 import static org.apache.http.util.TextUtils.isEmpty;
 
@@ -24,6 +23,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     private ConnectorView view;
     private List<TestFunctionInputEntity> testFunctionInputRecentEntityList = new ArrayList<>();
     private boolean autoRefreshAwsLog = false;
+    private JsonHelper jsonHelper = new JsonHelper();
 
     @Override
     public void setView(ConnectorView view) {
@@ -253,6 +253,46 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         return true;
     }
 
+    @Override
+    public void deleteAwsLogStreams() {
+        FunctionEntity functionEntity = view.getSelectedFunctionEntity();
+        if(functionEntity == null) {
+            return;
+        }
+        view.clearAwsLogStreamList();
+
+        OperationValueResult<List<AwsLogStreamEntity>> deleteAwsLogEventsResult = getFunctionConnectorModel()
+                .deleteAwsLogStreamsFor(functionEntity.getFunctionName());
+        if(deleteAwsLogEventsResult.failed()) {
+            getLogger().logOperationResult(deleteAwsLogEventsResult);
+            view.showError(deleteAwsLogEventsResult.getErrorAsString());
+            return;
+        }
+        getLogger().logDebug("Deleted AWS Log Stream list.");
+    }
+
+    @Override
+    public void reformatJsonFunctionTestInput(String jsonText) {
+        OperationValueResult<String> result = jsonHelper.Reformat(jsonText);
+        if(result.success()) {
+            getLogger().logDebug("Reformat input JSON");
+            view.setFunctionTestInput(result.getValue());
+            return;
+        }
+        getLogger().logError("Reformat JSON input failed:\n%s", result.getErrorAsString());
+    }
+
+    @Override
+    public void reformatJsonFunctionTestOutput(String jsonText) {
+        OperationValueResult<String> result = jsonHelper.Reformat(jsonText);
+        if(result.success()) {
+            getLogger().logDebug("Reformatted output JSON");
+            view.setFunctionTestOutput(result.getValue());
+            return;
+        }
+        getLogger().logError("Reformat JSON output failed:\n%s", result.getErrorAsString());
+    }
+
     private void refreshAwsLogStreamList(FunctionEntity functionEntity) {
         if(functionEntity == null) {
             getLogger().logDebug("Clear AWS Log Stream list for not selected function.");
@@ -436,7 +476,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             }
             byte[] buffer = Files.readAllBytes(file.toPath());
             String inputText = new String(buffer);
-            view.setTestFunctionInput(inputText);
+            view.setFunctionTestInput(inputText);
             for(TestFunctionInputEntity entity : testFunctionInputRecentEntityList){
                 if(entity.getFilePath().equals(filePath)){
                     testFunctionInputRecentEntityList.remove(entity);
@@ -464,7 +504,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void setSetTestFunctionInputFromRecent(TestFunctionInputEntity entity) {
-        view.setTestFunctionInput(entity.getInputText());
+        view.setFunctionTestInput(entity.getInputText());
     }
 
     @Override

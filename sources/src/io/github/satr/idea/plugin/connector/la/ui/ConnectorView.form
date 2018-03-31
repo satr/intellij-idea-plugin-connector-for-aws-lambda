@@ -16,7 +16,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="9784d" binding="pnlToolBar" layout-manager="GridLayoutManager" row-count="10" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="9784d" binding="pnlToolBar" layout-manager="GridLayoutManager" row-count="8" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="25" left="5" bottom="25" right="5"/>
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
@@ -52,7 +52,7 @@
               </component>
               <vspacer id="309bc">
                 <constraints>
-                  <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
               <component id="a922d" class="javax.swing.JToolBar$Separator">
@@ -60,30 +60,6 @@
                   <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
-              </component>
-              <component id="e633f" class="javax.swing.JToolBar$Separator">
-                <constraints>
-                  <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
-              <component id="94c51" class="javax.swing.JButton" binding="clearLogButton">
-                <constraints>
-                  <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                    <minimum-size width="-1" height="24"/>
-                    <preferred-size width="-1" height="24"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <hideActionText value="false"/>
-                  <horizontalAlignment value="0"/>
-                  <horizontalTextPosition value="2"/>
-                  <icon value="icons/iconClearLog.png"/>
-                  <margin top="10" left="10" bottom="10" right="10"/>
-                  <opaque value="true"/>
-                  <text value=""/>
-                  <toolTipText value="Clear log"/>
-                </properties>
               </component>
               <component id="d96c9" class="javax.swing.JButton" binding="openFunctionInputFileButton">
                 <constraints>
@@ -518,7 +494,7 @@
                           </component>
                         </children>
                       </grid>
-                      <grid id="7140f" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="7140f" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
                           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -535,70 +511,165 @@
                             </properties>
                             <border type="none"/>
                             <children>
-                              <scrollpane id="7587a">
+                              <grid id="70151" layout-manager="GridLayoutManager" row-count="2" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                                <margin top="0" left="0" bottom="0" right="0"/>
                                 <constraints>
                                   <splitpane position="left"/>
                                 </constraints>
                                 <properties/>
                                 <border type="none"/>
                                 <children>
-                                  <grid id="70151" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                                    <margin top="0" left="0" bottom="0" right="0"/>
-                                    <constraints/>
+                                  <component id="ef711" class="javax.swing.JLabel">
+                                    <constraints>
+                                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                                    </constraints>
+                                    <properties>
+                                      <text value="Input"/>
+                                    </properties>
+                                  </component>
+                                  <component id="adae1" class="javax.swing.JButton" binding="clearFunctionTestInputButton">
+                                    <constraints>
+                                      <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                                        <minimum-size width="-1" height="24"/>
+                                        <preferred-size width="-1" height="24"/>
+                                      </grid>
+                                    </constraints>
+                                    <properties>
+                                      <hideActionText value="false"/>
+                                      <horizontalAlignment value="0"/>
+                                      <horizontalTextPosition value="2"/>
+                                      <icon value="icons/iconClearLog.png"/>
+                                      <margin top="10" left="10" bottom="10" right="10"/>
+                                      <opaque value="true"/>
+                                      <text value=""/>
+                                      <toolTipText value="Clear input text"/>
+                                    </properties>
+                                  </component>
+                                  <scrollpane id="7587a" binding="functionTestInputTextScroll">
+                                    <constraints>
+                                      <grid row="1" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                    </constraints>
                                     <properties/>
                                     <border type="none"/>
                                     <children>
-                                      <component id="ef711" class="javax.swing.JLabel">
-                                        <constraints>
-                                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <text value="Input"/>
-                                        </properties>
-                                      </component>
                                       <component id="661fe" class="javax.swing.JTextArea" binding="functionTestInputText">
-                                        <constraints>
-                                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                                        </constraints>
+                                        <constraints/>
                                         <properties>
                                           <lineWrap value="false"/>
                                         </properties>
                                       </component>
                                     </children>
-                                  </grid>
+                                  </scrollpane>
+                                  <component id="ee9f3" class="javax.swing.JCheckBox" binding="functionTestInputWrapCheckBox">
+                                    <constraints>
+                                      <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                                    </constraints>
+                                    <properties>
+                                      <text value="Wrap"/>
+                                      <toolTipText value="Wrap input text"/>
+                                    </properties>
+                                  </component>
+                                  <hspacer id="99f4">
+                                    <constraints>
+                                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                    </constraints>
+                                  </hspacer>
+                                  <component id="78bcf" class="javax.swing.JButton" binding="reformatJsonFunctionTestInputButton">
+                                    <constraints>
+                                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                                        <minimum-size width="-1" height="24"/>
+                                        <preferred-size width="-1" height="24"/>
+                                      </grid>
+                                    </constraints>
+                                    <properties>
+                                      <hideActionText value="false"/>
+                                      <horizontalAlignment value="0"/>
+                                      <horizontalTextPosition value="2"/>
+                                      <icon value="icons/iconReformatJson.png"/>
+                                      <margin top="10" left="10" bottom="10" right="10"/>
+                                      <opaque value="true"/>
+                                      <text value=""/>
+                                      <toolTipText value="Reformat JSON input text"/>
+                                    </properties>
+                                  </component>
                                 </children>
-                              </scrollpane>
-                              <scrollpane id="7bc00">
+                              </grid>
+                              <grid id="b5f48" layout-manager="GridLayoutManager" row-count="2" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                                <margin top="0" left="0" bottom="0" right="0"/>
                                 <constraints>
                                   <splitpane position="right"/>
                                 </constraints>
                                 <properties/>
                                 <border type="none"/>
                                 <children>
-                                  <grid id="2e87e" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                                    <margin top="0" left="0" bottom="0" right="0"/>
-                                    <constraints/>
+                                  <component id="a6d2e" class="javax.swing.JLabel">
+                                    <constraints>
+                                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                                    </constraints>
+                                    <properties>
+                                      <text value="Output"/>
+                                    </properties>
+                                  </component>
+                                  <scrollpane id="a5bdc" binding="functionTestOutputTextScroll">
+                                    <constraints>
+                                      <grid row="1" column="0" row-span="1" col-span="5" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                    </constraints>
                                     <properties/>
                                     <border type="none"/>
                                     <children>
-                                      <component id="a6d2e" class="javax.swing.JLabel">
-                                        <constraints>
-                                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <text value="Output"/>
-                                        </properties>
-                                      </component>
                                       <component id="cac5a" class="javax.swing.JTextArea" binding="functionTestOutputText">
-                                        <constraints>
-                                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                                        </constraints>
+                                        <constraints/>
                                         <properties/>
                                       </component>
                                     </children>
-                                  </grid>
+                                  </scrollpane>
+                                  <component id="28d64" class="javax.swing.JButton" binding="clearFunctionTestOutputButton">
+                                    <constraints>
+                                      <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                                        <minimum-size width="-1" height="24"/>
+                                        <preferred-size width="-1" height="24"/>
+                                      </grid>
+                                    </constraints>
+                                    <properties>
+                                      <hideActionText value="false"/>
+                                      <horizontalAlignment value="0"/>
+                                      <horizontalTextPosition value="2"/>
+                                      <icon value="icons/iconClearLog.png"/>
+                                      <margin top="10" left="10" bottom="10" right="10"/>
+                                      <opaque value="true"/>
+                                      <text value=""/>
+                                      <toolTipText value="Clear output text"/>
+                                    </properties>
+                                  </component>
+                                  <component id="860a0" class="javax.swing.JCheckBox" binding="functionTestOutputWrapCheckBox">
+                                    <constraints>
+                                      <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                                    </constraints>
+                                    <properties>
+                                      <text value="Wrap"/>
+                                      <toolTipText value="Wrap output text"/>
+                                    </properties>
+                                  </component>
+                                  <component id="e1c20" class="javax.swing.JButton" binding="reformatJsonFunctionTestOutputButton">
+                                    <constraints>
+                                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                                        <minimum-size width="-1" height="24"/>
+                                        <preferred-size width="-1" height="24"/>
+                                      </grid>
+                                    </constraints>
+                                    <properties>
+                                      <hideActionText value="false"/>
+                                      <horizontalAlignment value="0"/>
+                                      <horizontalTextPosition value="2"/>
+                                      <icon value="icons/iconReformatJson.png"/>
+                                      <margin top="10" left="10" bottom="10" right="10"/>
+                                      <opaque value="true"/>
+                                      <text value=""/>
+                                      <toolTipText value="Reformat JSON output text"/>
+                                    </properties>
+                                  </component>
                                 </children>
-                              </scrollpane>
+                              </grid>
                             </children>
                           </splitpane>
                         </children>
@@ -622,7 +693,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <grid id="d3177" binding="logSettingsPan" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="d3177" binding="logSettingsPan" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -636,16 +707,43 @@
                             </constraints>
                             <properties/>
                           </component>
+                          <component id="94c51" class="javax.swing.JButton" binding="clearLocalLogButton">
+                            <constraints>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                                <minimum-size width="-1" height="24"/>
+                                <preferred-size width="-1" height="24"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <hideActionText value="false"/>
+                              <horizontalAlignment value="0"/>
+                              <horizontalTextPosition value="2"/>
+                              <icon value="icons/iconClearLog.png"/>
+                              <margin top="10" left="10" bottom="10" right="10"/>
+                              <opaque value="true"/>
+                              <text value=""/>
+                              <toolTipText value="Clear log"/>
+                            </properties>
+                          </component>
+                          <component id="748b2" class="javax.swing.JCheckBox" binding="localLogWrapCheckBox">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="Wrap"/>
+                              <toolTipText value="Wrap input text"/>
+                            </properties>
+                          </component>
                         </children>
                       </grid>
-                      <scrollpane id="8163f" binding="logScrollPan">
+                      <scrollpane id="8163f" binding="localLogScroll">
                         <constraints>
                           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="215a3" class="javax.swing.JTextArea" binding="logTextBox">
+                          <component id="215a3" class="javax.swing.JTextArea" binding="localLogText">
                             <constraints/>
                             <properties>
                               <lineWrap value="false"/>
@@ -655,7 +753,7 @@
                       </scrollpane>
                     </children>
                   </grid>
-                  <grid id="75fb5" binding="awsLogPan" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="75fb5" binding="awsLogPan" layout-manager="GridLayoutManager" row-count="2" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <tabbedpane title="AWS Log"/>
@@ -665,7 +763,7 @@
                     <children>
                       <splitpane id="f60c1">
                         <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                          <grid row="1" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
                             <preferred-size width="200" height="200"/>
                           </grid>
                         </constraints>
@@ -753,6 +851,24 @@
                           <icon value="icons/iconRefresh.png"/>
                           <text value=""/>
                           <toolTipText value="Refresh AWS Log Stream list"/>
+                        </properties>
+                      </component>
+                      <component id="c9804" class="javax.swing.JButton" binding="deleteAwsLogStreamsButton">
+                        <constraints>
+                          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                            <minimum-size width="-1" height="24"/>
+                            <preferred-size width="-1" height="24"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <hideActionText value="false"/>
+                          <horizontalAlignment value="0"/>
+                          <horizontalTextPosition value="2"/>
+                          <icon value="icons/iconClearLog.png"/>
+                          <margin top="10" left="10" bottom="10" right="10"/>
+                          <opaque value="true"/>
+                          <text value=""/>
+                          <toolTipText value="Delete AWS log streams"/>
                         </properties>
                       </component>
                       <component id="d4561" class="javax.swing.JCheckBox" binding="autoRefreshAwsLog">

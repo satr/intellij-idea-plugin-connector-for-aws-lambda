@@ -15,6 +15,7 @@ import com.amazonaws.services.lambda.model.ResourceNotFoundException;
 import com.amazonaws.services.logs.AWSLogs;
 import com.amazonaws.services.logs.AWSLogsClientBuilder;
 import com.amazonaws.services.logs.model.*;
+import com.intellij.javaee.model.xml.web.HttpStatusCode;
 import io.github.satr.common.OperationResult;
 import io.github.satr.common.OperationResultImpl;
 import io.github.satr.common.OperationValueResult;
@@ -273,6 +274,22 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
             awsLogStreamEntities.add(new AwsLogStreamEntity(logGroup.getLogGroupName(), logStream));
         }
         awsLogStreamEntities.sort(Comparator.comparing(AwsLogStreamEntity::getCreationTime));
+        return operationResult;
+    }
+
+    public OperationValueResult deleteAwsLogStreamsFor(String functionName) {
+        OperationValueResult operationResult = new OperationValueResultImpl();
+        LogGroup logGroup = getLogGroupForAwsLambdaFunction(functionName);
+        if(logGroup == null) {
+            operationResult.addError("Not found log group for the function \"%s\"", functionName);
+            return operationResult;
+        }
+        DeleteLogGroupResult deleteLogGroupResult = awsLogClient.deleteLogGroup(new DeleteLogGroupRequest(logGroup.getLogGroupName()));
+        int httpStatusCode = deleteLogGroupResult.getSdkHttpMetadata().getHttpStatusCode();
+        if (httpStatusCode == HttpStatusCode.OK.getCode()) {
+            return operationResult;
+        }
+        operationResult.addError("Operation responded with code %d", httpStatusCode);
         return operationResult;
     }
 
