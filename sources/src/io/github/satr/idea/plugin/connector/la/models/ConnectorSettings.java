@@ -6,10 +6,13 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.http.util.TextUtils.isEmpty;
 
@@ -23,12 +26,34 @@ public class ConnectorSettings  implements PersistentStateComponent<ConnectorSet
     private String lastSelectedCredentialProfile;
     private String lastSelectedTestFunctionInputFilePath;
 
+    private Map<String, String> lastSelectedJarArtifactPerFunction = new HashMap<>();
+
     public String getLastSelectedJarArtifactName() {
         return lastSelectedJarArtifactName;
     }
 
     public void setLastSelectedJarArtifactName(String lastSelectedJarArtifactName) {
         this.lastSelectedJarArtifactName = lastSelectedJarArtifactName;
+
+        if (!isEmpty(lastSelectedFunctionName)) {
+            if (!isEmpty(lastSelectedJarArtifactName)) {
+                lastSelectedJarArtifactPerFunction.put(lastSelectedFunctionName, lastSelectedJarArtifactName);
+            } else {
+                lastSelectedJarArtifactPerFunction.remove(lastSelectedFunctionName);
+            }
+        }
+    }
+
+    public @Nullable String getLastSelectedJarArtifactNameForFunction(@NotNull String functionName) {
+        return lastSelectedJarArtifactPerFunction.getOrDefault(functionName, null);
+    }
+
+    public Map<String, String> getLastSelectedJarArtifactPerFunction() {
+        return lastSelectedJarArtifactPerFunction;
+    }
+
+    public void setLastSelectedJarArtifactPerFunction(Map<String, String> lastSelectedJarArtifactPerFunction) {
+        this.lastSelectedJarArtifactPerFunction = lastSelectedJarArtifactPerFunction;
     }
 
     public String getLastSelectedFunctionName() {
@@ -69,7 +94,8 @@ public class ConnectorSettings  implements PersistentStateComponent<ConnectorSet
 
     private void clearLastSelectedFunctionOnChangedRegion(String lastSelectedRegionName) {
         if((isEmpty(lastSelectedRegionName) && !isEmpty(this.lastSelectedRegionName))
-                || (!isEmpty(lastSelectedRegionName) && !lastSelectedRegionName.equals(this.lastSelectedRegionName))){
+                || (!isEmpty(lastSelectedRegionName) && !lastSelectedRegionName.equals(this.lastSelectedRegionName)
+                        && !isEmpty(this.lastSelectedRegionName))){
             setLastSelectedFunctionName("");
         }
     }

@@ -8,6 +8,7 @@ import io.github.satr.common.*;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 import io.github.satr.idea.plugin.connector.la.models.FunctionConnectorModel;
 import io.github.satr.idea.plugin.connector.la.models.RoleConnectorModel;
+import org.apache.http.util.TextUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -323,6 +324,14 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         }
         getLogger().logDebug("Refresh JAR-artifact list.");
         String lastSelectedJarArtifactName = getConnectorSettings().getLastSelectedJarArtifactName();
+        if (view.getSelectedFunctionEntity() != null) {
+            String lastSelectedArtifactForSelectedFunction =
+                    getConnectorSettings().getLastSelectedJarArtifactNameForFunction(
+                            view.getSelectedFunctionEntity().getFunctionName());
+            if (!TextUtils.isEmpty(lastSelectedArtifactForSelectedFunction)) {
+                lastSelectedJarArtifactName = lastSelectedArtifactForSelectedFunction;
+            }
+        }
         ArtifactEntity selectedArtifactEntity = null;
         Collection<? extends ArtifactEntity> jarArtifacts = projectModel.getJarArtifacts();
         for(ArtifactEntity entity : jarArtifacts){
@@ -431,19 +440,23 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             getLogger().logDebug("Function not set.");
         }
         refreshRolesList();
+        if (functionEntity != null) {
+            view.updateFunctionEntity(functionEntity);
+        }
         view.setFunctionConfiguration(functionEntity);
         if(autoRefreshAwsLog) {
             refreshAwsLogStreamList(functionEntity);
         } else {
             view.clearAwsLogStreamList();
         }
+        refreshJarArtifactList();
         refreshStatus();
     }
 
     @Override
     public void setJarArtifact(ArtifactEntity artifactEntity) {
         getLogger().logDebug("Set JAR-artifact.");
-        getConnectorSettings().setLastSelectedFunctionName(artifactEntity.getName());
+        getConnectorSettings().setLastSelectedJarArtifactName(artifactEntity.getName());
         refreshStatus();
     }
 
