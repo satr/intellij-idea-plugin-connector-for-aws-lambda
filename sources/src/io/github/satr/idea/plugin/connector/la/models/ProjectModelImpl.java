@@ -12,6 +12,7 @@ import org.jetbrains.idea.maven.project.MavenProjectsManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class ProjectModelImpl implements ProjectModel {
     private final String JAR_ARTIFACT_TYPE = "jar";
@@ -24,7 +25,7 @@ public class ProjectModelImpl implements ProjectModel {
     }
 
     @Override
-    public Collection<? extends ArtifactEntity> getJarArtifacts() {
+    public List<? extends ArtifactEntity> getJarArtifacts() {
         if(project == null) {
             return Collections.emptyList();
         }

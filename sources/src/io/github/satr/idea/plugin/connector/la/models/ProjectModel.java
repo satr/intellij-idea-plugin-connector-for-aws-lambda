@@ -3,8 +3,8 @@ package io.github.satr.idea.plugin.connector.la.models;
 
 import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntity;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface ProjectModel {
-    Collection<? extends ArtifactEntity> getJarArtifacts();
+    List<? extends ArtifactEntity> getJarArtifacts();
 }

@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.satr.idea.plugin.connector.la</id>
   <name>Connector for AWS Lambda</name>
-  <version>1.6.RC2</version>
+  <version>1.6</version>
   <vendor email="satr.github.io@gmail.com" url="https://satr.github.io/intellij-idea-plugin-connector-for-aws-lambda/">github.com/satr</vendor>
 
   <description><![CDATA[
@@ -13,12 +13,14 @@
 
   <change-notes><![CDATA[
       <ul>
-      <li>1.6.RC2</li>
+      <li>1.6</li>
+      <li>Save and restore selected jar artifact per function - implemented by <a href="https://github.com/DragoX">DragoX</a>.</li>
+      <li>Fix last selected function restore after relaunch - implemented by <a href="https://github.com/DragoX">DragoX</a>.</li>
+      <li>Sorted alphabetically function and JAR-artifact lists.</li>
       <li>Function configuration details form can be collapsed or expanded.</li>
       <li>Reformat JSON content for input and output. Output can be auto-formatted on function invocation.</li>
       <li>Deleting of AWS log streams for a selected function.</li>
       <li>Clear content for input and output.</li>
-      <li>1.6.RC1</li>
       <li>Set constraints to function properties and code file size. Added links to these values on AWS documentation site.</li>
       <li>1.5</li>
       <li>AWS Log for a selected function.</li>

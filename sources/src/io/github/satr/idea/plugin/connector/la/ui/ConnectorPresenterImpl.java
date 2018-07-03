@@ -6,15 +6,17 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.Runtime;
 import io.github.satr.common.*;
 import io.github.satr.idea.plugin.connector.la.entities.*;
+import io.github.satr.idea.plugin.connector.la.models.ConnectorSettings;
 import io.github.satr.idea.plugin.connector.la.models.FunctionConnectorModel;
 import io.github.satr.idea.plugin.connector.la.models.RoleConnectorModel;
 import org.apache.http.util.TextUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.apache.http.util.TextUtils.isEmpty;
@@ -34,15 +36,14 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void refreshFunctionList() {
         getLogger().logDebug("Refresh function list.");
-        ArrayList<String> functionNames = new ArrayList<>();
-        OperationValueResult<List<FunctionEntity>> functionListResult = getFunctionConnectorModel().getFunctions();
-        getLogger().logOperationResult(functionListResult);
+
         clearRolesList();
+        List<FunctionEntity> functionList = getFunctionEntities();
 
         String lastSelectedFunctionName = getConnectorSettings().getLastSelectedFunctionName();
         FunctionEntity selectedFunctionEntity = null;
         int functionCount = 0;
-        List<FunctionEntity> functionList = functionListResult.getValue();
+        ArrayList<String> functionNames = new ArrayList<>();
         for (FunctionEntity entity : functionList) {
             if (!entity.getRuntime().equals(Runtime.Java8)) {
                 continue;
@@ -54,8 +55,10 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             functionCount++;
         }
         getLogger().logDebug("Found %d Java-8 functions.", functionCount);
+
         getConnectorSettings().setFunctionNames(functionNames);
         view.setFunctionList(functionList, selectedFunctionEntity);
+
         FunctionEntity functionEntity = view.getSelectedFunctionEntity();
         if(functionEntity == null) {
             getLogger().logInfo("Function is not selected.");
@@ -64,6 +67,15 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         }
         view.setFunctionConfiguration(functionEntity);
         refreshStatus();
+    }
+
+    @NotNull
+    public List<FunctionEntity> getFunctionEntities() {
+        OperationValueResult<List<FunctionEntity>> functionListResult = getFunctionConnectorModel().getFunctions();
+        getLogger().logOperationResult(functionListResult);
+        List<FunctionEntity> functionList = functionListResult.getValue();
+        functionList.sort(Comparator.comparing(FunctionEntity::getFunctionName));
+        return functionList;
     }
 
     private void clearRolesList() {
@@ -323,23 +335,12 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             return;
         }
         getLogger().logDebug("Refresh JAR-artifact list.");
-        String lastSelectedJarArtifactName = getConnectorSettings().getLastSelectedJarArtifactName();
-        if (view.getSelectedFunctionEntity() != null) {
-            String lastSelectedArtifactForSelectedFunction =
-                    getConnectorSettings().getLastSelectedJarArtifactNameForFunction(
-                            view.getSelectedFunctionEntity().getFunctionName());
-            if (!TextUtils.isEmpty(lastSelectedArtifactForSelectedFunction)) {
-                lastSelectedJarArtifactName = lastSelectedArtifactForSelectedFunction;
-            }
-        }
-        ArtifactEntity selectedArtifactEntity = null;
-        Collection<? extends ArtifactEntity> jarArtifacts = projectModel.getJarArtifacts();
-        for(ArtifactEntity entity : jarArtifacts){
-            if(entity.getName().equals(lastSelectedJarArtifactName)){
-                selectedArtifactEntity = entity;
-                break;
-            }
-        }
+        String lastSelectedJarArtifactName = getLastSelectedJarArtifactName();
+
+        List<? extends ArtifactEntity> jarArtifacts = projectModel.getJarArtifacts();
+        jarArtifacts.sort(Comparator.comparing(ArtifactEntity::getName));
+
+        ArtifactEntity selectedArtifactEntity = getSelectedArtifactEntity(lastSelectedJarArtifactName, jarArtifacts);
         view.setArtifactList(jarArtifacts, selectedArtifactEntity);
 
         if(jarArtifacts.size() == 0) {
@@ -361,6 +362,31 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             getLogger().logError("JAR-artifact file does not exist with the path:\n%s", outputFilePath);
         }
         refreshStatus();
+    }
+
+    @Nullable
+    public ArtifactEntity getSelectedArtifactEntity(String lastSelectedJarArtifactName, List<? extends ArtifactEntity> jarArtifacts) {
+        ArtifactEntity selectedArtifactEntity = null;
+        for(ArtifactEntity entity : jarArtifacts){
+            if(entity.getName().equals(lastSelectedJarArtifactName)){
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    public String getLastSelectedJarArtifactName() {
+        ConnectorSettings connectorSettings = getConnectorSettings();
+        String lastSelectedJarArtifactName = connectorSettings.getLastSelectedJarArtifactName();
+        FunctionEntity selectedFunctionEntity = view.getSelectedFunctionEntity();
+        if (selectedFunctionEntity == null) {
+            return lastSelectedJarArtifactName;
+        }
+        String lastSelectedArtifactForSelectedFunction = connectorSettings.getLastSelectedJarArtifactNameForFunction(
+                        selectedFunctionEntity.getFunctionName());
+        return TextUtils.isEmpty(lastSelectedArtifactForSelectedFunction)
+                ? lastSelectedJarArtifactName
+                : lastSelectedArtifactForSelectedFunction;
     }
 
     @Override
