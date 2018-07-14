@@ -268,6 +268,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
                 runReformatJsonFunctionTestOutput();
             }
         });
+        setFunctionTestInput("{\"name\":\"value\"}");
     }
 
     private void collapseFunctionConfigurationDetails(boolean collapse) {

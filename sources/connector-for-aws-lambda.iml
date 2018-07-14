@@ -10,11 +10,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-lambda:1.11.359" level="project" />
-    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-iam:1.11.359" level="project" />
+    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-lambda:1.11.348" level="project" />
+    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-iam:1.11.348" level="project" />
     <orderEntry type="library" scope="TEST" name="org.mockito:mockito-all:Latest" level="project" />
     <orderEntry type="library" name="log4j:log4j:Latest" level="project" />
-    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-logs:1.11.359" level="project" />
+    <orderEntry type="library" name="com.amazonaws:aws-java-sdk-logs:1.11.348" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
