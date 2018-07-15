@@ -15,14 +15,5 @@
     <orderEntry type="library" scope="TEST" name="org.mockito:mockito-all:Latest" level="project" />
     <orderEntry type="library" name="log4j:log4j:Latest" level="project" />
     <orderEntry type="library" name="com.amazonaws:aws-java-sdk-logs:1.11.348" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/plugins/maven/lib/maven.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
   </component>
 </module>
