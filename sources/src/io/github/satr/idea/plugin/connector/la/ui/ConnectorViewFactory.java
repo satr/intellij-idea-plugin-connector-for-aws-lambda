@@ -130,6 +130,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JLabel awsLogStreamEventTimestamp;
     private JCheckBox awsLogStreamEventMessageWrapCheckBox;
     private JScrollPane awsLogStreamEventMessageScroll;
+    private JButton getNextAwsLogStreamListSet;
     private JTextField textProxyHost;
     private JTextField textProxyPort;
     private JCheckBox cbUseProxy;
@@ -230,6 +231,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
 
         refreshAwsLogStreamList.addActionListener(e -> {
             runRefreshAwsLogStreams();
+        });
+
+        getNextAwsLogStreamListSet.addActionListener(e -> {
+            runGetNextAwsLogStreamSet();
         });
 
         this.presenter.refreshTracingModeList();
@@ -405,6 +410,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         setupButton(reformatJsonFunctionTestInputButton, IconLoader.getIcon("/icons/iconReformatJson.png"));
         setupButton(reformatJsonFunctionTestOutputButton, IconLoader.getIcon("/icons/iconReformatJson.png"));
         setupButton(functionConfigurationCollapseExpandButton, IconLoader.getIcon("/icons/iconExpand.png"));
+        setupButton(getNextAwsLogStreamListSet, IconLoader.getIcon("/icons/iconNextAwsLogSet.png"));
     }
 
     private void performAfterBuildActivity() {
@@ -427,10 +433,10 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     private static void removeButtonBorder(JButton button) {
+        button.setBorder(BorderFactory.createEmptyBorder());
         button.setOpaque(false);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
-        button.setBorder(null);
     }
 
     private void openFunctionTestInputFile() {
@@ -506,6 +512,13 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             return;
         }
         runOperation(() -> presenter.refreshAwsLogStreams(), "Refresh AWS Log Streams");
+    }
+
+    private void runGetNextAwsLogStreamSet() {
+        if(operationInProgress || setRegionOperationInProgress) {
+            return;
+        }
+        runOperation(() -> presenter.runGetNextAwsLogStreamSet(), "Get next AWS Log Streams");
     }
 
     private void refreshAwsLogStreamEvents(JList source) {

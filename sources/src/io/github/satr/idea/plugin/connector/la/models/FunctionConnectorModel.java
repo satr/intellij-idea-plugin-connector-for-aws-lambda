@@ -33,11 +33,40 @@ import static org.apache.http.util.TextUtils.isEmpty;
 
 public class FunctionConnectorModel extends AbstractConnectorModel {
     private final AWSLogs awsLogClient;
+    private final int awsLogStreamItemsLimit = 50;
     private AWSLambda awsLambdaClient;
     private static final Map<String, String> regionDescriptions;
 
     static {
         regionDescriptions = createRegionDescriptionsMap();
+    }
+
+    private LastLogStreamState lastLogStreamState;
+
+    private class LastLogStreamState {
+        private String nextToken;
+        private String functionName;
+
+        private LastLogStreamState(String functionName) {
+            this.functionName = functionName;
+        }
+
+        public String getNextToken() {
+            return nextToken;
+        }
+
+        public LastLogStreamState setNextToken(String token) {
+            this.nextToken = token;
+            return this;
+        }
+
+        public boolean hasNextToken() {
+            return !isEmpty(nextToken);
+        }
+
+        public boolean isForFunction(String functionName) {
+            return this.functionName.equals(functionName);
+        }
     }
 
     private static Map<String, String> createRegionDescriptionsMap() {
@@ -111,6 +140,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
     }
 
     public OperationValueResult<FunctionEntity> updateWithJar(final FunctionEntity functionEntity, final File file) {
+        resetLastLogStreamNextToken();
         final OperationValueResultImpl<FunctionEntity> operationResult = new OperationValueResultImpl<>();
         validateLambdaFunctionJarFile(file, operationResult);
         if (operationResult.failed())
@@ -134,6 +164,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
     }
 
     private OperationValueResult<FunctionEntity> updateFunctionCode(final FunctionEntity functionEntity, final FileChannel fileChannel) throws IOException {
+        resetLastLogStreamNextToken();
         final OperationValueResultImpl<FunctionEntity> valueResult = new OperationValueResultImpl<>();
         try {
             final MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
@@ -153,6 +184,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
     public OperationValueResult<String> invokeFunction(final String functionName, final String inputText) {
         OperationValueResult<String> operationResult = new OperationValueResultImpl<>();
         try {
+            resetLastLogStreamNextToken();
             InvokeRequest invokeRequest = new InvokeRequest();
             invokeRequest.setFunctionName(functionName);
             invokeRequest.setPayload(inputText);
@@ -174,6 +206,10 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
             operationResult.addError(e.getMessage());
         }
         return operationResult;
+    }
+
+    public void resetLastLogStreamNextToken() {
+        lastLogStreamState = null;
     }
 
     private void validateLambdaFunctionJarFile(File file, OperationResult operationResult) {
@@ -236,6 +272,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
     }
 
     public OperationResult updateConfiguration(FunctionEntity functionEntity) {
+        resetLastLogStreamNextToken();
         OperationResultImpl operationResult = new OperationResultImpl();
         UpdateFunctionConfigurationRequest request = new UpdateFunctionConfigurationRequest()
                 .withFunctionName(functionEntity.getFunctionName())
@@ -254,7 +291,9 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
         return operationResult;
     }
 
-    public OperationValueResult<List<AwsLogStreamEntity>> getAwsLogStreamsFor(String functionName) {
+    @NotNull
+    public OperationValueResult<List<AwsLogStreamEntity>> getAwsLogStreamsFor(String functionName,
+                                                                              AwsLogRequestMode awsLogRequestMode) {
         List<AwsLogStreamEntity> awsLogStreamEntities = new ArrayList<>();
         OperationValueResult<List<AwsLogStreamEntity>> operationResult = new OperationValueResultImpl<>();
         operationResult.setValue(awsLogStreamEntities);
@@ -263,17 +302,39 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
             operationResult.addInfo("Not found log group for the function \"%s\"", functionName);
             return operationResult;
         }
-        DescribeLogStreamsRequest describeLogStreamsRequest = new DescribeLogStreamsRequest().withLogGroupName(logGroup.getLogGroupName());
+        DescribeLogStreamsRequest describeLogStreamsRequest = new DescribeLogStreamsRequest()
+                                                                    .withLogGroupName(logGroup.getLogGroupName())
+                                                                    .withOrderBy(OrderBy.LastEventTime)
+                                                                    .withDescending(true)
+                                                                    .withLimit(awsLogStreamItemsLimit);
+        if (awsLogRequestMode == AwsLogRequestMode.RequestNextSet
+                && lastLogStreamState != null
+                && lastLogStreamState.isForFunction(functionName)
+                && lastLogStreamState.hasNextToken()  ) {
+            describeLogStreamsRequest.withNextToken(lastLogStreamState.getNextToken());
+        } else {
+            lastLogStreamState = null;
+        }
+        //TODO move backward?
         DescribeLogStreamsResult describeLogStreamsResult = awsLogClient.describeLogStreams(describeLogStreamsRequest);
+        String nextToken = describeLogStreamsResult.getNextToken();
+        lastLogStreamState = getLastLogStreamStateFor(functionName).setNextToken(nextToken);
         List<LogStream> logStreams = describeLogStreamsResult.getLogStreams();
         for(LogStream logStream : logStreams) {
             awsLogStreamEntities.add(new AwsLogStreamEntity(logGroup.getLogGroupName(), logStream));
         }
-        awsLogStreamEntities.sort(Comparator.comparing(AwsLogStreamEntity::getCreationTime));
+        awsLogStreamEntities.sort(Comparator.comparing(AwsLogStreamEntity::getLastEventTime).reversed());
         return operationResult;
     }
 
+    public LastLogStreamState getLastLogStreamStateFor(String functionName) {
+        return lastLogStreamState != null && lastLogStreamState.isForFunction(functionName)
+               ? lastLogStreamState
+               : new LastLogStreamState(functionName);
+    }
+
     public OperationValueResult deleteAwsLogStreamsFor(String functionName) {
+        resetLastLogStreamNextToken();
         OperationValueResult operationResult = new OperationValueResultImpl();
         LogGroup logGroup = getLogGroupForAwsLambdaFunction(functionName);
         if(logGroup == null) {
@@ -324,4 +385,8 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
         }
     }
 
+    public enum AwsLogRequestMode {
+        NewRequest, RequestNextSet
+
+    }
 }

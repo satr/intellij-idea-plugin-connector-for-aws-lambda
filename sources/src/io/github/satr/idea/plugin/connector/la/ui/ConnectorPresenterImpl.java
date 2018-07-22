@@ -218,7 +218,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         FunctionEntity functionEntity = view.getSelectedFunctionEntity();
         refreshFunctionConfiguration(functionEntity);
         if(autoRefreshAwsLog) {
-            refreshAwsLogStreamList(functionEntity);
+            refreshAwsLogStreamList(functionEntity, FunctionConnectorModel.AwsLogRequestMode.NewRequest);
         } else {
             view.clearAwsLogStreamList();
         }
@@ -253,7 +253,12 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void refreshAwsLogStreams() {
-        refreshAwsLogStreamList(view.getSelectedFunctionEntity());
+        refreshAwsLogStreamList(view.getSelectedFunctionEntity(), FunctionConnectorModel.AwsLogRequestMode.NewRequest);
+    }
+
+    @Override
+    public void runGetNextAwsLogStreamSet() {
+        refreshAwsLogStreamList(view.getSelectedFunctionEntity(), FunctionConnectorModel.AwsLogRequestMode.RequestNextSet);
     }
 
     @Override
@@ -311,7 +316,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         view.setAwsLogStreamEvent(DateTimeHelper.toFormattedString(entity.getTimeStamp()), entity.getMessage());
     }
 
-    private void refreshAwsLogStreamList(FunctionEntity functionEntity) {
+    private void refreshAwsLogStreamList(FunctionEntity functionEntity, FunctionConnectorModel.AwsLogRequestMode awsLogRequestMode) {
         if(functionEntity == null) {
             getLogger().logDebug("Clear AWS Log Stream list for not selected function.");
             view.clearAwsLogStreamList();
@@ -320,7 +325,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         getLogger().logDebug("Refresh AWS Log Stream list.");
         view.clearAwsLogStreamEventList();
         OperationValueResult<List<AwsLogStreamEntity>> getAwsLogEventsResult = getFunctionConnectorModel()
-                                                                .getAwsLogStreamsFor(functionEntity.getFunctionName());
+                                                                .getAwsLogStreamsFor(functionEntity.getFunctionName(),
+                                                                        awsLogRequestMode);
         if(getAwsLogEventsResult.failed()) {
             getLogger().logOperationResult(getAwsLogEventsResult);
             return;
@@ -471,7 +477,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         }
         view.setFunctionConfiguration(functionEntity);
         if(autoRefreshAwsLog) {
-            refreshAwsLogStreamList(functionEntity);
+            refreshAwsLogStreamList(functionEntity, FunctionConnectorModel.AwsLogRequestMode.NewRequest);
         } else {
             view.clearAwsLogStreamList();
         }

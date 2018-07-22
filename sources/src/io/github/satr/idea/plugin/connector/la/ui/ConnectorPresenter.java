@@ -34,6 +34,7 @@ public interface ConnectorPresenter {
     void setAwsLogStreamEventList(AwsLogStreamEntity entity);
     void setAutoRefreshAwsLog(boolean autoRefresh);
     void refreshAwsLogStreams();
+    void runGetNextAwsLogStreamSet();
     boolean roleListLoaded();
     boolean initializeFunctionRoleList();
     void deleteAwsLogStreams();

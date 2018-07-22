@@ -4,23 +4,19 @@ import com.amazonaws.services.logs.model.LogStream;
 import io.github.satr.common.DateTimeHelper;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Date;
 
 public class AwsLogStreamEntity {
 
     private String logGroupName;
     private final String logStreamName;
     private final LocalDateTime lastEventTimestamp;
-    private final LocalDateTime creationTime;
+    private final LocalDateTime lastEventTime;
 
     public AwsLogStreamEntity(String logGroupName, LogStream logStream) {
         this.logGroupName = logGroupName;
         logStreamName = logStream.getLogStreamName();
         lastEventTimestamp = DateTimeHelper.toLocalDateTime(logStream.getLastEventTimestamp());
-        creationTime = DateTimeHelper.toLocalDateTime(logStream.getCreationTime());
+        lastEventTime = DateTimeHelper.toLocalDateTime(logStream.getLastEventTimestamp());
     }
 
     public String getLogStreamName() {
@@ -31,13 +27,13 @@ public class AwsLogStreamEntity {
         return logGroupName;
     }
 
-    public LocalDateTime getCreationTime() {
-        return creationTime;
+    public LocalDateTime getLastEventTime() {
+        return lastEventTime;
     }
 
     @Override
     public String toString() {
-        return String.format("%s - %s : \"%s\"", DateTimeHelper.toFormattedString(creationTime),
+        return String.format("%s - %s : \"%s\"", DateTimeHelper.toFormattedString(lastEventTime),
                 DateTimeHelper.toFormattedString(lastEventTimestamp),
                 logStreamName);
     }

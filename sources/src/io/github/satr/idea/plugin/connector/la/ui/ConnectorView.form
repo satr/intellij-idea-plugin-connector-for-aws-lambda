@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="toolPanel" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="1" vgap="1">
     <margin top="3" left="3" bottom="3" right="3"/>
     <constraints>
-      <xy x="20" y="20" width="1135" height="617"/>
+      <xy x="20" y="20" width="1391" height="617"/>
     </constraints>
     <properties/>
     <border type="empty"/>
@@ -30,8 +30,9 @@
               <component id="ece73" class="javax.swing.JButton" binding="updateFunctionButton">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="9" fill="0" indent="0" use-parent-layout="false">
-                    <minimum-size width="-1" height="24"/>
-                    <preferred-size width="-1" height="24"/>
+                    <minimum-size width="24" height="24"/>
+                    <preferred-size width="24" height="24"/>
+                    <maximum-size width="32" height="32"/>
                   </grid>
                 </constraints>
                 <properties>
@@ -39,7 +40,8 @@
                   <borderPainted value="true"/>
                   <contentAreaFilled value="true"/>
                   <defaultCapable value="true"/>
-                  <horizontalAlignment value="0"/>
+                  <hideActionText value="false"/>
+                  <horizontalAlignment value="2"/>
                   <horizontalTextPosition value="11"/>
                   <icon value="icons/iconUpdateFunction.png"/>
                   <iconTextGap value="4"/>
@@ -64,14 +66,16 @@
               <component id="d96c9" class="javax.swing.JButton" binding="openFunctionInputFileButton">
                 <constraints>
                   <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="9" fill="0" indent="0" use-parent-layout="false">
-                    <minimum-size width="-1" height="24"/>
-                    <preferred-size width="-1" height="24"/>
+                    <minimum-size width="24" height="24"/>
+                    <preferred-size width="24" height="24"/>
+                    <maximum-size width="32" height="32"/>
                   </grid>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
-                  <horizontalAlignment value="0"/>
+                  <horizontalAlignment value="2"/>
                   <icon value="icons/iconOpenFunctionInputFile.png"/>
+                  <margin top="3" left="3" bottom="3" right="3"/>
                   <text value=""/>
                   <toolTipText value="Open function test input file"/>
                 </properties>
@@ -81,12 +85,13 @@
                   <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="9" fill="0" indent="0" use-parent-layout="false">
                     <minimum-size width="-1" height="24"/>
                     <preferred-size width="-1" height="24"/>
+                    <maximum-size width="32" height="-1"/>
                   </grid>
                 </constraints>
                 <properties>
-                  <horizontalAlignment value="0"/>
+                  <horizontalAlignment value="2"/>
                   <icon value="icons/iconRunFunctionTest.png"/>
-                  <margin top="10" left="10" bottom="10" right="10"/>
+                  <margin top="3" left="3" bottom="3" right="3"/>
                   <text value=""/>
                   <toolTipText value="Run test of the function"/>
                 </properties>
@@ -94,15 +99,21 @@
               <component id="ceb06" class="javax.swing.JButton" binding="updateProxySettingsButton">
                 <constraints>
                   <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="9" fill="0" indent="0" use-parent-layout="false">
-                    <preferred-size width="-1" height="24"/>
-                    <maximum-size width="-1" height="24"/>
+                    <minimum-size width="24" height="-1"/>
+                    <preferred-size width="24" height="24"/>
+                    <maximum-size width="32" height="24"/>
                   </grid>
                 </constraints>
                 <properties>
+                  <borderPainted value="false"/>
+                  <contentAreaFilled value="false"/>
                   <enabled value="true"/>
-                  <horizontalAlignment value="0"/>
+                  <focusable value="false"/>
+                  <horizontalAlignment value="2"/>
+                  <horizontalTextPosition value="2"/>
                   <icon value="icons/iconUpdateProxySettings.png"/>
-                  <margin top="10" left="10" bottom="10" right="10"/>
+                  <margin top="3" left="3" bottom="3" right="3"/>
+                  <opaque value="false"/>
                   <text value=""/>
                   <toolTipText value="Update proxy settings from IDEA settings"/>
                 </properties>
@@ -118,12 +129,13 @@
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="9" fill="0" indent="0" use-parent-layout="false">
                     <minimum-size width="-1" height="24"/>
                     <preferred-size width="-1" height="24"/>
+                    <maximum-size width="32" height="-1"/>
                   </grid>
                 </constraints>
                 <properties>
-                  <horizontalAlignment value="0"/>
+                  <horizontalAlignment value="2"/>
                   <icon value="icons/iconRefresh.png"/>
-                  <margin top="10" left="10" bottom="10" right="10"/>
+                  <margin top="3" left="3" bottom="3" right="3"/>
                   <text value=""/>
                   <toolTipText value="Refresh All"/>
                 </properties>
@@ -795,7 +807,7 @@
                       </scrollpane>
                     </children>
                   </grid>
-                  <grid id="75fb5" binding="awsLogPan" layout-manager="GridLayoutManager" row-count="2" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="75fb5" binding="awsLogPan" layout-manager="GridLayoutManager" row-count="2" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <tabbedpane title="AWS Log"/>
@@ -805,7 +817,7 @@
                     <children>
                       <splitpane id="f60c1">
                         <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                          <grid row="1" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
                             <preferred-size width="200" height="200"/>
                           </grid>
                         </constraints>
@@ -978,7 +990,7 @@
                       </component>
                       <component id="c9804" class="javax.swing.JButton" binding="deleteAwsLogStreamsButton">
                         <constraints>
-                          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                          <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="8" fill="0" indent="0" use-parent-layout="false">
                             <minimum-size width="-1" height="24"/>
                             <preferred-size width="-1" height="24"/>
                           </grid>
@@ -996,11 +1008,22 @@
                       </component>
                       <component id="d4561" class="javax.swing.JCheckBox" binding="autoRefreshAwsLog">
                         <constraints>
-                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Auto Refresh"/>
                           <toolTipText value="Auto Refresh Aws Log is off by default - to reduce data-transfer amount"/>
+                        </properties>
+                      </component>
+                      <component id="e5602" class="javax.swing.JButton" binding="getNextAwsLogStreamListSet">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <horizontalAlignment value="0"/>
+                          <icon value="icons/iconNextAwsLogSet.png"/>
+                          <text value=""/>
+                          <toolTipText value="Load next AWS Log Stream list set"/>
                         </properties>
                       </component>
                     </children>
