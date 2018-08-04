@@ -3,9 +3,6 @@ package io.github.satr.idea.plugin.connector.la.entities;
 
 import com.intellij.packaging.artifacts.Artifact;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class ArtifactEntity {
 
     private final String name;
@@ -20,10 +17,6 @@ public class ArtifactEntity {
         name = artifactName;
         this.outputFilePath = artifactFilePath;
         this.isMavenized = isMavenized;
-    }
-
-    public ArtifactEntity(String artifactName, String artifactPath, String artifactPackage, boolean isMavenized) {
-        this(artifactName, Paths.get(artifactPath, artifactName).toAbsolutePath().toString(), isMavenized);
     }
 
     public String getName() {

@@ -6,5 +6,5 @@ import io.github.satr.idea.plugin.connector.la.entities.ArtifactEntity;
 import java.util.List;
 
 public interface ProjectModel {
-    List<? extends ArtifactEntity> getJarArtifacts();
+    List<? extends ArtifactEntity> getArtifacts();
 }

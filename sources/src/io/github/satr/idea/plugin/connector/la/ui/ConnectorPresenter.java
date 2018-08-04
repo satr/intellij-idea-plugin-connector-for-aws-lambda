@@ -15,13 +15,13 @@ public interface ConnectorPresenter {
     void refreshRegionList();
     void refreshTracingModeList();
     void refreshCredentialProfilesList();
-    void refreshJarArtifactList();
+    void refreshArtifactList();
     void refreshStatus();
     void refreshAll();
     void setRegion(RegionEntity regionEntity);
     void setCredentialProfile(CredentialProfileEntity credentialProfileEntity);
     void setFunction(FunctionEntity functionEntity);
-    void setJarArtifact(ArtifactEntity artifactEntity);
+    void setArtifact(ArtifactEntity artifactEntity);
     void runFunctionTest(String inputText, boolean autoFormatOutput);
     void openTestFunctionInputFile(File filename);
     String getLastSelectedTestFunctionInputFilePath();

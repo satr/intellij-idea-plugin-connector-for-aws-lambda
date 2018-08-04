@@ -3,7 +3,6 @@ package io.github.satr.idea.plugin.connector.la.ui;
 
 import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.lambda.model.Runtime;
 import io.github.satr.common.*;
 import io.github.satr.idea.plugin.connector.la.entities.*;
 import io.github.satr.idea.plugin.connector.la.models.ConnectorSettings;
@@ -45,16 +44,13 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         int functionCount = 0;
         ArrayList<String> functionNames = new ArrayList<>();
         for (FunctionEntity entity : functionList) {
-            if (!entity.getRuntime().equals(Runtime.Java8)) {
-                continue;
-            }
             functionNames.add(entity.getFunctionName());
             if(entity.getFunctionName().equals(lastSelectedFunctionName)){
                 selectedFunctionEntity = entity;
             }
             functionCount++;
         }
-        getLogger().logDebug("Found %d Java-8 functions.", functionCount);
+        getLogger().logDebug("Found %d functions.", functionCount);
 
         getConnectorSettings().setFunctionNames(functionNames);
         view.setFunctionList(functionList, selectedFunctionEntity);
@@ -106,17 +102,17 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         }
         String functionName = functionEntity.getFunctionName();
         String artifactFilePath = artifactEntity.getOutputFilePath();
-        final OperationValueResult<FunctionEntity> result = getFunctionConnectorModel().updateWithJar(functionEntity, artifactFilePath);
+        final OperationValueResult<FunctionEntity> result = getFunctionConnectorModel().updateWithArtifact(functionEntity, artifactFilePath);
         if (!result.success()) {
             showError(result.getErrorAsString());
             return;
         }
         getConnectorSettings().setLastSelectedFunctionName(functionName);
-        getConnectorSettings().setLastSelectedJarArtifactName(artifactEntity.getName());
+        getConnectorSettings().setLastSelectedArtifactName(artifactEntity.getName());
         FunctionEntity updatedFunctionEntity = result.getValue();
         view.updateFunctionEntity(updatedFunctionEntity);
         setFunction(updatedFunctionEntity);
-        showInfo("Lambda function \"%s\" has been updated with the JAR-artifact \"%s\".",
+        showInfo("Lambda function \"%s\" has been updated with the artifact \"%s\".",
                             updatedFunctionEntity.getFunctionName(), artifactEntity.getName());
     }
 
@@ -136,14 +132,14 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             result.addError("Function is not selected.");
         }
         if(artifactEntity == null){
-            result.addError("JAR-artifact is not selected.");
+            result.addError("Artifact is not selected.");
         }
         if(result.failed()) {
             return result;
         }
         final File codeFile = new File(artifactEntity.getOutputFilePath());
         if(!codeFile.exists()){
-            result.addError("JAR-artifact file does not exist.");
+            result.addError("Artifact file does not exist.");
             return result;
         }
         final long codeFileSize = codeFile.length();
@@ -211,7 +207,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void refreshAll() {
         getLogger().logDebug("Refresh all.");
-        refreshJarArtifactList();
+        refreshArtifactList();
         refreshRegionList();
         refreshCredentialProfilesList();
         refreshFunctionList();
@@ -336,36 +332,36 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     }
 
     @Override
-    public void refreshJarArtifactList() {
+    public void refreshArtifactList() {
         if(projectModel == null) {
             return;
         }
-        getLogger().logDebug("Refresh JAR-artifact list.");
-        String lastSelectedJarArtifactName = getLastSelectedJarArtifactName();
+        getLogger().logDebug("Refresh artifact list.");
+        String lastSelectedJarArtifactName = getLastSelectedArtifactName();
 
-        List<? extends ArtifactEntity> jarArtifacts = projectModel.getJarArtifacts();
+        List<? extends ArtifactEntity> jarArtifacts = projectModel.getArtifacts();
         jarArtifacts.sort(Comparator.comparing(ArtifactEntity::getName));
 
         ArtifactEntity selectedArtifactEntity = getSelectedArtifactEntity(lastSelectedJarArtifactName, jarArtifacts);
         view.setArtifactList(jarArtifacts, selectedArtifactEntity);
 
         if(jarArtifacts.size() == 0) {
-            getLogger().logInfo("No JAR-artifacts found.");
+            getLogger().logInfo("No artifacts found.");
             refreshStatus();
             return;
         }
 
         ArtifactEntity artifactEntity = view.getSelectedArtifactEntity();
         if(artifactEntity == null) {
-            getLogger().logInfo("JAR-artifact is not selected.");
+            getLogger().logInfo("Artifact is not selected.");
             refreshStatus();
             return;
         }
 
-        getLogger().logInfo("Selected JAR-artifact: \"%s\"", artifactEntity.getName());
+        getLogger().logInfo("Selected artifact: \"%s\"", artifactEntity.getName());
         String outputFilePath = artifactEntity.getOutputFilePath();
         if(!new File(outputFilePath).exists()){
-            getLogger().logError("JAR-artifact file does not exist with the path:\n%s", outputFilePath);
+            getLogger().logError("Artifact file does not exist with the path:\n%s", outputFilePath);
         }
         refreshStatus();
     }
@@ -381,15 +377,23 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         return null;
     }
 
-    public String getLastSelectedJarArtifactName() {
+    public String getLastSelectedArtifactName() {
         ConnectorSettings connectorSettings = getConnectorSettings();
         String lastSelectedJarArtifactName = connectorSettings.getLastSelectedJarArtifactName();
+        if(isEmpty(lastSelectedJarArtifactName)) {
+            lastSelectedJarArtifactName = connectorSettings.getLastSelectedJarArtifactName();
+        }
         FunctionEntity selectedFunctionEntity = view.getSelectedFunctionEntity();
         if (selectedFunctionEntity == null) {
             return lastSelectedJarArtifactName;
         }
+        //left for backward compatibility transition
         String lastSelectedArtifactForSelectedFunction = connectorSettings.getLastSelectedJarArtifactNameForFunction(
                         selectedFunctionEntity.getFunctionName());
+        if(isEmpty(lastSelectedArtifactForSelectedFunction)) {
+            lastSelectedArtifactForSelectedFunction = connectorSettings.getLastSelectedArtifactNameForFunction(
+                    selectedFunctionEntity.getFunctionName());
+        }
         return TextUtils.isEmpty(lastSelectedArtifactForSelectedFunction)
                 ? lastSelectedJarArtifactName
                 : lastSelectedArtifactForSelectedFunction;
@@ -481,14 +485,14 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         } else {
             view.clearAwsLogStreamList();
         }
-        refreshJarArtifactList();
+        refreshArtifactList();
         refreshStatus();
     }
 
     @Override
-    public void setJarArtifact(ArtifactEntity artifactEntity) {
+    public void setArtifact(ArtifactEntity artifactEntity) {
         getLogger().logDebug("Set JAR-artifact.");
-        getConnectorSettings().setLastSelectedJarArtifactName(artifactEntity.getName());
+        getConnectorSettings().setLastSelectedArtifactName(artifactEntity.getName());
         refreshStatus();
     }
 

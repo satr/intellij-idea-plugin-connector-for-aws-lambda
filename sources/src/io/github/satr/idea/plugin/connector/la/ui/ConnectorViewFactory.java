@@ -4,7 +4,6 @@ package io.github.satr.idea.plugin.connector.la.ui;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.model.AWSLambdaException;
-import com.amazonaws.services.lambda.model.Runtime;
 import com.amazonaws.services.logs.model.InvalidOperationException;
 import com.intellij.codeInspection.ui.RegExFormatter;
 import com.intellij.compiler.server.BuildManagerListener;
@@ -68,8 +67,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private JButton refreshFuncListButton;
     private JButton updateFunctionButton;
     private JPanel toolPanel;
-    private JComboBox jarArtifactList;
-    private JButton refreshJarArtifactsButton;
+    private JComboBox artifactList;
+    private JButton refreshArtifactsButton;
     private JComboBox regionList;
     private JButton refreshRegionsButton;
     private JComboBox credentialProfileList;
@@ -168,8 +167,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         refreshFunctionConfiguration.addActionListener(e -> {
             runRefreshFunctionConfiguration();
         });
-        refreshJarArtifactsButton.addActionListener(e -> {
-            runRefreshJarArtifactList();
+        refreshArtifactsButton.addActionListener(e -> {
+            runRefreshArtifactList();
         });
         refreshRegionsButton.addActionListener(e -> {
             runRefreshRegionList();
@@ -210,8 +209,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         credentialProfileList.addItemListener(e -> {
             runSetCredentialProfile(e);
         });
-        jarArtifactList.addItemListener(e -> {
-            runSetJarArtifact(e);
+        artifactList.addItemListener(e -> {
+            runSetArtifact(e);
         });
         updateProxySettingsButton.addActionListener(e -> {
             updateProxySetting();
@@ -238,7 +237,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         });
 
         this.presenter.refreshTracingModeList();
-        this.presenter.refreshJarArtifactList();
+        this.presenter.refreshArtifactList();
         runRefreshAll();
 
         functionTestInputWrapCheckBox.addChangeListener(e -> {
@@ -402,7 +401,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         setupButton(clearFunctionTestOutputButton, IconLoader.getIcon("/icons/iconClearLog.png"));
         setupButton(deleteAwsLogStreamsButton, IconLoader.getIcon("/icons/iconClearLog.png"));
         setupButton(refreshFuncListButton, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(refreshJarArtifactsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
+        setupButton(refreshArtifactsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshRegionsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
         setupButton(refreshFunctionConfiguration, IconLoader.getIcon("/icons/iconRefresh.png"));
@@ -414,7 +413,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     private void performAfterBuildActivity() {
-        runRefreshJarArtifactList();
+        runRefreshArtifactList();
     }
 
 
@@ -631,19 +630,19 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.setProxySettings(), "Update proxy settings from IDEA settings.");
     }
 
-    private void runSetJarArtifact(ItemEvent e) {
+    private void runSetArtifact(ItemEvent e) {
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
         ArtifactEntity entity = (ArtifactEntity) e.getItem();
         if(entity == null) {
             return;
         }
-        runOperation(() -> presenter.setJarArtifact(entity), "Select JAR-artifact: " + entity.toString());
+        runOperation(() -> presenter.setArtifact(entity), "Select artifact: " + entity.toString());
     }
 
     private void runUpdateFunction() {
         runOperation(() -> presenter.updateFunction(),
-                    "Update selected AWS Lambda function with JAR-artifact");
+                    "Update selected AWS Lambda function with artifact");
     }
 
     private void clearLocalLog() {
@@ -674,8 +673,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         runOperation(() -> presenter.refreshFunctionConfiguration(), "Refresh AWS Lambda function configuration");
     }
 
-    private void runRefreshJarArtifactList() {
-        runOperation(() -> presenter.refreshJarArtifactList(), "Refresh list of JAR-artifacts in the project");
+    private void runRefreshArtifactList() {
+        runOperation(() -> presenter.refreshArtifactList(), "Refresh list of artifacts in the project");
     }
 
     private void runInitializeFunctionRoleList() {
@@ -740,14 +739,14 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     private void setControlsEnabled(boolean enabled) {
         refreshAllButton.setEnabled(enabled);
         refreshFuncListButton.setEnabled(enabled);
-        refreshJarArtifactsButton.setEnabled(enabled);
+        refreshArtifactsButton.setEnabled(enabled);
         refreshRegionsButton.setEnabled(enabled);
         refreshCredentialProfiles.setEnabled(enabled);
         updateFunctionButton.setEnabled(enabled);
         runFunctionTestButton.setEnabled(enabled);
         openFunctionInputFileButton.setEnabled(enabled);
         functionList.setEnabled(enabled);
-        jarArtifactList.setEnabled(enabled);
+        artifactList.setEnabled(enabled);
         regionList.setEnabled(enabled);
         credentialProfileList.setEnabled(enabled);
         testFunctionInputRecentFileList.setEnabled(enabled);
@@ -779,21 +778,19 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     public void setFunctionList(List<FunctionEntity> functions, FunctionEntity selectedFunctionEntity) {
         functionList.removeAllItems();
         for (FunctionEntity entity : functions) {
-            if (entity.getRuntime().equals(Runtime.Java8)) {
-                functionList.addItem(entity);
-            }
+            functionList.addItem(entity);
         }
         presenter.setFunction(selectedFunctionEntity);
     }
 
     @Override
     public void setArtifactList(Collection<? extends ArtifactEntity> artifacts, ArtifactEntity selectedArtifactEntity) {
-        jarArtifactList.removeAllItems();
+        artifactList.removeAllItems();
         for(ArtifactEntity artifactEntity : artifacts) {
-            jarArtifactList.addItem(artifactEntity);
+            artifactList.addItem(artifactEntity);
         }
         if(selectedArtifactEntity != null){
-            jarArtifactList.setSelectedItem(selectedArtifactEntity);
+            artifactList.setSelectedItem(selectedArtifactEntity);
         }
     }
 
@@ -832,14 +829,14 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     @Override
     public void refreshStatus(String function, String artifact, String region, String regionDescription,
                               String credentialProfile, String proxyDetails) {
-        txtStatus.setText(String.format("Func: \"%s\"; Jar: \"%s\"; Region: \"%s\"; Profile:\"%s\"; Proxy:\"%s\"",
+        txtStatus.setText(String.format("Func: \"%s\"; Artifact: \"%s\"; Region: \"%s\"; Profile:\"%s\"; Proxy:\"%s\"",
                 getNotEmptyString(function, "?"),
                 getNotEmptyString(artifact, "?"),
                 getNotEmptyString(region, "?"),
                 getNotEmptyString(credentialProfile, "?"),
                 getNotEmptyString(proxyDetails, "?")
         ));
-        txtStatus.setToolTipText(String.format("Func: %s\nJar: %s\nRegion: %s\nProfile: %s; \nProxy: %s",
+        txtStatus.setToolTipText(String.format("Func: %s\nArtifact: %s\nRegion: %s\nProfile: %s; \nProxy: %s",
                 getNotEmptyString(function, "?"),
                 getNotEmptyString(artifact, "?"),
                 getNotEmptyString(regionDescription, "?"),
@@ -868,7 +865,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
 
     @Override
     public ArtifactEntity getSelectedArtifactEntity() {
-        return (ArtifactEntity) jarArtifactList.getSelectedItem();
+        return (ArtifactEntity) artifactList.getSelectedItem();
     }
 
     @Override
@@ -1038,7 +1035,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             itemSetToList = true;
             break;
         }
-        if(!itemSetToList && functionEntity.getRuntime().equals(Runtime.Java8)) {
+        if(!itemSetToList) {
             functionList.addItem(functionEntity);
             itemSetToList = true;
         }

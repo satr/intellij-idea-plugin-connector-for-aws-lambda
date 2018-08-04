@@ -2,23 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="543263f4-ce4d-4e4f-b6eb-b999e236b381" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/resources/icons/iconNextAwsLogSet.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/iconNextAwsLogSet@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/iconNextAwsLogSet@2x_dark.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/icons/iconNextAwsLogSet_dark.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/META-INF/plugin.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/AwsLogStreamEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/AwsLogStreamEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/ArtifactEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/ArtifactEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ConnectorSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ConnectorSettings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithJarTestCases.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithArtifactTestCases.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/sources/.idea/shelf/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,62 +43,77 @@
     <session id="-692390605">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.16" value="1" />
+          <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.24" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.open.time.30" value="1" />
+          <entry key="project.open.time.8" value="1" />
+          <entry key="project.opened" value="5" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="875" />
-          <entry key="PLAIN_TEXT" value="1" />
+          <entry key="GUI_DESIGNER_FORM" value="3" />
+          <entry key="JAVA" value="1863" />
+          <entry key="PLAIN_TEXT" value="4" />
+          <entry key="XML" value="120" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JAVA" value="8" />
+          <entry key="CLASS" value="11" />
+          <entry key="GUI_DESIGNER_FORM" value="1" />
+          <entry key="JAVA" value="22" />
+          <entry key="XML" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="dummy" value="1" />
-          <entry key="java" value="875" />
+          <entry key="dummy" value="4" />
+          <entry key="form" value="3" />
+          <entry key="java" value="1863" />
+          <entry key="xml" value="120" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="java" value="8" />
+          <entry key="class" value="11" />
+          <entry key="form" value="1" />
+          <entry key="java" value="22" />
+          <entry key="xml" value="1" />
         </counts>
       </usages-collector>
+      <usages-collector id="statistics.spring.boot.run.usages" />
+      <usages-collector id="statistics.spring.boot.mvc.usages" />
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="ConnectorViewFactory.java" pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="1073" column="16" selection-start-line="1073" selection-start-column="16" selection-end-line="1073" selection-end-column="16" />
+            <state relative-caret-position="166">
+              <caret line="838" column="66" selection-start-line="838" selection-start-column="66" selection-end-line="838" selection-end-column="66" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ConnectorPresenter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithArtifactTestCases.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="35" column="19" selection-start-line="35" selection-start-column="19" selection-end-line="35" selection-end-column="19" />
+            <state relative-caret-position="475">
+              <caret line="30" column="5" lean-forward="true" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FunctionConnectorModel.java" pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="325" column="84" selection-start-line="325" selection-start-column="84" selection-end-line="325" selection-end-column="84" />
+            <state relative-caret-position="548">
+              <caret line="236" column="13" selection-start-line="236" selection-start-column="13" selection-end-line="236" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -106,62 +121,82 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AwsLogStreamEntity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/AwsLogStreamEntity.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/ArtifactEntity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="78">
-              <caret line="18" column="17" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
+            <state relative-caret-position="238">
+              <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
               <folding>
+                <element signature="e#342#343#0" expanded="true" />
+                <element signature="e#419#420#0" expanded="true" />
                 <element signature="e#1075#1076#0" expanded="true" />
-                <element signature="e#1110#1111#0" expanded="true" />
+                <element signature="e#1127#1128#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="plugin.xml" pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" selection-start-line="16" selection-end-line="18" selection-end-column="86" />
+            <state relative-caret-position="289">
+              <caret line="17" column="57" selection-start-line="17" selection-start-column="57" selection-end-line="17" selection-end-column="57" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FunctionConnectorModelTestCasesBase.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/FunctionConnectorModelTestCasesBase.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="16" column="37" selection-start-line="16" selection-start-column="37" selection-end-line="16" selection-end-column="37" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConnectorView.form" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form">
-          <provider selected="true" editor-type-id="ui-designer" />
-        </entry>
-      </file>
-      <file leaf-file-name="DescribeLogStreamsRequest.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/com/amazonaws/aws-java-sdk-logs/1.11.348/aws-java-sdk-logs-1.11.348-sources.jar!/com/amazonaws/services/logs/model/DescribeLogStreamsRequest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="477" column="82" selection-start-line="477" selection-start-column="82" selection-end-line="477" selection-end-column="111" />
+            <state relative-caret-position="367">
+              <caret line="89" column="17" selection-start-line="89" selection-start-column="17" selection-end-line="89" selection-end-column="17" />
               <folding>
-                <element signature="e#18171#18172#0" expanded="true" />
-                <element signature="e#18208#18209#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ConnectorPresenterImpl.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="164">
-              <caret line="327" column="78" lean-forward="true" selection-start-line="327" selection-start-column="78" selection-end-line="327" selection-end-column="78" />
+            <state relative-caret-position="102">
+              <caret line="8" column="38" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
             </state>
           </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ConnectorSettings.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="72" column="16" selection-start-line="72" selection-start-column="16" selection-end-line="72" selection-end-column="16" />
+              <folding>
+                <element signature="e#1226#1227#0" expanded="true" />
+                <element signature="e#1276#1277#0" expanded="true" />
+                <element signature="e#1375#1376#0" expanded="true" />
+                <element signature="e#1425#1426#0" expanded="true" />
+                <element signature="e#2745#2746#0" expanded="true" />
+                <element signature="e#2802#2803#0" expanded="true" />
+                <element signature="e#3134#3135#0" expanded="true" />
+                <element signature="e#3188#3189#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="389">
+              <caret line="390" column="94" selection-start-line="390" selection-start-column="94" selection-end-line="390" selection-end-column="94" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form">
+          <provider selected="true" editor-type-id="ui-designer" />
         </entry>
       </file>
     </leaf>
@@ -201,11 +236,19 @@
       <find>AwsLogRequestMode</find>
       <find>last</find>
       <find>sort</find>
+      <find>java</find>
+      <find>Code file is invalid of empty</find>
+      <find>jar</find>
+      <find>Jar</find>
+      <find>Java8</find>
     </findStrings>
     <replaceStrings>
       <replace />
       <replace>getConnectorSettings()</replace>
     </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/src</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -214,7 +257,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/MavenListener.java" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/ArtifactEntity.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/AwsLogEventEntity.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/AwsLogStreamEventEntity.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/common/DateTimeHelper.java" />
@@ -234,23 +276,33 @@
         <option value="$PROJECT_DIR$/resources/Notes" />
         <option value="$PROJECT_DIR$/src/io/github/satr/common/JsonHelper.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java" />
         <option value="$PROJECT_DIR$/resources/META-INF/javaee-optional-dependencies.xml" />
         <option value="$PROJECT_DIR$/src/io/github/satr/common/HttpStatusCode.java" />
         <option value="$PROJECT_DIR$/out/production/connector-for-aws-lambda/META-INF/plugin.xml" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" />
-        <option value="$PROJECT_DIR$/resources/META-INF/plugin.xml" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form" />
-        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java" />
         <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/AwsLogStreamEntity.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/ArtifactEntity.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form" />
+        <option value="$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithJarTestCases.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ConnectorSettings.java" />
+        <option value="$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java" />
+        <option value="$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithArtifactTestCases.java" />
+        <option value="$PROJECT_DIR$/resources/META-INF/plugin.xml" />
       </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
@@ -268,13 +320,11 @@
       <select />
     </treeState>
   </component>
-  <component name="NodePackageJsonFileManager">
-    <packageJsonPaths />
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
+    <option name="x" value="1280" />
     <option name="y" value="23" />
-    <option name="width" value="1280" />
-    <option name="height" value="716" />
+    <option name="width" value="1920" />
+    <option name="height" value="999" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -284,12 +334,18 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="intellij-idea-plugin-connector-for-aws-lambda" type="b2602c69:ProjectViewProjectNode" />
               <item name="sources" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="intellij-idea-plugin-connector-for-aws-lambda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sources" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="intellij-idea-plugin-connector-for-aws-lambda" type="b2602c69:ProjectViewProjectNode" />
@@ -326,6 +382,14 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="satr" type="462c0819:PsiDirectoryNode" />
               <item name="la" type="462c0819:PsiDirectoryNode" />
+              <item name="entities" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="intellij-idea-plugin-connector-for-aws-lambda" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sources" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="satr" type="462c0819:PsiDirectoryNode" />
+              <item name="la" type="462c0819:PsiDirectoryNode" />
               <item name="models" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -343,7 +407,7 @@
               <item name="satr" type="462c0819:PsiDirectoryNode" />
               <item name="la" type="462c0819:PsiDirectoryNode" />
               <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="ConnectorViewFactory" type="e9f4de52:FormNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="intellij-idea-plugin-connector-for-aws-lambda" type="b2602c69:ProjectViewProjectNode" />
@@ -369,9 +433,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
       <pane id="Scope" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -383,14 +446,15 @@
     <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH" value="346" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1532288584563" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1533371679206" />
     <property name="extract.method.default.visibility" value="public" />
-    <property name="last_opened_file_path" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven-server-api.jar!/" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.105596624" />
+    <property name="project.structure.side.proportion" value="0.21691176" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="settings.nodejs" />
   </component>
   <component name="RecentsManager">
     <key name="ExtractSuperBase.RECENT_KEYS">
@@ -416,57 +480,29 @@
   <component name="RunManager">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <method>
+      <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <method>
+      <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <patterns />
-      <method>
+      <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="SUITE_NAME" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="GROUP_NAME" />
-      <option name="TEST_OBJECT" value="CLASS" />
       <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <option name="OUTPUT_DIRECTORY" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <option name="USE_DEFAULT_REPORTERS" value="false" />
-      <option name="PROPERTIES_FILE" />
       <properties />
       <listeners />
-      <method>
+      <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
@@ -475,13 +511,16 @@
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <predefined_log_file id="idea.log" enabled="true" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="connector-for-aws-lambda" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
       <option name="PROGRAM_PARAMETERS" />
       <predefined_log_file id="idea.log" enabled="true" />
-      <method>
+      <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
@@ -546,7 +585,12 @@
       <workItem from="1532250731745" duration="25000" />
       <workItem from="1532251413890" duration="1146000" />
       <workItem from="1532267146246" duration="8131000" />
-      <workItem from="1532288674564" duration="1116000" />
+      <workItem from="1532288674564" duration="1304000" />
+      <workItem from="1532290011257" duration="314000" />
+      <workItem from="1533323456743" duration="741000" />
+      <workItem from="1533357114298" duration="424000" />
+      <workItem from="1533357575646" duration="84000" />
+      <workItem from="1533360513449" duration="9907000" />
     </task>
     <task id="LOCAL-00001" summary="Artifact list is automatically refreshed after a project or artifact build.">
       <created>1520437214334</created>
@@ -667,11 +711,18 @@
       <option name="project" value="LOCAL" />
       <updated>1531637552856</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Fixed button layout for the version IDEA 2018.2.RC. The list of AWS streams has been ordered by event time, descendant. Added a button to load next list of AWS stream set (split by 50 items).">
+      <created>1532289932025</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1532289932025</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="143901000" />
+    <option name="totallyTimeSpent" value="155559000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -683,38 +734,38 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="717" extended-state="6" />
+    <frame x="1280" y="23" width="1920" height="999" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="bottom" id="TODO" order="8" sideWeight="0.49892932" weight="0.32993197" />
-      <window_info anchor="bottom" id="Messages" order="11" sideWeight="0.32003257" weight="0.32554257" />
-      <window_info anchor="right" id="Palette&#9;" order="4" />
-      <window_info id="Image Layers" order="3" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50104165" side_tool="true" weight="0.31840795" />
-      <window_info anchor="right" id="Maven Projects" order="6" weight="0.32975295" />
-      <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.32166123" weight="0.63439065" />
-      <window_info anchor="bottom" id="Run" order="3" sideWeight="0.32166123" weight="0.13021703" />
-      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.48925886" weight="0.30413222" />
-      <window_info id="Capture Tool" order="4" />
-      <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12540716" />
-      <window_info anchor="right" id="Database" order="7" />
-      <window_info active="true" anchor="bottom" id="Find" order="2" sideWeight="0.45649838" visible="true" weight="0.15025042" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21359743" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="Capture Tool" order="4" />
       <window_info id="UI Designer" order="5" />
-      <window_info anchor="right" id="Theme Preview" order="8" />
       <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="4" sideWeight="0.32166123" weight="0.43238732" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="bottom" id="Connector for AWS Lambda" order="12" sideWeight="0.67833877" side_tool="true" visible="true" weight="0.49415693" />
+      <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" sideWeight="0.4193811" weight="0.25310734" />
+      <window_info anchor="bottom" id="Run" order="3" sideWeight="0.32166123" weight="0.38564274" />
+      <window_info active="true" anchor="bottom" id="Debug" order="4" sideWeight="0.4127409" visible="true" weight="0.33898306" />
       <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50104165" side_tool="true" weight="0.31840795" />
+      <window_info anchor="bottom" id="TODO" order="8" sideWeight="0.49892932" weight="0.32993197" />
+      <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.247557" weight="0.63439065" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.48925886" weight="0.30413222" />
+      <window_info anchor="bottom" id="Messages" order="11" sideWeight="0.32003257" weight="0.32542372" />
+      <window_info anchor="bottom" id="Connector for AWS Lambda" order="12" sideWeight="0.5872591" side_tool="true" weight="0.43163842" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="4" />
+      <window_info anchor="right" id="Capture Analysis" order="5" />
+      <window_info anchor="right" id="Maven Projects" order="6" weight="0.32975295" />
+      <window_info anchor="right" id="Database" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -777,7 +828,8 @@
     <MESSAGE value="Fixed reference library versions" />
     <MESSAGE value="Fixed reference library versions. Removed dependency from java-ee idea-plugin component" />
     <MESSAGE value="Reference to maven.jar IDEA plugin has been replaced with classpath to it - to avoid doublicated plugin description." />
-    <option name="LAST_COMMIT_MESSAGE" value="Reference to maven.jar IDEA plugin has been replaced with classpath to it - to avoid doublicated plugin description." />
+    <MESSAGE value="Fixed button layout for the version IDEA 2018.2.RC. The list of AWS streams has been ordered by event time, descendant. Added a button to load next list of AWS stream set (split by 50 items)." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed button layout for the version IDEA 2018.2.RC. The list of AWS streams has been ordered by event time, descendant. Added a button to load next list of AWS stream set (split by 50 items)." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -789,120 +841,72 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java</url>
-          <line>333</line>
+          <line>329</line>
           <properties />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="2" />
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>updateProxySettingsButton</expression-string>
+        <expression-string>((ArchivePackagingElement) packagingElement).getName()</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.elements.ArchivePackagingElement</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>updateProxySettingsButton.getBackground()</expression-string>
+        <expression-string>((ArtifactImpl) ((ArrayList) artifactsByType).get(0)).getRootElement().getChildren().get(0)</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.artifacts.ArtifactImpl</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>e.getClickCount()</expression-string>
+        <expression-string>((ArtifactImpl) ((ArrayList) artifactsByType).get(0)).getRootElement().getChildren().get(0).toString()</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.artifacts.ArtifactImpl</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>((JList)e.getSource()).getSelectedIndex()</expression-string>
+        <expression-string>((ArtifactImpl) ((ArrayList) artifactsByType).get(0)).getRootElement().getChildren().get(0).myType</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.artifacts.ArtifactImpl</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>((JList)e.getSource())</expression-string>
+        <expression-string>((ArtifactImpl) ((ArrayList) artifactsByType).get(0)).getRootElement().getChildren()</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.artifacts.ArtifactImpl</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>e.source</expression-string>
+        <expression-string>((ArtifactImpl) ((ArrayList) artifactsByType).get(0)).getRootElement().getChildren().contains(&quot;zip&quot;)</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.artifacts.ArtifactImpl</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>e</expression-string>
+        <expression-string>((ArtifactImpl) ((ArrayList) artifactsByType).get(0)).getRootElement()</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.artifacts.ArtifactImpl</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>e.getSource()</expression-string>
+        <expression-string>((ArtifactImpl) ((ArrayList) artifactsByType).get(0)).getName()</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.artifacts.ArtifactImpl</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>e.getFirstIndex()</expression-string>
+        <expression-string>((ArtifactImpl) ((ArrayList) artifactsByType).get(0)).getOutputFile()</expression-string>
         <language-id>JAVA</language-id>
+        <custom-info>com.intellij.packaging.impl.artifacts.ArtifactImpl</custom-info>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/javax/swing/text/MaskFormatter.java" />
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/java/text/Format.java" />
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/java/io/File.java" />
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/common/FileHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="13" column="21" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/javax/swing/JFormattedTextField.java" />
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_151/src.zip!/javax/swing/text/DefaultFormatter.java" />
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/components/RegexFormatter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="20" column="32" lean-forward="true" selection-start-line="20" selection-start-column="32" selection-end-line="20" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/common/OperationValueResult.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="17" selection-start-line="3" selection-start-column="17" selection-end-line="3" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/common/OperationResult.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resources/Notes" />
-    <entry file="file://$PROJECT_DIR$/connector-for-aws-lambda.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/aws-java-sdk-lambda-1.11.305-sources.jar!/com/amazonaws/services/lambda/model/FunctionConfiguration.java" />
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/FunctionEntity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="663">
-          <caret line="45" column="43" selection-start-line="45" selection-start-column="43" selection-end-line="45" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/jsr305.jar!/javax/annotation/RegEx.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="20" column="18" selection-start-line="20" selection-start-column="18" selection-end-line="20" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/javax/swing/JTextArea.java" />
     <entry file="jar://$MAVEN_REPOSITORY$/com/amazonaws/aws-java-sdk-logs/1.11.306/aws-java-sdk-logs-1.11.306.jar!/com/amazonaws/services/logs/model/DescribeLogStreamsResult.class" />
     <entry file="jar://$MAVEN_REPOSITORY$/com/amazonaws/aws-java-sdk-logs/1.11.306/aws-java-sdk-logs-1.11.306.jar!/com/amazonaws/services/logs/AWSLogs.class" />
@@ -1000,20 +1004,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="8" column="8" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="39" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/out/production/connector-for-aws-lambda/META-INF/plugin.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1122">
@@ -1021,31 +1011,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="35" column="19" selection-start-line="35" selection-start-column="19" selection-end-line="35" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="35" column="19" selection-start-line="35" selection-start-column="19" selection-end-line="35" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/AbstractConnectorPresenter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="156">
           <caret line="61" column="33" selection-start-line="61" selection-start-column="33" selection-end-line="61" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithJarTestCases.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="21" column="2" selection-start-line="21" selection-start-column="2" selection-end-line="21" selection-end-column="2" />
         </state>
       </provider>
     </entry>
@@ -1063,6 +1032,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/amazonaws/aws-java-sdk-logs/1.11.348/aws-java-sdk-logs-1.11.348-sources.jar!/com/amazonaws/services/logs/model/LogStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="142" column="16" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="35" column="19" selection-start-line="35" selection-start-column="19" selection-end-line="35" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/AwsLogStreamEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/FunctionConnectorModelTestCasesBase.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -1070,16 +1060,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" selection-start-line="16" selection-end-line="18" selection-end-column="86" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/amazonaws/aws-java-sdk-logs/1.11.348/aws-java-sdk-logs-1.11.348-sources.jar!/com/amazonaws/services/logs/model/DescribeLogStreamsRequest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
+        <state relative-caret-position="7429">
           <caret line="477" column="82" selection-start-line="477" selection-start-column="82" selection-end-line="477" selection-end-column="111" />
           <folding>
             <element signature="e#18171#18172#0" expanded="true" />
@@ -1088,52 +1071,186 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form">
-      <provider selected="true" editor-type-id="ui-designer" />
+    <entry file="jar://$PROJECT_DIR$/lib/aws-java-sdk-lambda-1.11.348-sources.jar!/com/amazonaws/services/lambda/AWSLambda.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="779" column="24" selection-start-line="779" selection-start-column="24" selection-end-line="779" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/aws-java-sdk-lambda-1.11.348-sources.jar!/com/amazonaws/services/lambda/model/ListFunctionsResult.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="89" column="49" selection-start-line="89" selection-start-column="49" selection-end-line="89" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="10" column="9" selection-start-line="10" selection-start-column="9" selection-end-line="10" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/aws-java-sdk-lambda-1.11.348-sources.jar!/com/amazonaws/services/lambda/model/Runtime.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="20" column="12" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/packaging/impl/artifacts/ArtifactImpl.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="222" selection-start-line="222" selection-end-line="222" />
+          <folding>
+            <element signature="e#3288#3289#0" expanded="true" />
+            <element signature="e#3317#3318#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/packaging/impl/artifacts/ArtifactManagerImpl.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="62">
+          <caret line="91" column="36" lean-forward="true" selection-start-line="91" selection-start-column="36" selection-end-line="91" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/packaging/artifacts/ArtifactModel.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="26" column="35" selection-start-line="26" selection-start-column="35" selection-end-line="26" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/packaging/impl/artifacts/PlainArtifactType.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/packaging/artifacts/ArtifactType.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="22" column="22" selection-start-line="22" selection-start-column="22" selection-end-line="22" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/packaging/elements/PackagingElement.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/platform-api.jar!/com/intellij/openapi/roots/ProjectModelElement.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/platform-api.jar!/com/intellij/openapi/roots/ProjectModelBuildableElement.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="10" column="65" selection-start-line="10" selection-start-column="65" selection-end-line="10" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/com/intellij/packaging/artifacts/Artifact.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="15" column="65" selection-start-line="15" selection-start-column="65" selection-end-line="15" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/ArtifactEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+          <folding>
+            <element signature="e#342#343#0" expanded="true" />
+            <element signature="e#419#420#0" expanded="true" />
+            <element signature="e#1075#1076#0" expanded="true" />
+            <element signature="e#1127#1128#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="1073" column="16" selection-start-line="1073" selection-start-column="16" selection-end-line="1073" selection-end-column="16" />
+        <state relative-caret-position="166">
+          <caret line="838" column="66" selection-start-line="838" selection-start-column="66" selection-end-line="838" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.form">
+      <provider selected="true" editor-type-id="ui-designer" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="367">
+          <caret line="89" column="17" selection-start-line="89" selection-start-column="17" selection-end-line="89" selection-end-column="17" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="8" column="38" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
-          <caret line="327" column="78" lean-forward="true" selection-start-line="327" selection-start-column="78" selection-end-line="327" selection-end-column="78" />
+        <state relative-caret-position="389">
+          <caret line="390" column="94" selection-start-line="390" selection-start-column="94" selection-end-line="390" selection-end-column="94" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/amazonaws/aws-java-sdk-logs/1.11.348/aws-java-sdk-logs-1.11.348-sources.jar!/com/amazonaws/services/logs/model/LogStream.java">
+    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/ConnectorSettings.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
-          <caret line="142" column="16" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="16" />
+        <state relative-caret-position="180">
+          <caret line="72" column="16" selection-start-line="72" selection-start-column="16" selection-end-line="72" selection-end-column="16" />
           <folding>
-            <element signature="e#4140#4141#0" expanded="true" />
-            <element signature="e#4180#4181#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/entities/AwsLogStreamEntity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="78">
-          <caret line="18" column="17" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
-          <folding>
-            <element signature="e#1075#1076#0" expanded="true" />
-            <element signature="e#1110#1111#0" expanded="true" />
+            <element signature="e#1226#1227#0" expanded="true" />
+            <element signature="e#1276#1277#0" expanded="true" />
+            <element signature="e#1375#1376#0" expanded="true" />
+            <element signature="e#1425#1426#0" expanded="true" />
+            <element signature="e#2745#2746#0" expanded="true" />
+            <element signature="e#2802#2803#0" expanded="true" />
+            <element signature="e#3134#3135#0" expanded="true" />
+            <element signature="e#3188#3189#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="325" column="84" selection-start-line="325" selection-start-column="84" selection-end-line="325" selection-end-column="84" />
+        <state relative-caret-position="548">
+          <caret line="236" column="13" selection-start-line="236" selection-start-column="13" selection-end-line="236" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithArtifactTestCases.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="30" column="5" lean-forward="true" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="57" selection-start-line="17" selection-start-column="57" selection-end-line="17" selection-end-column="57" />
         </state>
       </provider>
     </entry>
@@ -1179,11 +1296,11 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>IntelliJ IDEA IU-181.5281.24</last-edited>
+          <last-edited>IntelliJ IDEA IU-182.3684.101</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.105596624" />
+                <option value="0.21691176" />
               </list>
             </option>
           </splitter-proportions>
@@ -1195,7 +1312,7 @@
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.22702205" />
+                <option value="0.21691176" />
               </list>
             </option>
           </splitter-proportions>
@@ -1207,7 +1324,7 @@
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.32536766" />
+                <option value="0.21691176" />
               </list>
             </option>
           </splitter-proportions>

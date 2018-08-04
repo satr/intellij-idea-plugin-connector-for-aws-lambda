@@ -28,6 +28,8 @@ import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static org.apache.http.util.TextUtils.isEmpty;
 
@@ -135,14 +137,14 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
         return new FunctionEntity(functionConfiguration);
     }
 
-    public OperationValueResult<FunctionEntity> updateWithJar(final FunctionEntity functionEntity, final String filePath) {
-        return updateWithJar(functionEntity, new File(filePath));
+    public OperationValueResult<FunctionEntity> updateWithArtifact(final FunctionEntity functionEntity, final String filePath) {
+        return updateWithArtifact(functionEntity, new File(filePath));
     }
 
-    public OperationValueResult<FunctionEntity> updateWithJar(final FunctionEntity functionEntity, final File file) {
+    public OperationValueResult<FunctionEntity> updateWithArtifact(final FunctionEntity functionEntity, final File file) {
         resetLastLogStreamNextToken();
         final OperationValueResultImpl<FunctionEntity> operationResult = new OperationValueResultImpl<>();
-        validateLambdaFunctionJarFile(file, operationResult);
+        validateLambdaFunctionArtifactFile(file, operationResult);
         if (operationResult.failed())
             return operationResult;
 
@@ -212,20 +214,34 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
         lastLogStreamState = null;
     }
 
-    private void validateLambdaFunctionJarFile(File file, OperationResult operationResult) {
+    private void validateLambdaFunctionArtifactFile(File file, OperationResult operationResult) {
         if (!file.exists()) {
-            operationResult.addError("JAR-file does not exist.");
+            operationResult.addError("Artifact file does not exist.");
             return;
         }
 
         try {
-            final Object jarEntityEnumeration = new JarFile(file).entries();
-            if (jarEntityEnumeration == null || !((Enumeration<JarEntry>) jarEntityEnumeration).hasMoreElements())
-                operationResult.addError("The file is not a valid jar-file.");
+            if(file.getName().toLowerCase().endsWith(".jar")) {
+                validateJarArtifact(file, operationResult);
+            } else if(file.getName().toLowerCase().endsWith(".zip")) {
+                validateJarArtifact(file, operationResult);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             operationResult.addError(e.getMessage());
         }
+    }
+
+    private void validateJarArtifact(File file, OperationResult operationResult) throws IOException {
+        final Object entityEnumeration = new JarFile(file).entries();
+        if (entityEnumeration == null || !((Enumeration<JarEntry>) entityEnumeration).hasMoreElements())
+            operationResult.addError("The file is not a valid jar-file.");
+    }
+
+    private void validateZipArtifact(File file, OperationResult operationResult) throws IOException {
+        final Object entityEnumeration = new ZipFile(file).entries();
+        if (entityEnumeration == null || !((Enumeration<ZipEntry>) entityEnumeration).hasMoreElements())
+            operationResult.addError("The file is not a valid zip-file.");
     }
 
     public List<RegionEntity> getRegions() {
