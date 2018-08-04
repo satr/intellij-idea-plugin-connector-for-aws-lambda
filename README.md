@@ -1,7 +1,7 @@
 # intellij-idea-plugin-connector-for-aws-lambda
 The plugin for the IntelliJ IDEA: connector for AWS Lambda functions.
 
-View and update functions powered by AWS Lambda with JAR-artifact.
+View and update functions powered by AWS Lambda with Java function (uploading with JAR-artifact). In the [RC1.7.RC2](https://github.com/satr/intellij-idea-plugin-connector-for-aws-lambda/releases/tag/v1.7.RC2) there is a basic support for the NodeJS (uploading with zip-archive).
 
 Please read more about AWS Lambda on the following site: https://aws.amazon.com/lambda
 
