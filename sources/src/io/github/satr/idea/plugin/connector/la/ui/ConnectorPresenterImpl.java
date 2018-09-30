@@ -21,7 +21,6 @@ import java.util.List;
 import static org.apache.http.util.TextUtils.isEmpty;
 
 public class ConnectorPresenterImpl extends AbstractConnectorPresenter implements ConnectorPresenter {
-    private final Regions DEFAULT_REGION = Regions.US_EAST_1;
     private ConnectorView view;
     private List<TestFunctionInputEntity> testFunctionInputRecentEntityList = new ArrayList<>();
     private boolean autoRefreshAwsLog = false;
@@ -169,7 +168,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void refreshRegionList() {
-        getLogger().logDebug("Refresh region list.");
+        getLogger().logDebug("Refresh regionName list.");
         view.setRegionList(getFunctionConnectorModel().getRegions(), getLastSelectedRegion());
     }
 
@@ -182,11 +181,39 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void refreshCredentialProfilesList() {
         getLogger().logDebug("Refresh credential profile list.");
-        OperationValueResult<List<CredentialProfileEntity>> credentialProfilesResult = getFunctionConnectorModel().getCredentialProfiles();
-        List<CredentialProfileEntity> credentialProfiles = credentialProfilesResult.getValue();
-        view.setCredentialProfilesList(credentialProfiles, getLastSelectedCredentialProfileName());
-        getLogger().logOperationResult(credentialProfilesResult);
+        FunctionConnectorModel functionConnectorModel = getFunctionConnectorModel();
+        OperationValueResult<List<CredentialProfileEntity>> result = functionConnectorModel.getCredentialProfileEntities();
+        if(result.success()) {
+            List<CredentialProfileEntity> profileEntities = result.getValue();
+            CredentialProfileEntity selectedProfileEntry = getLastSelectedProfileEntry(functionConnectorModel, profileEntities);
+            if (selectedProfileEntry == null) {
+                result.addError("Profile is not selected.");
+            } else {
+                String profileName = selectedProfileEntry.getName();
+                getConnectorSettings().setLastSelectedCredentialProfile(profileName);
+                view.setCredentialProfilesList(profileEntities, profileName);
+                Regions region = tryGetRegionBy(functionConnectorModel.getRegionName());
+                if (region != null) {
+                    view.setRegion(region);
+                }
+            }
+        }
+        getLogger().logOperationResult(result);
         refreshStatus();
+    }
+
+    public CredentialProfileEntity getLastSelectedProfileEntry(FunctionConnectorModel functionConnectorModel, List<CredentialProfileEntity> credentialProfiles) {
+        String lastSelectedCredentialProfileName = getLastSelectedCredentialProfileName();
+        CredentialProfileEntity profileEntry = getProfileEntry(lastSelectedCredentialProfileName, credentialProfiles);
+        return profileEntry != null ? profileEntry : getProfileEntry(functionConnectorModel.getCredentialProfileName(), credentialProfiles);
+    }
+
+    private CredentialProfileEntity getProfileEntry(String profileName, List<CredentialProfileEntity> credentialProfiles) {
+        for(CredentialProfileEntity profileEntity: credentialProfiles) {
+            if(profileEntity.getName().equals(profileName))
+                return profileEntity;
+        }
+        return null;
     }
 
     @Override
@@ -207,6 +234,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void refreshAll() {
         getLogger().logDebug("Refresh all.");
+        shutdownConnectorModel();
         refreshArtifactList();
         refreshRegionList();
         refreshCredentialProfilesList();
@@ -262,7 +290,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         if (roleListLoaded()) {
             return false;
         }
-        getRoleConnectorModel().loadRoles();
+        OperationResult result = getRoleConnectorModel().loadRoles();
+        getLogger().logOperationResult(result);
         refreshRolesList();
         return true;
     }
@@ -405,14 +434,14 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         if(region == null) {
             return;
         }
-        setRegionAndProfile(region, getConnectorSettings().getLastSelectedCredentialProfile());
+        setRegionAndProfile(getConnectorSettings().getLastSelectedCredentialProfile(), region.getName());
     }
 
-    private void setRegionAndProfile(Regions region, String credentialProfile) {
-        getLogger().logInfo("Region is set to: %s", region.toString());
+    private void setRegionAndProfile(String credentialProfile, String regionName) {
+        getLogger().logInfo("Region is set to: %s", regionName);
         getLogger().logInfo("Profile is set to: %s", credentialProfile);
-        reCreateModels(region, credentialProfile);
-        getConnectorSettings().setLastSelectedRegionName(region.getName());
+        reCreateModels(credentialProfile, regionName);
+        getConnectorSettings().setLastSelectedRegionName(regionName);
         refreshFunctionList();
     }
 
@@ -443,27 +472,9 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @Override
     public void setCredentialProfile(CredentialProfileEntity credentialProfileEntity) {
         BasicProfile basicProfile = credentialProfileEntity.getBasicProfile();
-        Regions lastSelectedRegion = getLastSelectedRegion();
-        Regions region = lastSelectedRegion;
-        if(!isEmpty(basicProfile.getRegion())) {
-            region = tryGetRegionBy(basicProfile.getRegion());
-        }
-        if(region == null){
-            region = lastSelectedRegion;
-        }
-        String credentialProfile = credentialProfileEntity.getName();
-        getConnectorSettings().setLastSelectedCredentialProfile(credentialProfile);
-        setRegionAndProfile(region, credentialProfile);
-        if(!lastSelectedRegion.getName().equals(region.getName())){
-            view.setRegion(region);
-        }
-        CredentialProfileEntity profileEntity = view.getSelectedCredentialProfileEntity();
-        if(profileEntity == null) {
-            getLogger().logInfo("Credential profile is not selected.");
-        } else {
-            getLogger().logInfo("Selected Credential profile: \"%s\"", profileEntity.getName());
-        }
-        refreshStatus();
+        getConnectorSettings().setLastSelectedCredentialProfile(basicProfile.getProfileName());
+        shutdownConnectorModel();
+        refreshCredentialProfilesList();
     }
 
     @Override
@@ -553,7 +564,7 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
             view.setTestFunctionInputRecentEntityList(testFunctionInputRecentEntityList);
         } catch (Exception e) {
             e.printStackTrace();
-            getLogger().logError(e);
+            getLogger().logError("Cannot open of an input file: %s", e.getMessage());
         }
     }
 
@@ -575,8 +586,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
 
     @Override
     public void setProxySettings() {
-        FunctionConnectorModel model = this.getFunctionConnectorModel();
-        reCreateModels(model.getRegion(), model.getCredentialProfileName());
+        FunctionConnectorModel functionConnectorModel = this.getFunctionConnectorModel();
+        reCreateModels(functionConnectorModel.getCredentialProfileName(), functionConnectorModel.getRegionName());
         refreshStatus();
     }
 
@@ -613,10 +624,10 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
     @NotNull
     protected Regions getLastSelectedRegion() {
         String lastSelectedRegionName = getConnectorSettings().getLastSelectedRegionName();
-        Regions region = lastSelectedRegionName == null
-                            ? DEFAULT_REGION
+        Regions region = isEmpty(lastSelectedRegionName)
+                            ? Regions.DEFAULT_REGION
                             : tryGetRegionBy(lastSelectedRegionName);
-        return region != null ? region : DEFAULT_REGION;
+        return region != null ? region : Regions.DEFAULT_REGION;
     }
 
     @Override

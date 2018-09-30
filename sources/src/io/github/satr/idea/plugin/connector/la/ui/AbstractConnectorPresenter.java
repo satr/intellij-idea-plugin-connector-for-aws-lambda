@@ -26,41 +26,49 @@ public abstract class AbstractConnectorPresenter {
 
     protected void shutdownConnectorModel() {
         if(functionConnectorModel != null) {
+            getLogger().logDebug("Shutdown function connector");
             functionConnectorModel.shutdown();
         }
+        functionConnectorModel = null;
+
         if(roleConnectorModel != null) {
+            getLogger().logDebug("Shutdown role connector");
             roleConnectorModel.shutdown();
         }
+        roleConnectorModel = null;
     }
 
     @NotNull
-    private FunctionConnectorModel createFunctionConnectorModel(Regions region, String profileName) {
-        return new FunctionConnectorModel(region, profileName);
+    private FunctionConnectorModel createFunctionConnectorModel(String profileName, String regionName) {
+        return new FunctionConnectorModel(regionName, profileName, getLogger());
     }
 
     @NotNull
-    private RoleConnectorModel createRoleConnectorModel(Regions region, String profileName) {
-        return new RoleConnectorModel(region, profileName);
+    private RoleConnectorModel createRoleConnectorModel(String profileName, String regionName) {
+        return new RoleConnectorModel(regionName, profileName, getLogger());
     }
 
     protected FunctionConnectorModel getFunctionConnectorModel() {
         if (functionConnectorModel != null) {
             return functionConnectorModel;
         }
-        return functionConnectorModel = createFunctionConnectorModel(getLastSelectedRegion(), getLastSelectedCredentialProfileName());
+        String lastSelectedCredentialProfileName = getLastSelectedCredentialProfileName();
+        functionConnectorModel = createFunctionConnectorModel(lastSelectedCredentialProfileName, getLastSelectedRegion().getName());
+        getConnectorSettings().setLastSelectedCredentialProfile(functionConnectorModel.getCredentialProfileName());
+        return functionConnectorModel;
     }
 
     protected RoleConnectorModel getRoleConnectorModel() {
         if (roleConnectorModel != null) {
             return roleConnectorModel;
         }
-        return roleConnectorModel = createRoleConnectorModel(getLastSelectedRegion(), getLastSelectedCredentialProfileName());
+        return roleConnectorModel = createRoleConnectorModel(getLastSelectedCredentialProfileName(), getLastSelectedRegion().getName());
     }
 
-    protected void reCreateModels(Regions region, String credentialProfile) {
+    protected void reCreateModels(String credentialProfile, String regionName) {
         shutdownConnectorModel();
-        functionConnectorModel = createFunctionConnectorModel(region, credentialProfile);
-        roleConnectorModel = createRoleConnectorModel(region, credentialProfile);
+        functionConnectorModel = createFunctionConnectorModel(credentialProfile, regionName);
+        roleConnectorModel = createRoleConnectorModel(credentialProfile, regionName);
     }
 
     public void addLogger(Logger logger) {

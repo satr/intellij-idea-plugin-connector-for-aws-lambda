@@ -68,8 +68,7 @@ public class ProjectModelImpl implements ProjectModel {
     private boolean addArtifactEntity(ArrayList<ArtifactEntity> artifactEntries, Artifact artifact) {
         CompositePackagingElement<?> rootElement = artifact.getRootElement();
         if(rootElement.getType() == PackagingElementFactoryImpl.ARCHIVE_ELEMENT_TYPE) {
-            artifactEntries.add(new ArtifactEntity(artifact));
-            return true;
+            artifactEntries.add(new ArtifactEntity(artifact));            return true;
         }
         for(PackagingElement<?> packagingElement : rootElement.getChildren()) {
             if (packagingElement.getType() != PackagingElementFactoryImpl.ARCHIVE_ELEMENT_TYPE) {

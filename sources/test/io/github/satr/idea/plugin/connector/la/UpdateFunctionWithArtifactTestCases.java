@@ -5,9 +5,9 @@ import org.junit.Test;
 
 import java.io.File;
 
-//Tests expected an existing AWS Lambda function with a name "JavaFuncToTestConnector" in the region US-EAST-1.
+//Tests expected an existing AWS Lambda function with a name "JavaFuncToTestConnector" in the regionName US-EAST-1.
 //Alter the function name in the constant FUNC_NAME in this class, if needed.
-//Alter the region if the FunctionConnectorModel class, if needed.
+//Alter the regionName if the FunctionConnectorModel class, if needed.
 public class UpdateFunctionWithArtifactTestCases extends FunctionConnectorModelTestCasesBase {
 
     private final String FUNC_NAME = "JavaFuncToTestConnector";

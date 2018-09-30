@@ -3,18 +3,23 @@ package io.github.satr.idea.plugin.connector.la;
 
 import com.amazonaws.regions.Regions;
 import io.github.satr.common.Constant;
+import io.github.satr.common.Logger;
 import io.github.satr.idea.plugin.connector.la.models.FunctionConnectorModel;
 import org.junit.After;
 import org.junit.Before;
 
 import java.io.File;
 
+import static org.mockito.Mockito.mock;
+
 public class FunctionConnectorModelTestCasesBase {
     protected FunctionConnectorModel functionConnectorModel;
+    Logger logger;
 
     @Before
     public void setUp() throws Exception {
-        functionConnectorModel = new FunctionConnectorModel(Regions.US_EAST_1, Constant.CredentialProfile.DEFAULT);
+        logger = mock(Logger.class);
+        functionConnectorModel = new FunctionConnectorModel(Regions.US_EAST_1.getName(), Constant.CredentialProfile.DEFAULT, logger);
     }
 
     @After

@@ -463,7 +463,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
             runOperation(() -> presenter.openTestFunctionInputFile(selectedFile), "Read test function input file \"%s\".", selectedFile.getName());
         } catch (Exception e) {
             e.printStackTrace();
-            logError(e.getMessage());
+            logError("Cannot open of an input file: %s", e.getMessage());
         }
     }
 
@@ -552,7 +552,7 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         RegionEntity entity = (RegionEntity)e.getItem();
         if(entity == null)
             return;
-        runOperation(() -> presenter.setRegion(entity), "Select region: " + entity.toString());
+        runOperation(() -> presenter.setRegion(entity), "Select regionName: " + entity.toString());
     }
 
     private void runSetFunction(ItemEvent e) {
@@ -795,12 +795,12 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     @Override
-    public void setCredentialProfilesList(List<CredentialProfileEntity> credentialProfiles, String selectedCredentialsProfile) {
+    public void setCredentialProfilesList(List<CredentialProfileEntity> credentialProfiles, String selectedProfileName) {
         credentialProfileList.removeAllItems();
         CredentialProfileEntity selectedCredentialsProfileEntity = null;
         for(CredentialProfileEntity entity : credentialProfiles){
             credentialProfileList.addItem(entity);
-            if(!isEmpty(selectedCredentialsProfile) && entity.getName().equals(selectedCredentialsProfile))
+            if(!isEmpty(selectedProfileName) && entity.getName().equals(selectedProfileName))
                 selectedCredentialsProfileEntity = entity;
         }
         if(selectedCredentialsProfileEntity != null) {

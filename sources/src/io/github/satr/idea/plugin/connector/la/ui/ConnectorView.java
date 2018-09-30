@@ -12,7 +12,7 @@ public interface ConnectorView {
     void setArtifactList(Collection<? extends ArtifactEntity> artifacts, ArtifactEntity selectedArtifactEntity);
     void setRegionList(List<RegionEntity> regions, Regions selectedRegion);
     void setTracingModeList(Collection<TracingModeEntity> tracingModeEntities);
-    void setCredentialProfilesList(List<CredentialProfileEntity> credentialProfiles, String selectedCredentialsProfile);
+    void setCredentialProfilesList(List<CredentialProfileEntity> credentialProfiles, String selectedProfileName);
     void setRegion(Regions region);
     void refreshStatus(String function, String artifact, String region, String regionDescription, String credentialProfile, String proxyDetails);
     FunctionEntity getSelectedFunctionEntity();

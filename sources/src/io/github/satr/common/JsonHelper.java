@@ -12,14 +12,15 @@ public class JsonHelper {
     private final String RESULT_KEY = "result";
 
     public OperationValueResult<String> Reformat(String jsonText) {
-        OperationValueResultImpl<String> valueResult = new OperationValueResultImpl<>();
+        OperationValueResultImpl<String> result = new OperationValueResultImpl<>();
         scriptEngine.put(VALUE_FORMAT, jsonText);
         try {
             scriptEngine.eval(SCRIPT_PARAMS);
-            valueResult.setValue((String)scriptEngine.get(RESULT_KEY));
+            result.setValue((String)scriptEngine.get(RESULT_KEY));
         } catch (ScriptException e) {
-            valueResult.addError(e.getMessage());
+            e.printStackTrace();
+            result.addError(e.getMessage());
         }
-        return valueResult;
+        return result;
     }
 }

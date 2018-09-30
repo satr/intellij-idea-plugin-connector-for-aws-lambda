@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OperationResultImpl implements OperationResult {
+    private final List<String> debugMessages = new ArrayList<>();
     private final List<String> errorMessages = new ArrayList<>();
     private final List<String> warningMessages = new ArrayList<>();
     private final List<String> infoMessages = new ArrayList<>();
@@ -19,6 +20,11 @@ public class OperationResultImpl implements OperationResult {
     @Override
     public void addError(String format, Object... args) {
         errorMessages.add(String.format(format, args));
+    }
+
+    @Override
+    public void addDebug(String format, Object... args) {
+        debugMessages.add(String.format(format, args));
     }
 
     @Override
@@ -54,6 +60,11 @@ public class OperationResultImpl implements OperationResult {
     @Override
     public String getErrorAsString() {
         return join(errorMessages);
+    }
+
+    @Override
+    public String getDebugAsString() {
+        return join(debugMessages);
     }
 
     @Override

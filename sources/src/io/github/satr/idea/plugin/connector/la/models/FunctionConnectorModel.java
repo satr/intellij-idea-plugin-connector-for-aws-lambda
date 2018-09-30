@@ -7,7 +7,6 @@ import com.amazonaws.auth.profile.ProfilesConfigFile;
 import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.lambda.model.*;
@@ -34,9 +33,9 @@ import java.util.zip.ZipFile;
 import static org.apache.http.util.TextUtils.isEmpty;
 
 public class FunctionConnectorModel extends AbstractConnectorModel {
-    private final AWSLogs awsLogClient;
-    private final int awsLogStreamItemsLimit = 50;
+    private AWSLogs awsLogClient;
     private AWSLambda awsLambdaClient;
+    private final int awsLogStreamItemsLimit = 50;
     private static final Map<String, String> regionDescriptions;
 
     static {
@@ -84,6 +83,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
         map.put("ap-southeast-2", "Asia Pacific (Sydney)");
         map.put("ca-central-1", "Canada (Central)");
         map.put("cn-north-1", "China (Beijing)");
+        map.put("cn-northwest-1", "China (Ningxia)");
         map.put("eu-central-1", "EU (Frankfurt)");
         map.put("eu-west-1", "EU (Ireland)");
         map.put("eu-west-2", "EU (London)");
@@ -94,42 +94,62 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
 
     private ArrayList<RegionEntity> regionEntries;
 
-    public FunctionConnectorModel(Regions region, String credentialProfileName) {
-        super(region, credentialProfileName);
-        AWSCredentialsProvider credentialsProvider = getCredentialsProvider(credentialProfileName);
-        ClientConfiguration clientConfiguration = getClientConfiguration();
-        awsLambdaClient = AWSLambdaClientBuilder.standard()
-                .withRegion(region)
-                .withClientConfiguration(clientConfiguration)
-                .withCredentials(credentialsProvider)
-                .build();
-        awsLogClient = AWSLogsClientBuilder.standard()
-                .withRegion(region)
-                .withCredentials(credentialsProvider)
-                .withClientConfiguration(clientConfiguration)
-                .build();
+    public FunctionConnectorModel(String regionName, String credentialProfileName, Logger logger) {
+        super(regionName, credentialProfileName, logger);
+        try {
+            AWSCredentialsProvider credentialsProvider = getCredentialsProvider();
+            ClientConfiguration clientConfiguration = getClientConfiguration();
+            getLogger().logDebug("Build AWS Lambda client.");
+            awsLambdaClient = AWSLambdaClientBuilder.standard()
+                    .withRegion(getRegionName())
+                    .withClientConfiguration(clientConfiguration)
+                    .withCredentials(credentialsProvider)
+                    .build();
+            getLogger().logDebug("Build AWS Logs client.");
+            awsLogClient = AWSLogsClientBuilder.standard()
+                    .withRegion(getRegionName())
+                    .withCredentials(credentialsProvider)
+                    .withClientConfiguration(clientConfiguration)
+                    .build();
+            getLogger().logDebug("AWS Lambda and Logs clients created.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.logError("Creating function connector failed: %s", e.getMessage());
+            awsLambdaClient = AWSLambdaClientBuilder.standard().build();
+            awsLogClient = AWSLogsClientBuilder.standard().build();
+        }
     }
 
 
     public OperationValueResult<List<FunctionEntity>> getFunctions() {
         final List<FunctionEntity> entries = new ArrayList<>();
-        final OperationValueResult<List<FunctionEntity>> operationResult = new OperationValueResultImpl<List<FunctionEntity>>().withValue(entries);
+        final OperationValueResult<List<FunctionEntity>> result = new OperationValueResultImpl<List<FunctionEntity>>().withValue(entries);
         try {
             final ListFunctionsResult functionRequestResult = awsLambdaClient.listFunctions();
             for (FunctionConfiguration functionConfiguration : functionRequestResult.getFunctions()) {
                 entries.add(createFunctionEntity(functionConfiguration));
             }
-            operationResult.setValue(entries);
+            result.setValue(entries);
         } catch (com.amazonaws.services.lambda.model.AWSLambdaException e) {
             if ("AccessDeniedException".equals(e.getErrorCode())) {
-                operationResult.addError("User has not access to a list of functions.");
+                reportErrorLoadingOfFunctionListFailed(result, e, "User has not access to a list of functions.");
             } else {
-                operationResult.addError(e.getMessage());
+                reportErrorLoadingOfFunctionListFailed(result, e);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            reportErrorLoadingOfFunctionListFailed(result, e);
         }
-        return operationResult;
+        return result;
+    }
+
+    private void reportErrorLoadingOfFunctionListFailed(OperationResult result, Exception e) {
+        reportErrorLoadingOfFunctionListFailed(result, e, "");
+    }
+
+    public void reportErrorLoadingOfFunctionListFailed(OperationResult result,
+                                                       Exception e, String additionalMessage) {
+        e.printStackTrace();
+        result.addError("Loading of a function list failed: %s %s", additionalMessage, e.getMessage());
     }
 
     @NotNull
@@ -143,10 +163,10 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
 
     public OperationValueResult<FunctionEntity> updateWithArtifact(final FunctionEntity functionEntity, final File file) {
         resetLastLogStreamNextToken();
-        final OperationValueResultImpl<FunctionEntity> operationResult = new OperationValueResultImpl<>();
-        validateLambdaFunctionArtifactFile(file, operationResult);
-        if (operationResult.failed())
-            return operationResult;
+        final OperationValueResultImpl<FunctionEntity> result = new OperationValueResultImpl<>();
+        validateLambdaFunctionArtifactFile(file, result);
+        if (result.failed())
+            return result;
 
         try {
             final String readOnlyAccessFileMode = "r";
@@ -155,19 +175,18 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
                 return updateFunctionCode(functionEntity, fileChannel);
             }
         } catch (InvalidParameterValueException e) {
-            operationResult.addError("Invalid request parameters: %s", e.getMessage());
+            reportErrorUpdateOfFunctionFailed(result, e,"invalid request parameters");
         } catch (ResourceNotFoundException e) {
-            operationResult.addError("Function not found.");
+            reportErrorUpdateOfFunctionFailed(result, e,"function not found");
         } catch (Exception e) {
-            e.printStackTrace();
-            operationResult.addError(e.getMessage());
+            reportErrorUpdateOfFunctionFailed(result, e);
         }
-        return operationResult;
+        return result;
     }
 
     private OperationValueResult<FunctionEntity> updateFunctionCode(final FunctionEntity functionEntity, final FileChannel fileChannel) throws IOException {
         resetLastLogStreamNextToken();
-        final OperationValueResultImpl<FunctionEntity> valueResult = new OperationValueResultImpl<>();
+        final OperationValueResultImpl<FunctionEntity> result = new OperationValueResultImpl<>();
         try {
             final MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
             buffer.load();
@@ -175,12 +194,20 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
                     .withFunctionName(functionEntity.getFunctionName())
                     .withZipFile(buffer);
             final UpdateFunctionCodeResult updateFunctionResult = awsLambdaClient.updateFunctionCode(request);
-           valueResult.setValue(new FunctionEntity(updateFunctionResult));
-        } catch (IOException e) {
-            e.printStackTrace();
-            valueResult.addError("Update function error: %s", e.getMessage());
+            result.setValue(new FunctionEntity(updateFunctionResult));
+        } catch (Exception e) {
+            reportErrorUpdateOfFunctionFailed(result, e);
         }
-        return valueResult;
+        return result;
+    }
+
+    private void reportErrorUpdateOfFunctionFailed(OperationValueResultImpl<FunctionEntity> result, Exception e) {
+        reportErrorUpdateOfFunctionFailed(result, e, "");
+    }
+
+    private void reportErrorUpdateOfFunctionFailed(OperationValueResultImpl<FunctionEntity> result, Exception e, String additionalMessage) {
+        e.printStackTrace();
+        result.addError("Update of the function failed: %s %s", additionalMessage, e.getMessage());
     }
 
     public OperationValueResult<String> invokeFunction(final String functionName, final String inputText) {
@@ -205,7 +232,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
             operationResult.setValue(rawJson);
         } catch (Exception e) {
             e.printStackTrace();
-            operationResult.addError(e.getMessage());
+            operationResult.addError("Invocation of the function failed: %s", e.getMessage());
         }
         return operationResult;
     }
@@ -214,34 +241,34 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
         lastLogStreamState = null;
     }
 
-    private void validateLambdaFunctionArtifactFile(File file, OperationResult operationResult) {
+    private void validateLambdaFunctionArtifactFile(File file, OperationResult result) {
         if (!file.exists()) {
-            operationResult.addError("Artifact file does not exist.");
+            result.addError("Artifact file does not exist.");
             return;
         }
 
         try {
             if(file.getName().toLowerCase().endsWith(".jar")) {
-                validateJarArtifact(file, operationResult);
+                validateJarArtifact(file, result);
             } else if(file.getName().toLowerCase().endsWith(".zip")) {
-                validateJarArtifact(file, operationResult);
+                validateZipArtifact(file, result);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            operationResult.addError(e.getMessage());
+            result.addError("Validation of an artifact file failed: %s", e.getMessage());
         }
     }
 
-    private void validateJarArtifact(File file, OperationResult operationResult) throws IOException {
+    private void validateJarArtifact(File file, OperationResult result) throws IOException {
         final Object entityEnumeration = new JarFile(file).entries();
         if (entityEnumeration == null || !((Enumeration<JarEntry>) entityEnumeration).hasMoreElements())
-            operationResult.addError("The file is not a valid jar-file.");
+            result.addError("The file is not a valid jar-file.");
     }
 
-    private void validateZipArtifact(File file, OperationResult operationResult) throws IOException {
+    private void validateZipArtifact(File file, OperationResult result) throws IOException {
         final Object entityEnumeration = new ZipFile(file).entries();
         if (entityEnumeration == null || !((Enumeration<ZipEntry>) entityEnumeration).hasMoreElements())
-            operationResult.addError("The file is not a valid zip-file.");
+            result.addError("The file is not a valid zip-file.");
     }
 
     public List<RegionEntity> getRegions() {
@@ -258,7 +285,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
         return regionEntries;
     }
 
-    public OperationValueResult<List<CredentialProfileEntity>> getCredentialProfiles() {
+    public OperationValueResult<List<CredentialProfileEntity>> getCredentialProfileEntities() {
         OperationValueResult<List<CredentialProfileEntity>> valueResult = new OperationValueResultImpl<>();
         ArrayList<CredentialProfileEntity> credentialProfilesEntries = new ArrayList<>();
         valueResult.setValue(credentialProfilesEntries);
@@ -282,9 +309,9 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
     public OperationValueResult<FunctionEntity> getFunctionBy(String name) {
         GetFunctionRequest getFunctionRequest = new GetFunctionRequest().withFunctionName(name);
         GetFunctionResult function = awsLambdaClient.getFunction(getFunctionRequest);
-        OperationValueResultImpl<FunctionEntity> valueResult = new OperationValueResultImpl<>();
-        valueResult.setValue(createFunctionEntity(function.getConfiguration()));
-        return valueResult;
+        OperationValueResultImpl<FunctionEntity> result = new OperationValueResultImpl<>();
+        result.setValue(createFunctionEntity(function.getConfiguration()));
+        return result;
     }
 
     public OperationResult updateConfiguration(FunctionEntity functionEntity) {
@@ -311,12 +338,12 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
     public OperationValueResult<List<AwsLogStreamEntity>> getAwsLogStreamsFor(String functionName,
                                                                               AwsLogRequestMode awsLogRequestMode) {
         List<AwsLogStreamEntity> awsLogStreamEntities = new ArrayList<>();
-        OperationValueResult<List<AwsLogStreamEntity>> operationResult = new OperationValueResultImpl<>();
-        operationResult.setValue(awsLogStreamEntities);
+        OperationValueResult<List<AwsLogStreamEntity>> result = new OperationValueResultImpl<>();
+        result.setValue(awsLogStreamEntities);
         LogGroup logGroup = getLogGroupForAwsLambdaFunction(functionName);
         if(logGroup == null) {
-            operationResult.addInfo("Not found log group for the function \"%s\"", functionName);
-            return operationResult;
+            result.addInfo("Not found log group for the function \"%s\"", functionName);
+            return result;
         }
         DescribeLogStreamsRequest describeLogStreamsRequest = new DescribeLogStreamsRequest()
                                                                     .withLogGroupName(logGroup.getLogGroupName())
@@ -340,7 +367,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
             awsLogStreamEntities.add(new AwsLogStreamEntity(logGroup.getLogGroupName(), logStream));
         }
         awsLogStreamEntities.sort(Comparator.comparing(AwsLogStreamEntity::getLastEventTime).reversed());
-        return operationResult;
+        return result;
     }
 
     public LastLogStreamState getLastLogStreamStateFor(String functionName) {
@@ -351,19 +378,19 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
 
     public OperationValueResult deleteAwsLogStreamsFor(String functionName) {
         resetLastLogStreamNextToken();
-        OperationValueResult operationResult = new OperationValueResultImpl();
+        OperationValueResult result = new OperationValueResultImpl();
         LogGroup logGroup = getLogGroupForAwsLambdaFunction(functionName);
         if(logGroup == null) {
-            operationResult.addError("Not found log group for the function \"%s\"", functionName);
-            return operationResult;
+            result.addError("Not found log group for the function \"%s\"", functionName);
+            return result;
         }
         DeleteLogGroupResult deleteLogGroupResult = awsLogClient.deleteLogGroup(new DeleteLogGroupRequest(logGroup.getLogGroupName()));
         int httpStatusCode = deleteLogGroupResult.getSdkHttpMetadata().getHttpStatusCode();
         if (httpStatusCode == HttpStatusCode.OK.getCode()) {
-            return operationResult;
+            return result;
         }
-        operationResult.addError("Operation responded with code %d", httpStatusCode);
-        return operationResult;
+        result.addError("Operation responded with code %d", httpStatusCode);
+        return result;
     }
 
     private LogGroup getLogGroupForAwsLambdaFunction(String functionName) {
@@ -402,7 +429,7 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
     }
 
     public enum AwsLogRequestMode {
-        NewRequest, RequestNextSet
-
+        NewRequest,
+        RequestNextSet
     }
 }

@@ -1,12 +1,14 @@
 package io.github.satr.idea.plugin.connector.la.models;
 
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.identitymanagement.model.AmazonIdentityManagementException;
 import com.amazonaws.services.identitymanagement.model.ListRolesRequest;
 import com.amazonaws.services.identitymanagement.model.ListRolesResult;
 import com.amazonaws.services.identitymanagement.model.Role;
+import io.github.satr.common.Logger;
+import io.github.satr.common.OperationResult;
+import io.github.satr.common.OperationResultImpl;
 import io.github.satr.idea.plugin.connector.la.entities.RoleEntity;
 
 import java.util.ArrayList;
@@ -21,18 +23,24 @@ public class RoleConnectorModel extends AbstractConnectorModel {
     private Map<String, RoleEntity> roleEntityMap = new LinkedHashMap<>();
     private boolean loaded;
 
-    public RoleConnectorModel(Regions region, String credentialProfileName) {
-        super(region, credentialProfileName);
+    public RoleConnectorModel(String regionName, String credentialProfileName, Logger logger) {
+        super(regionName, credentialProfileName, logger);
     }
 
-    public void loadRoles() {
-        identityManagementClient = AmazonIdentityManagementClientBuilder.standard()
-                .withRegion(region)
-                .withCredentials(getCredentialsProvider(credentialProfileName))
-                .withClientConfiguration(getClientConfiguration())
-                .build();
-        populateRoleListAndMap(identityManagementClient);
-        loaded = true;
+    public OperationResult loadRoles() {
+        OperationResultImpl result = new OperationResultImpl();
+        try {
+            identityManagementClient = AmazonIdentityManagementClientBuilder.standard()
+                    .withRegion(getRegionName())
+                    .withCredentials(getCredentialsProvider())
+                    .withClientConfiguration(getClientConfiguration())
+                    .build();
+            populateRoleListAndMap(identityManagementClient, result);
+            loaded = true;
+        } catch (Exception e) {
+            reportErrorLoadingOfRolesFailed(result, e);
+        }
+        return result;
     }
 
     @Override
@@ -53,7 +61,7 @@ public class RoleConnectorModel extends AbstractConnectorModel {
         return roleEntities;
     }
 
-    private void populateRoleListAndMap(AmazonIdentityManagement identityManagementClient) {
+    private void populateRoleListAndMap(AmazonIdentityManagement identityManagementClient, OperationResult result) {
         roleEntities = new ArrayList<>();
         roleEntityMap = new LinkedHashMap<>();
         try {
@@ -63,13 +71,21 @@ public class RoleConnectorModel extends AbstractConnectorModel {
             for (Role role : roles) {
                 addRoleToListAndMap(role);
             }
+            result.addDebug("Loaded %d roles", roles.size());
         } catch (AmazonIdentityManagementException e) {
             if ("AccessDenied".equals(e.getErrorCode())) {
-                //"User has not access to a list of roles - skip the error.
+                result.addDebug("User has not access to a list of roles");//skip the error
+            } else {
+                reportErrorLoadingOfRolesFailed(result, e);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            reportErrorLoadingOfRolesFailed(result, e);
         }
+    }
+
+    private void reportErrorLoadingOfRolesFailed(OperationResult result, Exception e) {
+        e.printStackTrace();
+        result.addError("Loading of roles failed: %s", e.getMessage());
     }
 
     private RoleEntity addRoleToListAndMap(Role role) {

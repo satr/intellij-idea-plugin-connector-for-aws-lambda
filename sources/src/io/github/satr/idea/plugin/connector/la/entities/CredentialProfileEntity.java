@@ -24,6 +24,6 @@ public class CredentialProfileEntity {
     @Override
     public String toString() {
         String regionName = getBasicProfile().getRegion();
-        return String.format("%s (%s)", getName(), isEmpty(regionName) ? "no region" : regionName);
+        return String.format("%s (%s)", getName(), isEmpty(regionName) ? "no regionName" : regionName);
     }
 }
