@@ -50,7 +50,9 @@ public class ProjectModelImpl implements ProjectModel {
                 continue;
             }
             String artifactName = String.format("%s.%s", mavenProject.getFinalName(), mavenProject.getPackaging());
-            artifactEntries.add(new ArtifactEntity(artifactName, mavenProject.getBuildDirectory(), true));
+            String buildDirectory = mavenProject.getBuildDirectory();
+            String outputFilePath = Paths.appended(buildDirectory, artifactName);
+            artifactEntries.add(new ArtifactEntity(artifactName, outputFilePath, true));
         }
     }
 

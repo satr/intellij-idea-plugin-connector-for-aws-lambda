@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.satr.idea.plugin.connector.la</id>
   <name>Connector for AWS Lambda</name>
-  <version>1.7.RC3</version>
+  <version>1.7.RC4</version>
   <vendor email="satr.github.io@gmail.com" url="https://satr.github.io/intellij-idea-plugin-connector-for-aws-lambda/">github.com/satr</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,8 @@
 
   <change-notes><![CDATA[
       <ul>
+      <li>1.7.RC4</li>
+      <li>Fixed an issue with maven artifact path and not closed file.</li>
       <li>1.7.RC3</li>
       <li>Fixed an issue with not loading functions when default profile does not exist.</li>
       <li>1.7.RC2</li>

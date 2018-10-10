@@ -136,7 +136,8 @@ public class ConnectorPresenterImpl extends AbstractConnectorPresenter implement
         if(result.failed()) {
             return result;
         }
-        final File codeFile = new File(artifactEntity.getOutputFilePath());
+        String outputFilePath = artifactEntity.getOutputFilePath();
+        final File codeFile = new File(outputFilePath);
         if(!codeFile.exists()){
             result.addError("Artifact file does not exist.");
             return result;

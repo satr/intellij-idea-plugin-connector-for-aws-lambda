@@ -172,7 +172,9 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
             final String readOnlyAccessFileMode = "r";
             try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, readOnlyAccessFileMode);
                  final FileChannel fileChannel = randomAccessFile.getChannel()) {
-                return updateFunctionCode(functionEntity, fileChannel);
+                OperationValueResult<FunctionEntity> functionCode = updateFunctionCode(functionEntity, fileChannel);
+                randomAccessFile.close();
+                return functionCode;
             }
         } catch (InvalidParameterValueException e) {
             reportErrorUpdateOfFunctionFailed(result, e,"invalid request parameters");
