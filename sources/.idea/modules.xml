@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/connector-for-aws-lambda.iml" filepath="$PROJECT_DIR$/connector-for-aws-lambda.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sources.iml" filepath="$PROJECT_DIR$/.idea/sources.iml" />
     </modules>
   </component>
 </project>

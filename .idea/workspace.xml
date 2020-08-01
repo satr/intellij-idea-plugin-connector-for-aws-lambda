@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a6689057-bc58-4923-a163-6e1ee53fe1ee" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/sources/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sources/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sources/test/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sources/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sources/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/connector-for-aws-lambda.iml" beforeDir="false" afterPath="$PROJECT_DIR$/sources/connector-for-aws-lambda.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sources/resources/META-INF/plugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/common/MessageHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/common/MessageHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/common/OperationResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/common/OperationResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/common/OperationResultImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/common/OperationResultImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/common/OperationValueResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/common/OperationValueResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/common/OperationValueResultImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/common/OperationValueResultImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/entities/ArtifactEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/entities/ArtifactEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/entities/FunctionEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/entities/FunctionEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/models/ConnectorSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/models/ConnectorSettings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/models/FunctionConnectorModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/models/ProjectModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/models/ProjectModelImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/AbstractConnectorPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/AbstractConnectorPresenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorPresenterImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/src/io/github/satr/idea/plugin/connector/la/ui/ConnectorViewFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/test/io/github/satr/idea/plugin/connector/la/FunctionConnectorModelTestCases.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/test/io/github/satr/idea/plugin/connector/la/FunctionConnectorModelTestCases.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/test/io/github/satr/idea/plugin/connector/la/FunctionConnectorModelTestCasesBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/test/io/github/satr/idea/plugin/connector/la/FunctionConnectorModelTestCasesBase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithArtifactTestCases.java" beforeDir="false" afterPath="$PROJECT_DIR$/sources/test/io/github/satr/idea/plugin/connector/la/UpdateFunctionWithArtifactTestCases.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+</project>

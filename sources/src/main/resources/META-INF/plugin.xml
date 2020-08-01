@@ -1,0 +1,26 @@
+<idea-plugin>
+    <id>io.github.satr.idea.plugin.aws.lambda.connector.intellij-idea-plugin-connector-for-aws-lambda</id>
+    <name>Connector for AWS Lambda</name>
+    <vendor email="satr.github.io@gmail.com" url="https://satr.github.io/intellij-idea-plugin-connector-for-aws-lambda/">github.com/satr</vendor>
+
+    <description><![CDATA[
+      View and update functions powered by AWS Lambda with Java or Node.js<br />
+      Copyright © 2020, <a href="https://github.com/satr">github.com/satr</a>, MIT License. <br />
+      <a href="https://aws.amazon.com/lambda">Read more</a> about AWS Lambda</a>.<br />
+      Amazon Web Services, and AWS Lambda are trademarks of Amazon.com, Inc. or its affiliates in the United States and/or other countries.
+      Node.js is a trademark of Joyent, Inc.
+    ]]></description>
+
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
