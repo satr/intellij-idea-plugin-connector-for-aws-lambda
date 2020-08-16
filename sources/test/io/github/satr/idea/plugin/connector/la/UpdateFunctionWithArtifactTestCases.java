@@ -1,5 +1,5 @@
 package io.github.satr.idea.plugin.connector.la;
-// Copyright © 2018, github.com/satr, MIT License
+// Copyright © 2020, github.com/satr, MIT License
 
 import org.junit.Test;
 

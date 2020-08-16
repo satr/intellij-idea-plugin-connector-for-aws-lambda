@@ -1,10 +1,10 @@
 package io.github.satr.idea.plugin.connector.la;
-// Copyright © 2018, github.com/satr, MIT License
+// Copyright © 2020, github.com/satr, MIT License
 
 import com.amazonaws.regions.Regions;
 import io.github.satr.common.Constant;
 import io.github.satr.common.Logger;
-import io.github.satr.idea.plugin.connector.la.models.FunctionConnectorModel;
+import io.github.satr.idea.plugin.aws.lambda.models.FunctionConnectorModel;
 import org.junit.After;
 import org.junit.Before;
 

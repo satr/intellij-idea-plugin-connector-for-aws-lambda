@@ -1,35 +1,60 @@
-plugins {
-    id 'java'
-    id 'org.jetbrains.intellij' version '0.4.21'
-}
-
-group 'io.github.satr.idea.plugin.aws.lambda.connector'
-version '2.0-SNAPSHOT'
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
-    maven {
-        url 'https://dl.bintray.com/jetbrains/intellij-plugin-service'
+buildscript {
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
+            url 'https://dl.bintray.com/jetbrains/intellij-plugin-service'
+        }
     }
     dependencies {
         classpath "org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.5.0-SNAPSHOT"
     }
 }
 
-apply plugin: 'org.jetbrains.intellij'
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.21'
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'org.jetbrains.intellij'
+
+    intellij {
+        version '2020.2'
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven{
+        url "https://cache-redirector.jetbrains.com/jetbrains.bintray.com/intellij-plugin-service"
+    }
+    maven{
+        url "https://cache-redirector.jetbrains.com/repo1.maven.org/maven2"
+    }
+}
+
+group 'io.github.satr.idea.plugin.aws.lambda.connector'
+version '2.0-SNAPSHOT'
+sourceCompatibility = 1.8
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "com.amazonaws:aws-java-sdk-lambda:1.11.827"
+    compile "com.amazonaws:aws-java-sdk-iam:1.11.827"
+    compile "com.amazonaws:aws-java-sdk-logs:1.11.827"
+    compile "log4j:log4j:1.2.17"
+    //Add ref to file ~/Library/Application Support/JetBrains/Toolbox/apps/IDEA-U/ch-0/201.7846.76/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven.jar
+    implementation files("/Users/user1/Library/Application Support/JetBrains/Toolbox/apps/IDEA-U/ch-0/201.7846.76/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven.jar")
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-all:2.0.2-beta"
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
-intellij {
-    version '2020.2'
-}
 patchPluginXml {
     changeNotes """
       <ul>
