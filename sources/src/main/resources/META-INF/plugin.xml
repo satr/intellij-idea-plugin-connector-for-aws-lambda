@@ -15,14 +15,14 @@
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-    <depends>org.jetbrains.idea.maven</depends><!--Add manually a jar-dependency for the module to a plugin "maven.jar" from the IDEA install folder "Contents/plugins/maven/lib"-->
+<!--    <depends>org.jetbrains.idea.maven</depends>&lt;!&ndash;Add manually a jar-dependency for the module to a plugin "maven.jar" from the IDEA install folder "Contents/plugins/maven/lib"&ndash;&gt;-->
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceInterface="io.github.satr.idea.plugin.aws.lambda.models.ConnectorSettings"
-                            serviceImplementation="io.github.satr.idea.plugin.aws.lambda.models.ConnectorSettings" />
-        <applicationService serviceInterface="io.github.satr.idea.plugin.aws.lambda.ui.ConnectorPresenter"
-                            serviceImplementation="io.github.satr.idea.plugin.aws.lambda.ui.ConnectorPresenterImpl" />
+        <applicationService serviceInterface="io.github.satr.idea.plugin.aws.lambda.connector.models.ConnectorSettings"
+                            serviceImplementation="io.github.satr.idea.plugin.aws.lambda.connector.models.ConnectorSettings" />
+        <applicationService serviceInterface="io.github.satr.idea.plugin.aws.lambda.connector.ui.ConnectorPresenter"
+                            serviceImplementation="io.github.satr.idea.plugin.aws.lambda.connector.ui.ConnectorPresenterImpl" />
         <toolWindow id="Connector for AWS Lambda" secondary="true"  icon="/icons/iconConnector.png" anchor="right"
-                    factoryClass="io.github.satr.idea.plugin.aws.lambda.ui.ConnectorViewFactory"/>
+                        factoryClass="io.github.satr.idea.plugin.aws.lambda.connector.ui.ConnectorViewFactory"/>
     </extensions>
 
     <actions>

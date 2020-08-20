@@ -14,11 +14,11 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.messages.MessageBusConnection;
+import icons.IconSet;
 import io.github.satr.common.DateTimeHelper;
 import io.github.satr.common.MessageHelper;
 import io.github.satr.common.OperationResult;
@@ -280,8 +280,8 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
         functionSizeLimitsLink.setVisible(!collapse);
         functionParameterConstraintsLink.setVisible(!collapse);
         refreshFunctionConfiguration.setVisible(!collapse);
-        setupButton(functionConfigurationCollapseExpandButton, collapse ? IconLoader.getIcon("/icons/iconExpand.png")
-                                                                : IconLoader.getIcon("/icons/iconCollapse.png"));
+        setupButton(functionConfigurationCollapseExpandButton, collapse ? IconSet.IconExpand
+                                                                : IconSet.IconCollapse);
         mainSplitPanel.getUI().resetToPreferredSizes(mainSplitPanel);
     }
 
@@ -391,25 +391,25 @@ public class ConnectorViewFactory implements ToolWindowFactory, ConnectorView, i
     }
 
     private void prepareButtons() {
-        setupButton(updateFunctionButton, IconLoader.getIcon("/icons/iconUpdateFunction.png"));
-        setupButton(refreshAllButton, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(runFunctionTestButton, IconLoader.getIcon("/icons/iconRunFunctionTest.png"));
-        setupButton(openFunctionInputFileButton, IconLoader.getIcon("/icons/iconOpenFunctionInputFile.png"));
-        setupButton(updateProxySettingsButton, IconLoader.getIcon("/icons/iconUpdateProxySettings.png"));
-        setupButton(clearLocalLogButton, IconLoader.getIcon("/icons/iconClearLog.png"));
-        setupButton(clearFunctionTestInputButton, IconLoader.getIcon("/icons/iconClearLog.png"));
-        setupButton(clearFunctionTestOutputButton, IconLoader.getIcon("/icons/iconClearLog.png"));
-        setupButton(deleteAwsLogStreamsButton, IconLoader.getIcon("/icons/iconClearLog.png"));
-        setupButton(refreshFuncListButton, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(refreshArtifactsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(refreshRegionsButton, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(refreshCredentialProfiles, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(refreshFunctionConfiguration, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(refreshAwsLogStreamList, IconLoader.getIcon("/icons/iconRefresh.png"));
-        setupButton(reformatJsonFunctionTestInputButton, IconLoader.getIcon("/icons/iconReformatJson.png"));
-        setupButton(reformatJsonFunctionTestOutputButton, IconLoader.getIcon("/icons/iconReformatJson.png"));
-        setupButton(functionConfigurationCollapseExpandButton, IconLoader.getIcon("/icons/iconExpand.png"));
-        setupButton(getNextAwsLogStreamListSet, IconLoader.getIcon("/icons/iconNextAwsLogSet.png"));
+        setupButton(updateFunctionButton, IconSet.IconUpdateFunction);
+        setupButton(refreshAllButton, IconSet.IconRefresh);
+        setupButton(runFunctionTestButton, IconSet.IconRunFunctionTest);
+        setupButton(openFunctionInputFileButton, IconSet.IconOpenFunctionInputFile);
+        setupButton(updateProxySettingsButton, IconSet.IconUpdateProxySettings);
+        setupButton(clearLocalLogButton, IconSet.IconClearLog);
+        setupButton(clearFunctionTestInputButton, IconSet.IconClearLog);
+        setupButton(clearFunctionTestOutputButton, IconSet.IconClearLog);
+        setupButton(deleteAwsLogStreamsButton, IconSet.IconClearLog);
+        setupButton(refreshFuncListButton, IconSet.IconRefresh);
+        setupButton(refreshArtifactsButton, IconSet.IconRefresh);
+        setupButton(refreshRegionsButton, IconSet.IconRefresh);
+        setupButton(refreshCredentialProfiles, IconSet.IconRefresh);
+        setupButton(refreshFunctionConfiguration, IconSet.IconRefresh);
+        setupButton(refreshAwsLogStreamList, IconSet.IconRefresh);
+        setupButton(reformatJsonFunctionTestInputButton, IconSet.IconReformatJson);
+        setupButton(reformatJsonFunctionTestOutputButton, IconSet.IconReformatJson);
+        setupButton(functionConfigurationCollapseExpandButton, IconSet.IconExpand);
+        setupButton(getNextAwsLogStreamListSet, IconSet.IconNextAwsLogSet);
     }
 
     private void performAfterBuildActivity() {
