@@ -1,23 +1,18 @@
 package io.github.satr.common;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class JsonHelper {
-    private final ScriptEngineManager manager = new ScriptEngineManager();
-    private final ScriptEngine scriptEngine = manager.getEngineByName("JavaScript");
-    private final String SCRIPT_PARAMS = "result = JSON.stringify(JSON.parse(jsonString), null, 2)";
-    private final String VALUE_FORMAT = "jsonString";
-    private final String RESULT_KEY = "result";
+    private static final ObjectWriter PRETTY_WRITER = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
     public OperationValueResult<String> Reformat(String jsonText) {
         OperationValueResultImpl<String> result = new OperationValueResultImpl<>();
-        scriptEngine.put(VALUE_FORMAT, jsonText);
         try {
-            scriptEngine.eval(SCRIPT_PARAMS);
-            result.setValue((String)scriptEngine.get(RESULT_KEY));
-        } catch (ScriptException e) {
+            Object json = new ObjectMapper().readValue(jsonText, Object.class);
+            result.setValue(PRETTY_WRITER.writeValueAsString(json));
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             result.addError(e.getMessage());
         }

@@ -127,7 +127,12 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
         try {
             final ListFunctionsResult functionRequestResult = awsLambdaClient.listFunctions();
             for (FunctionConfiguration functionConfiguration : functionRequestResult.getFunctions()) {
-                entries.add(createFunctionEntity(functionConfiguration));
+                try {
+                    entries.add(createFunctionEntity(functionConfiguration));
+                } catch (Exception ex) {
+                    // Log and skip problematic function (e.g., unknown enum/ARN)
+                    System.err.println("Skipping function due to error: " + ex.getMessage());
+                }
             }
             result.setValue(entries);
         } catch (com.amazonaws.services.lambda.model.AWSLambdaException e) {
@@ -198,6 +203,14 @@ public class FunctionConnectorModel extends AbstractConnectorModel {
             final UpdateFunctionCodeResult updateFunctionResult = awsLambdaClient.updateFunctionCode(request);
             result.setValue(new FunctionEntity(updateFunctionResult));
         } catch (Exception e) {
+            // Check for AWS Lambda update-in-progress (409 Conflict)
+            if (e instanceof com.amazonaws.services.lambda.model.AWSLambdaException) {
+                com.amazonaws.services.lambda.model.AWSLambdaException awsEx = (com.amazonaws.services.lambda.model.AWSLambdaException) e;
+                if (awsEx.getStatusCode() == 409 || "ConflictException".equals(awsEx.getErrorCode())) {
+                    result.addError("An update is already in progress for this Lambda function. Please wait for the current update to complete and try again.");
+                    return result;
+                }
+            }
             reportErrorUpdateOfFunctionFailed(result, e);
         }
         return result;
