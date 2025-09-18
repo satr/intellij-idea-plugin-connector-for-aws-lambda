@@ -1,0 +1,1 @@
+rootProject.name = "intellij-idea-plugin-connector-for-aws-lambda"
